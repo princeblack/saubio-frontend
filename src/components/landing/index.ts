@@ -1,0 +1,12 @@
+export { AboutSection } from './AboutSection';
+export { ConfiguratorPreview } from './ConfiguratorPreview';
+export { EcoHighlight } from './EcoHighlight';
+export { FinalCta } from './FinalCta';
+export { HeroSection } from './HeroSection';
+export { MatchingModes } from './MatchingModes';
+export { MobileShowcase } from './MobileShowcase';
+export { PricingPlans } from './PricingPlans';
+export { ServiceGrid } from './ServiceGrid';
+export { Testimonials } from './Testimonials';
+export { TrustBar } from './TrustBar';
+export { WhyChooseUs } from './WhyChooseUs';

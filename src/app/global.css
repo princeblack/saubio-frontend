@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --radius-card: 1.75rem;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-saubio-mist text-saubio-slate font-sans antialiased;
+}
+
+a {
+  @apply transition-colors duration-150;
+}
+
+.section-container {
+  @apply mx-auto w-full max-w-7xl px-6 py-16 sm:px-10;
+}
+
+.section-heading {
+  @apply text-sm font-semibold uppercase tracking-[0.3em] text-saubio-moss;
+}
+
+.headline {
+  @apply text-4xl font-semibold text-saubio-forest sm:text-5xl lg:text-6xl;
+}
+
+.subheadline {
+  @apply mt-4 max-w-2xl text-lg text-saubio-slate/80 sm:text-xl;
+}

@@ -1,0 +1,68 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@saubio/models": [
+        "libs/models/src"
+      ],
+      "@saubio/models/*": [
+        "libs/models/src/*"
+      ],
+      "@saubio/utils": [
+        "libs/utils/src"
+      ],
+      "@saubio/utils/*": [
+        "libs/utils/src/*"
+      ],
+      "@saubio/config": [
+        "libs/config/src"
+      ],
+      "@saubio/config/*": [
+        "libs/config/src/*"
+      ],
+      "@saubio/ui": [
+        "libs/ui/src"
+      ],
+      "@saubio/ui/*": [
+        "libs/ui/src/*"
+      ]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "incremental": true
+  },
+  "include": [
+    "**/*.cts",
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.mts",
+    "**/*.ts",
+    "**/*.tsx",
+    "next-env.d.ts",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    ".next"
+  ]
+}
