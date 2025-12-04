@@ -48,22 +48,22 @@ export function SiteFooter() {
           </h3>
           <ul className="space-y-2 text-sm text-saubio-cream/70">
             <li>
-              <Link href="#about" className="hover:text-white">
+              <Link href="/a-propos" className="hover:text-white">
                 {t('footer.links.about')}
               </Link>
             </li>
             <li>
-              <Link href="#services" className="hover:text-white">
+              <Link href="/services" className="hover:text-white">
                 {t('footer.links.services')}
               </Link>
             </li>
             <li>
-              <Link href="#tarifs" className="hover:text-white">
+              <Link href="/tarifs" className="hover:text-white">
                 {t('footer.links.pricing')}
               </Link>
             </li>
             <li>
-              <Link href="/blog" className="hover:text-white">
+              <Link href="/guides" className="hover:text-white">
                 {t('footer.links.blog')}
               </Link>
             </li>
