@@ -1,6 +1,5 @@
 import {
   AboutSection,
-  EcoHighlight,
   FinalCta,
   HeroSection,
   MatchingModes,
@@ -20,7 +19,6 @@ export default function HomePage() {
         <AboutSection />
         <ServiceGrid />
         <MatchingModes />
-        <EcoHighlight />
         <PricingPlans />
         <Testimonials />
         <FinalCta />

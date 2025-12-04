@@ -1,6 +1,11 @@
 'use client';
 
-import { SectionContainer, SectionDescription, SectionHeading, SectionTitle } from '@saubio/ui';
+import {
+  SectionContainer,
+  SectionDescription,
+  SectionHeading,
+  SectionTitle,
+} from '@saubio/ui';
 import { useTranslation } from 'react-i18next';
 
 export function ServiceGrid() {
@@ -11,7 +16,12 @@ export function ServiceGrid() {
   }[];
 
   return (
-    <SectionContainer as="section" padding="spacious" aria-labelledby="services-title">
+    <SectionContainer
+      as="section"
+      padding="spacious"
+      aria-labelledby="services-title"
+      className="rounded-5xl bg-saubio-cream"
+    >
       <div className="mb-12 space-y-4 text-center">
         <SectionHeading>{t('services.heading')}</SectionHeading>
         <SectionTitle id="services-title" align="center">
