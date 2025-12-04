@@ -1,4 +1,4 @@
-import { forwardRef, useRef } from 'react';
+import { forwardRef } from 'react';
 import { AlertTriangle, CheckCircle2, Info, XCircle } from 'lucide-react';
 import type {
   ButtonHTMLAttributes,
@@ -771,6 +771,18 @@ export interface CarouselProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
 }
 
+function scrollCarousel(
+  button: HTMLButtonElement,
+  direction: 'prev' | 'next',
+  scrollOffset: number
+) {
+  const root = button.closest('[data-carousel-root]');
+  const track = root?.querySelector('[data-carousel-track]') as HTMLDivElement | null;
+  if (!track) return;
+  const amount = direction === 'next' ? scrollOffset : -scrollOffset;
+  track.scrollBy({ left: amount, behavior: 'smooth' });
+}
+
 export function Carousel({
   ariaLabel = 'carousel',
   gap = 'md',
@@ -779,23 +791,14 @@ export function Carousel({
   children,
   ...props
 }: CarouselProps) {
-  const trackRef = useRef<HTMLDivElement>(null);
-
-  const scrollBy = (direction: 'prev' | 'next') => {
-    const node = trackRef.current;
-    if (!node) return;
-    const amount = direction === 'next' ? scrollOffset : -scrollOffset;
-    node.scrollBy({ left: amount, behavior: 'smooth' });
-  };
-
   return (
-    <div className={joinClasses('relative', className)} {...props}>
+    <div className={joinClasses('relative', className)} data-carousel-root {...props}>
       <div className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white via-white/80 to-transparent" />
       <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white via-white/80 to-transparent" />
       <div className="flex items-center justify-between gap-3 pb-4">
         <button
           type="button"
-          onClick={() => scrollBy('prev')}
+          onClick={(event) => scrollCarousel(event.currentTarget, 'prev', scrollOffset)}
           className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-saubio-forest/20 bg-white text-saubio-forest shadow-soft-sm transition hover:border-saubio-forest/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-saubio-sun"
           aria-label="Scroll carousel backwards"
         >
@@ -803,7 +806,7 @@ export function Carousel({
         </button>
         <button
           type="button"
-          onClick={() => scrollBy('next')}
+          onClick={(event) => scrollCarousel(event.currentTarget, 'next', scrollOffset)}
           className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-saubio-forest/20 bg-white text-saubio-forest shadow-soft-sm transition hover:border-saubio-forest/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-saubio-sun"
           aria-label="Scroll carousel forwards"
         >
@@ -811,9 +814,9 @@ export function Carousel({
         </button>
       </div>
       <div
-        ref={trackRef}
         role="group"
         aria-label={ariaLabel}
+        data-carousel-track
         className={joinClasses(
           'flex snap-x snap-mandatory overflow-x-auto scroll-smooth',
           carouselGapClasses[gap],
