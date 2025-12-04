@@ -1487,21 +1487,25 @@
       "title": "Conseils Saubio",
       "description": "Ressources pratiques pour optimiser vos interventions : organisation, produits, procédures éco-responsables et retours d’expérience.",
       "readMore": "Lire la suite →",
+      "backToList": "Retour aux guides",
       "articles": [
         {
+          "slug": "guide-eco",
           "title": "Guide du nettoyage écologique",
           "excerpt": "Combiner efficacité, sécurité sanitaire et réduction d’empreinte carbone.",
-          "href": "#"
+          "body": "Découvrez les produits labellisés que nous recommandons, comment configurer vos équipes pour limiter les trajets, et les indicateurs suivis par Saubio pour mesurer l’impact environnemental."
         },
         {
+          "slug": "checklist-entree",
           "title": "Checklist entrée / sortie",
           "excerpt": "Les étapes clés pour rendre un logement impeccable lors d’un déménagement.",
-          "href": "#"
+          "body": "Téléchargez notre checklist détaillée : pièces à inspecter, temps moyen par surface et conseils pour sécuriser la caution. Nous y ajoutons les documents à remettre au client final."
         },
         {
+          "slug": "missions-short-notice",
           "title": "Planifier une intervention short notice",
           "excerpt": "Tout savoir sur les missions J+1 et la diffusion automatique aux prestataires.",
-          "href": "#"
+          "body": "Ce guide explique le workflow J+1, la façon dont les prestataires sont notifiés et comment le dépôt Mollie est géré jusqu’à la confirmation de la mission."
         }
       ]
     }

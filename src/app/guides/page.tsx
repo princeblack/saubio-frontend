@@ -9,9 +9,9 @@ import { useTranslation } from 'react-i18next';
 export default function GuidesPage() {
   const { t } = useTranslation();
   const articles = t('pages.guides.articles', { returnObjects: true }) as Array<{
+    slug: string;
     title: string;
     excerpt: string;
-    href: string;
   }>;
 
   return (
@@ -32,7 +32,7 @@ export default function GuidesPage() {
               >
                 <h3 className="text-base font-semibold text-saubio-forest">{article.title}</h3>
                 <p className="mt-3 flex-1">{article.excerpt}</p>
-                <Link href={article.href} className="mt-4 text-sm font-semibold text-saubio-forest">
+                <Link href={`/guides/${article.slug}`} className="mt-4 text-sm font-semibold text-saubio-forest">
                   {t('pages.guides.readMore')}
                 </Link>
               </article>

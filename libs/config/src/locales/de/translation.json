@@ -1460,21 +1460,25 @@
       "title": "Saubio-Ratgeber",
       "description": "Praktische Ressourcen für Haushalte, Firmen und Dienstleister:innen – Organisation, ökologische Produkte und Best Practices.",
       "readMore": "Weiterlesen →",
+      "backToList": "Zurück zu den Guides",
       "articles": [
         {
+          "slug": "oekologischer-leitfaden",
           "title": "Leitfaden für ökologische Reinigung",
           "excerpt": "Effizienz, Hygiene und geringere Emissionen unter einen Hut bringen.",
-          "href": "#"
+          "body": "Wir zeigen empfohlene Öko-Produkte, Routenoptimierung und die KPIs, mit denen Saubio den Energieverbrauch je Einsatz misst."
         },
         {
+          "slug": "checkliste-umzug",
           "title": "Checkliste Ein-/Auszug",
           "excerpt": "Die wichtigsten Schritte, um eine Immobilie tipptopp zu übergeben.",
-          "href": "#"
+          "body": "Laden Sie unsere detaillierte Liste herunter: Raum-für-Raum-Aufgaben, Zeitbedarf und Dokumente zur Absicherung der Kaution."
         },
         {
+          "slug": "short-notice-guide",
           "title": "Short-Notice-Einsätze planen",
           "excerpt": "So funktioniert die J+1-Organisation und das automatische Matching.",
-          "href": "#"
+          "body": "Dieser Artikel beschreibt den Workflow J+1, wie Dienstleister informiert werden und wie die Mollie-Anzahlung verwaltet wird."
         }
       ]
     }

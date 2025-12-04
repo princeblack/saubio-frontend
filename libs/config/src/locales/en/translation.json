@@ -1487,21 +1487,25 @@
       "title": "Saubio insights",
       "description": "Practical resources for households, companies and providers: organisation, eco products and ops best practices.",
       "readMore": "Read more →",
+      "backToList": "Back to guides",
       "articles": [
         {
+          "slug": "eco-guide",
           "title": "Eco-cleaning playbook",
           "excerpt": "Combine efficiency, hygiene and a lower carbon footprint.",
-          "href": "#"
+          "body": "Learn about Saubio-approved eco products, routing best practices and the KPIs we track to reduce energy consumption per mission."
         },
         {
+          "slug": "move-checklist",
           "title": "Move-in / move-out checklist",
           "excerpt": "Key steps to hand back an apartment in perfect shape.",
-          "href": "#"
+          "body": "Download our end-of-tenancy checklist with dedicated timelines, room-by-room tips and documents to secure the deposit."
         },
         {
+          "slug": "short-notice",
           "title": "Handling short-notice missions",
           "excerpt": "How the Saubio workflow broadcasts urgent jobs within 48 h.",
-          "href": "#"
+          "body": "We detail the J+1 process, provider notifications and the way the Mollie deposit is captured then released once a provider accepts."
         }
       ]
     }
