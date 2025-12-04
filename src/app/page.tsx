@@ -3,7 +3,6 @@ import {
   FinalCta,
   HeroSection,
   MatchingModes,
-  PricingPlans,
   ServiceGrid,
   Testimonials,
 } from '../components/landing';
@@ -19,7 +18,6 @@ export default function HomePage() {
         <AboutSection />
         <ServiceGrid />
         <MatchingModes />
-        <PricingPlans />
         <Testimonials />
         <FinalCta />
       </main>
