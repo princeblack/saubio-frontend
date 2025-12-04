@@ -284,6 +284,7 @@ export function SurfaceCard({
 }
 
 type AnalyticsCardVariant = 'light' | 'glass';
+type AnalyticsCardSize = 'default' | 'compact';
 
 const analyticsVariantClasses: Record<AnalyticsCardVariant, string> = {
   light:
@@ -297,6 +298,24 @@ const analyticsIconVariantClasses: Record<AnalyticsCardVariant, string> = {
   glass: 'bg-white/10 text-white',
 };
 
+const analyticsSizeClasses: Record<
+  AnalyticsCardSize,
+  { container: string; label: string; value: string; icon: string }
+> = {
+  default: {
+    container: 'p-5 sm:p-6',
+    label: 'text-[11px] tracking-[0.32em]',
+    value: 'text-3xl sm:text-4xl',
+    icon: 'h-9 w-9 text-base',
+  },
+  compact: {
+    container: 'p-4 sm:p-5',
+    label: 'text-[8px] sm:text-[9px] tracking-[0.18em] sm:tracking-[0.2em] leading-tight break-words',
+    value: 'text-base sm:text-xl leading-tight break-words whitespace-pre-wrap',
+    icon: 'h-6 w-6 text-xs',
+  },
+};
+
 export interface AnalyticsCardProps extends HTMLAttributes<HTMLDivElement> {
   label: string;
   value: string;
@@ -304,6 +323,7 @@ export interface AnalyticsCardProps extends HTMLAttributes<HTMLDivElement> {
   icon?: ReactNode;
   variant?: AnalyticsCardVariant;
   align?: 'left' | 'center' | 'right';
+  size?: AnalyticsCardSize;
 }
 
 export function AnalyticsCard({
@@ -313,14 +333,18 @@ export function AnalyticsCard({
   icon,
   variant = 'light',
   align = 'left',
+  size = 'default',
   className,
   children,
   ...props
 }: AnalyticsCardProps) {
+  const sizeClasses = analyticsSizeClasses[size];
+
   return (
     <div
       className={joinClasses(
-        'rounded-3xl p-5 sm:p-6',
+        'rounded-3xl',
+        sizeClasses.container,
         analyticsVariantClasses[variant],
         align === 'center' ? 'text-center' : undefined,
         align === 'right' ? 'text-right' : undefined,
@@ -328,14 +352,25 @@ export function AnalyticsCard({
       )}
       {...props}
     >
-      <div className={joinClasses('flex items-center gap-3', align === 'right' ? 'justify-end' : 'justify-between')}>
-        <span className="text-[11px] font-semibold uppercase tracking-[0.32em] opacity-70">
+      <div
+        className={joinClasses(
+          'flex items-center gap-3',
+          align === 'right' ? 'justify-end' : 'justify-between'
+        )}
+      >
+        <span
+          className={joinClasses(
+            'font-semibold uppercase opacity-70',
+            sizeClasses.label
+          )}
+        >
           {label}
         </span>
         {icon ? (
           <span
             className={joinClasses(
-              'flex h-9 w-9 items-center justify-center rounded-2xl text-base',
+              'flex items-center justify-center rounded-2xl',
+              sizeClasses.icon,
               analyticsIconVariantClasses[variant]
             )}
             aria-hidden="true"
@@ -344,7 +379,7 @@ export function AnalyticsCard({
           </span>
         ) : null}
       </div>
-      <p className="mt-3 text-3xl font-semibold sm:text-4xl">{value}</p>
+      <p className={joinClasses('mt-3 font-semibold', sizeClasses.value)}>{value}</p>
       {helper ? (
         <p className="mt-2 text-sm opacity-80">{helper}</p>
       ) : null}
