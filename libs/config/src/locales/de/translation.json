@@ -1368,5 +1368,115 @@
     },
     "noIncidents": "Aktuell keine Vorfälle.",
     "noServices": "Kein Service konfiguriert."
+  },
+  "pages": {
+    "about": {
+      "heading": "Saubio",
+      "title": "Über uns",
+      "description": "Saubio wurde in Berlin gegründet, um deutschen Qualitätsanspruch, Premium-Service und nachhaltige Reinigung zu vereinen. Wir bringen Kund:innen, Dienstleister:innen und Ops-Teams mit maximaler Transparenz zusammen.",
+      "pillars": [
+        {
+          "title": "Radikale Nachhaltigkeit",
+          "body": "Zertifizierte Produkte, optimierte Routen und automatische Kompensation jeder Mission."
+        },
+        {
+          "title": "Geprüfte Qualität",
+          "body": "Audits, Live-KPIs und transparente Reports für Privat- und Geschäftskund:innen."
+        },
+        {
+          "title": "Technologie mit Menschlichkeit",
+          "body": "Digitale Tools für die Einsatzplanung, kombiniert mit lokalem Saubio-Support an 7 Tagen pro Woche."
+        }
+      ]
+    },
+    "services": {
+      "heading": "Unser Angebot",
+      "title": "Saubio-Leistungen",
+      "description": "Stellen Sie aus Wohnungs-, Business- und Spezialservices Ihr persönliches Programm zusammen. Alle Einsätze sind versichert und werden von einem Customer Success Manager betreut.",
+      "offerings": [
+        {
+          "title": "Premium-Haushalt",
+          "details": [
+            "Regelmäßige oder einmalige Einsätze",
+            "Sichere Schlüsselverwaltung",
+            "Individuelle Checklisten"
+          ]
+        },
+        {
+          "title": "Geschäftsräume",
+          "details": [
+            "Büros, Retail, Coworkings",
+            "Erweiterte Zeiten (6–22 Uhr)",
+            "Qualitätsberichte & Audits"
+          ]
+        },
+        {
+          "title": "Spezialleistungen",
+          "details": [
+            "Grundreinigung & Übergaben",
+            "Ökologische Textilpflege",
+            "Event- und Sonderreinigung"
+          ]
+        }
+      ]
+    },
+    "tariffs": {
+      "heading": "Transparenz",
+      "title": "Preise",
+      "description": "Dienstleister:innen legen ihren Stundensatz selbst fest. Saubio zeigt die durchschnittliche Marktspanne (28–45 € / h), damit Sie Angebote vergleichen können.",
+      "disclaimer": "Alle Schätzungen enthalten Lohnnebenkosten, Versicherung, Produkte und Qualitätskontrolle. Vor Freigabe erhalten Sie ein verbindliches Angebot.",
+      "plans": [
+        {
+          "name": "Essentiel",
+          "price": "Spanne: 28–34 € / h",
+          "perks": [
+            "Zertifizierte Fachkraft",
+            "Material inklusive",
+            "E-Mail-Support"
+          ]
+        },
+        {
+          "name": "Komfort",
+          "price": "Spanne: 35–42 € / h",
+          "perks": [
+            "Festes Team",
+            "Wäscheservice",
+            "Priorisierter Support"
+          ]
+        },
+        {
+          "name": "Unternehmen",
+          "price": "Auf Anfrage (Dienstleister + Saubio)",
+          "perks": [
+            "Individuelle Reportings",
+            "Erweiterte Zeiten (6–22 Uhr)",
+            "Persönliche Ansprechperson"
+          ]
+        }
+      ]
+    },
+    "guides": {
+      "heading": "Guides & News",
+      "title": "Saubio-Ratgeber",
+      "description": "Praktische Ressourcen für Haushalte, Firmen und Dienstleister:innen – Organisation, ökologische Produkte und Best Practices.",
+      "readMore": "Weiterlesen →",
+      "articles": [
+        {
+          "title": "Leitfaden für ökologische Reinigung",
+          "excerpt": "Effizienz, Hygiene und geringere Emissionen unter einen Hut bringen.",
+          "href": "#"
+        },
+        {
+          "title": "Checkliste Ein-/Auszug",
+          "excerpt": "Die wichtigsten Schritte, um eine Immobilie tipptopp zu übergeben.",
+          "href": "#"
+        },
+        {
+          "title": "Short-Notice-Einsätze planen",
+          "excerpt": "So funktioniert die J+1-Organisation und das automatische Matching.",
+          "href": "#"
+        }
+      ]
+    }
   }
 }

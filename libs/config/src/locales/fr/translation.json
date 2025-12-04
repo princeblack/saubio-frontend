@@ -1395,5 +1395,115 @@
       "empty": "Aucun événement n’a encore été reçu pour vos paiements."
     },
     "error": "Impossible de charger vos mandats ou l’historique de paiement."
+  },
+  "pages": {
+    "about": {
+      "heading": "Saubio",
+      "title": "À propos de nous",
+      "description": "Saubio est né à Berlin avec la volonté d’allier rigueur allemande, prestations premium et nettoyage durable. Nous réunissons clients, prestataires et équipes internes autour d’un standard commun : transparence, simplicité et impact positif.",
+      "pillars": [
+        {
+          "title": "Durabilité radicale",
+          "body": "Produits certifiés, tournées optimisées et compensation automatique des émissions pour chaque mission."
+        },
+        {
+          "title": "Qualité vérifiée",
+          "body": "Prestataires audités, indicateurs en temps réel, contrôle Ops et suivi client centralisé."
+        },
+        {
+          "title": "Technologie humaine",
+          "body": "Outils digitaux fluides pour orchestrer les équipes, tout en gardant un support Saubio joignable 7 j/7."
+        }
+      ]
+    },
+    "services": {
+      "heading": "Nos offres",
+      "title": "Services Saubio",
+      "description": "Composez un programme sur mesure en combinant nos formules résidentielles, professionnelles et missions spécialisées. Les prestations sont assurées par des intervenants certifiés et suivies par un Customer Success Manager.",
+      "offerings": [
+        {
+          "title": "Résidentiel premium",
+          "details": [
+            "Entretien ponctuel ou récurrent",
+            "Gestion sécurisée des clés",
+            "Checklist personnalisée"
+          ]
+        },
+        {
+          "title": "Espaces professionnels",
+          "details": [
+            "Bureaux, retail, coworkings",
+            "Horaires étendus (6 h – 22 h)",
+            "Rapports et audits qualité"
+          ]
+        },
+        {
+          "title": "Services spécialisés",
+          "details": [
+            "Grand ménage & remise en état",
+            "Nettoyage écologique de tissus",
+            "Prestations événementielles"
+          ]
+        }
+      ]
+    },
+    "tariffs": {
+      "heading": "Transparence",
+      "title": "Nos tarifs",
+      "description": "Les prestataires définissent eux-mêmes leur tarif horaire depuis leur profil. Saubio affiche la fourchette moyenne constatée (28 à 45 € / h) afin de vous aider à comparer et choisir la bonne offre.",
+      "disclaimer": "Les estimations incluent charges sociales, assurances, produits et suivi qualité. Un devis précis est communiqué avant validation.",
+      "plans": [
+        {
+          "name": "Essentiel",
+          "price": "Fourchette observée : 28 – 34 € / h",
+          "perks": [
+            "Intervenant certifié",
+            "Produits inclus",
+            "Support e-mail"
+          ]
+        },
+        {
+          "name": "Confort",
+          "price": "Fourchette observée : 35 – 42 € / h",
+          "perks": [
+            "Équipe dédiée",
+            "Gestion du linge",
+            "Support prioritaire"
+          ]
+        },
+        {
+          "name": "Entreprise",
+          "price": "Sur devis (prestataire + Saubio)",
+          "perks": [
+            "Compte-rendu personnalisé",
+            "Horaires étendus (6 h – 22 h)",
+            "Référent Saubio dédié"
+          ]
+        }
+      ]
+    },
+    "guides": {
+      "heading": "Guides & actus",
+      "title": "Conseils Saubio",
+      "description": "Ressources pratiques pour optimiser vos interventions : organisation, produits, procédures éco-responsables et retours d’expérience.",
+      "readMore": "Lire la suite →",
+      "articles": [
+        {
+          "title": "Guide du nettoyage écologique",
+          "excerpt": "Combiner efficacité, sécurité sanitaire et réduction d’empreinte carbone.",
+          "href": "#"
+        },
+        {
+          "title": "Checklist entrée / sortie",
+          "excerpt": "Les étapes clés pour rendre un logement impeccable lors d’un déménagement.",
+          "href": "#"
+        },
+        {
+          "title": "Planifier une intervention short notice",
+          "excerpt": "Tout savoir sur les missions J+1 et la diffusion automatique aux prestataires.",
+          "href": "#"
+        }
+      ]
+    }
   }
 }

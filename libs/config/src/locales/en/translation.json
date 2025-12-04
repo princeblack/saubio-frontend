@@ -1395,5 +1395,115 @@
     "client": {
       "mandates": "SEPA mandates"
     }
+  },
+  "pages": {
+    "about": {
+      "heading": "Saubio",
+      "title": "About us",
+      "description": "Founded in Berlin, Saubio combines German rigor, premium execution and sustainable cleaning. We bring customers, providers and internal Ops together around transparency, simplicity and positive impact.",
+      "pillars": [
+        {
+          "title": "Radical sustainability",
+          "body": "Certified products, optimised routes and automatic carbon offsetting for every mission."
+        },
+        {
+          "title": "Verified quality",
+          "body": "Audited providers, live indicators and transparent reports for customers and businesses."
+        },
+        {
+          "title": "Human tech",
+          "body": "Simple digital tools to orchestrate teams with a local Saubio support crew available 7/7."
+        }
+      ]
+    },
+    "services": {
+      "heading": "Our offer",
+      "title": "Saubio services",
+      "description": "Build a tailored programme mixing residential, business and specialist missions. All assignments are insured and monitored by a dedicated Customer Success Manager.",
+      "offerings": [
+        {
+          "title": "Premium residential",
+          "details": [
+            "Recurring or one-off cleaning",
+            "Secure key management",
+            "Custom checklist"
+          ]
+        },
+        {
+          "title": "Business spaces",
+          "details": [
+            "Offices, retail, coworkings",
+            "Extended hours (6 am – 10 pm)",
+            "Quality reports & audits"
+          ]
+        },
+        {
+          "title": "Specialist services",
+          "details": [
+            "Deep cleaning & turnover",
+            "Eco textile care",
+            "Event operations"
+          ]
+        }
+      ]
+    },
+    "tariffs": {
+      "heading": "Transparency",
+      "title": "Pricing",
+      "description": "Providers set their hourly rate directly from their profile. Saubio displays the average market range (€28–45/h) so you can benchmark before confirming a mission.",
+      "disclaimer": "Estimates include payroll taxes, insurance, eco products and quality monitoring. A detailed quote is sent prior to confirmation.",
+      "plans": [
+        {
+          "name": "Essential",
+          "price": "Observed range: €28–34 / h",
+          "perks": [
+            "Certified provider",
+            "Supplies included",
+            "Email support"
+          ]
+        },
+        {
+          "name": "Comfort",
+          "price": "Observed range: €35–42 / h",
+          "perks": [
+            "Dedicated crew",
+            "Laundry add-on",
+            "Priority support"
+          ]
+        },
+        {
+          "name": "Business",
+          "price": "On request (provider + Saubio)",
+          "perks": [
+            "Custom reporting",
+            "Extended hours (6 am – 10 pm)",
+            "Dedicated Saubio contact"
+          ]
+        }
+      ]
+    },
+    "guides": {
+      "heading": "Guides & news",
+      "title": "Saubio insights",
+      "description": "Practical resources for households, companies and providers: organisation, eco products and ops best practices.",
+      "readMore": "Read more →",
+      "articles": [
+        {
+          "title": "Eco-cleaning playbook",
+          "excerpt": "Combine efficiency, hygiene and a lower carbon footprint.",
+          "href": "#"
+        },
+        {
+          "title": "Move-in / move-out checklist",
+          "excerpt": "Key steps to hand back an apartment in perfect shape.",
+          "href": "#"
+        },
+        {
+          "title": "Handling short-notice missions",
+          "excerpt": "How the Saubio workflow broadcasts urgent jobs within 48 h.",
+          "href": "#"
+        }
+      ]
+    }
   }
 }
