@@ -49,3 +49,22 @@ git push -u origin main
 ```
 
 Repeat all commits/pushes from this directory so backend/mobile history stays isolated.
+
+## CI/CD
+
+Workflow: `.github/workflows/frontend-ci.yml`
+
+- Triggers on pushes/PRs targeting `main`.
+- Steps: `npm ci`, lint, Jest, `npm run build`.
+- On `main`, the deploy job SSHs into the server, updates `/var/www/saubio-frontend`, preserves `.env.production`, pulls the infra repo, then rebuilds the `frontend` (and `nginx`) services via `docker compose up -d --build frontend nginx`.
+
+Secrets à créer dans GitHub (identiques au backend) :
+
+| Secret | Description |
+| --- | --- |
+| `SSH_HOST` | IP / hôte du serveur. |
+| `SSH_USER` | Utilisateur SSH (root ou autre). |
+| `SSH_KEY` | Clé privée pour se connecter. |
+| `SSH_PORT` | Port SSH si différent de 22 (sinon laissez vide). |
+
+La tâche sauvegarde et restaure automatiquement `.env.production` afin de conserver les valeurs propres au serveur après chaque `git reset`.
