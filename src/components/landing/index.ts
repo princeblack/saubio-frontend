@@ -3,6 +3,7 @@ export { ConfiguratorPreview } from './ConfiguratorPreview';
 export { EcoHighlight } from './EcoHighlight';
 export { FinalCta } from './FinalCta';
 export { HeroSection } from './HeroSection';
+export { HowItWorks } from './HowItWorks';
 export { MatchingModes } from './MatchingModes';
 export { MobileShowcase } from './MobileShowcase';
 export { PricingPlans } from './PricingPlans';

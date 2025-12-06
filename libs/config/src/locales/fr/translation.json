@@ -1509,5 +1509,24 @@
         }
       ]
     }
+  },
+  "how": {
+    "heading": "Saubio",
+    "title": "Comment ça marche ?",
+    "description": "En trois étapes : décrivez votre besoin, nous associons le bon prestataire, puis détendez-vous.",
+    "steps": {
+      "plan": {
+        "title": "Décrivez votre mission",
+        "body": "Adresse, fréquence, préférence bio… nous calculons une estimation claire."
+      },
+      "match": {
+        "title": "Matching intelligent",
+        "body": "Saubio envoie votre demande aux profils vérifiés correspondant à vos critères."
+      },
+      "relax": {
+        "title": "Suivi en temps réel",
+        "body": "Vous recevez la confirmation, le suivi Ops et les factures directement dans l’espace client."
+      }
+    }
   }
 }

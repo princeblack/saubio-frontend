@@ -60,7 +60,7 @@ export function HeroSection() {
         <SectionDescription size="large" className="!text-white/85">
           {t('hero.description')}
         </SectionDescription>
-        <div className="grid gap-4 sm:grid-cols-3">
+        {/* <div className="grid gap-4 sm:grid-cols-3">
           <AnalyticsCard
             variant="glass"
             size="compact"
@@ -82,7 +82,7 @@ export function HeroSection() {
             value={stats.eco.value}
             icon={<Leaf className="h-4 w-4" />}
           />
-        </div>
+        </div> */}
       </div>
       <div className="relative">
         <div className="absolute -top-8 -right-6 hidden h-32 w-32 rounded-full border-4 border-saubio-sun/60 md:block" />

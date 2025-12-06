@@ -1482,5 +1482,24 @@
         }
       ]
     }
+  },
+  "how": {
+    "heading": "Saubio",
+    "title": "So funktioniert Saubio",
+    "description": "In drei Schritten zur sauberen Wohnung: Anfrage stellen, Matching erhalten, entspannen.",
+    "steps": {
+      "plan": {
+        "title": "Anfrage planen",
+        "body": "Adresse, Rhythmus, Öko-Wunsch – Saubio erstellt eine transparente Einschätzung."
+      },
+      "match": {
+        "title": "Intelligentes Matching",
+        "body": "Wir senden Ihre Anfrage an geprüfte Profile und schlagen die beste Option vor."
+      },
+      "relax": {
+        "title": "Zurücklehnen",
+        "body": "Bestätigung, Ops-Updates und Rechnungen landen automatisch im Kundenbereich."
+      }
+    }
   }
 }

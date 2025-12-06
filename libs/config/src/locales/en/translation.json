@@ -1509,5 +1509,24 @@
         }
       ]
     }
+  },
+  "how": {
+    "heading": "Saubio",
+    "title": "How it works",
+    "description": "Three steps: submit your brief, we match the right provider, you relax.",
+    "steps": {
+      "plan": {
+        "title": "Plan your mission",
+        "body": "Address, schedule, eco preference – Saubio prepares a transparent estimate."
+      },
+      "match": {
+        "title": "Smart matching",
+        "body": "We broadcast the request to vetted profiles and highlight the best option."
+      },
+      "relax": {
+        "title": "Relax and track",
+        "body": "Confirmation, Ops updates and invoices land directly in your dashboard."
+      }
+    }
   }
 }

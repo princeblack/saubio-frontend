@@ -2,6 +2,7 @@ import {
   AboutSection,
   FinalCta,
   HeroSection,
+  HowItWorks,
   MatchingModes,
   ServiceGrid,
   Testimonials,
@@ -15,11 +16,12 @@ export default function HomePage() {
       <SiteHeader />
       <main className="space-y-16 pb-24">
         <HeroSection />
+        <HowItWorks />
         <AboutSection />
         <ServiceGrid />
         <MatchingModes />
         <Testimonials />
-        <FinalCta />
+        {/* <FinalCta /> */}
       </main>
       <SiteFooter />
     </>
