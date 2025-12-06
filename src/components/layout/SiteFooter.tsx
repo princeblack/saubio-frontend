@@ -1,6 +1,7 @@
 'use client';
 
 import { appConfig } from '@saubio/config';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 
