@@ -2,12 +2,12 @@
 
 import { SectionContainer, SectionHeading, SectionTitle } from '@saubio/ui';
 import { useTranslation } from 'react-i18next';
-import { IconCalendarCheck, IconSend, IconMapPin } from 'lucide-react';
+import { CalendarCheck, Send, MapPin } from 'lucide-react';
 
 const stepConfig = [
-  { icon: IconMapPin, titleKey: 'how.steps.plan.title', bodyKey: 'how.steps.plan.body' },
-  { icon: IconCalendarCheck, titleKey: 'how.steps.match.title', bodyKey: 'how.steps.match.body' },
-  { icon: IconSend, titleKey: 'how.steps.relax.title', bodyKey: 'how.steps.relax.body' },
+  { icon: MapPin, titleKey: 'how.steps.plan.title', bodyKey: 'how.steps.plan.body' },
+  { icon: CalendarCheck, titleKey: 'how.steps.match.title', bodyKey: 'how.steps.match.body' },
+  { icon: Send, titleKey: 'how.steps.relax.title', bodyKey: 'how.steps.relax.body' },
 ];
 
 export function HowItWorks() {
