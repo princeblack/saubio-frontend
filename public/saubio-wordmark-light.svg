@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="64" viewBox="0 0 300 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sun-wordmark-light" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE28A"/>
+      <stop offset="1" stop-color="#FFC845"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="18" fill="url(#sun-wordmark-light)"/>
+  <text
+    x="32"
+    y="42"
+    text-anchor="middle"
+    font-family="Manrope, 'Segoe UI', sans-serif"
+    font-size="28"
+    font-weight="700"
+    fill="#0A3D2E"
+  >
+    SB
+  </text>
+  <text x="80" y="34" font-family="Manrope, 'Segoe UI', sans-serif" font-size="28" font-weight="700" fill="#FFFFFF">
+    Saubio
+  </text>
+  <text x="80" y="50" font-family="Manrope, 'Segoe UI', sans-serif" font-size="12" letter-spacing="0.25em" fill="#FFFFFFCC">
+    REIN · SCHNELL · GRÜN
+  </text>
+</svg>

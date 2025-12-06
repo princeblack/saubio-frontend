@@ -15,7 +15,7 @@ export function SiteFooter() {
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <Image
-              src="/saubio-wordmark.svg"
+              src="/saubio-wordmark-light.svg"
               alt="Saubio"
               width={190}
               height={64}
