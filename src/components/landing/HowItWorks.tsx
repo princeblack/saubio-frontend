@@ -23,7 +23,7 @@ export function HowItWorks() {
   const { t } = useTranslation();
 
   return (
-    <SectionContainer as="section" padding="spacious" className="rounded-5xl bg-white shadow-soft-lg" id="how-it-works">
+    <SectionContainer as="section" padding="spacious" className="rounded-5xl bg-white" id="how-it-works">
       <div className="text-center">
         <SectionHeading>{t('how.heading', 'So funktioniert Saubio')}</SectionHeading>
         <SectionTitle align="center">{t('how.title', 'So einfach geht’s')}</SectionTitle>
