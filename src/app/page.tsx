@@ -14,7 +14,7 @@ export default function HomePage() {
   return (
     <>
       <SiteHeader />
-      <main className="space-y-16 pb-24">
+      <main className="space-y-24 pb-24">
         <HeroSection />
         <HowItWorks />
         <AboutSection />
