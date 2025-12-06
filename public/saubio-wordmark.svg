@@ -7,18 +7,21 @@
     </linearGradient>
   </defs>
   <rect x="4" y="4" width="56" height="56" rx="18" fill="url(#sun-wordmark)"/>
-  <path
-    d="M20.2 42.3C20.2 47.2 24.1 49.4 30 49.4C35.5 49.4 39.9 47.3 39.9 43.4C39.9 40.6 38.3 38.5 34.4 37.2C30.7 36 30 35.4 30 34.2C30 33.1 31.1 32.4 33 32.4C34.8 32.4 36.7 33.1 38.5 34.5L41.9 29.4C39.8 27.7 36.4 26.6 33 26.6C26.9 26.6 23 29.7 23 34.1C23 37 24.5 39.1 28.4 40.4C32.2 41.6 33.1 42.2 33.1 43.5C33.1 44.7 32.1 45.3 30 45.3C27.8 45.3 25.3 44.5 23.4 43L20.2 42.3Z"
+  <text
+    x="32"
+    y="42"
+    text-anchor="middle"
+    font-family="Manrope, 'Segoe UI', sans-serif"
+    font-size="28"
+    font-weight="700"
     fill="#0A3D2E"
-  />
-  <path
-    d="M49.8 26.1H43.6V49.2H49.8C57.6 49.2 62.5 45.6 62.5 37.7C62.5 29.6 57.5 26.1 49.8 26.1ZM54.3 37.7C54.3 41.5 52.5 43.4 48.9 43.4H48.3V31.9H48.9C52.5 31.9 54.3 33.9 54.3 37.7Z"
-    fill="#0A3D2E"
-  />
-  <text x="74" y="32" font-family="Manrope, 'Segoe UI', sans-serif" font-size="24" font-weight="700" fill="#0A3D2E">
+  >
+    SB
+  </text>
+  <text x="74" y="34" font-family="Manrope, 'Segoe UI', sans-serif" font-size="28" font-weight="700" fill="#0A3D2E">
     Saubio
   </text>
-  <text x="74" y="46" font-family="Manrope, 'Segoe UI', sans-serif" font-size="11" letter-spacing="0.4em" fill="#2E5E4C">
+  <text x="74" y="52" font-family="Manrope, 'Segoe UI', sans-serif" font-size="12" letter-spacing="0.28em" fill="#2E5E4C">
     REIN · SCHNELL · GRÜN
   </text>
 </svg>
