@@ -4,6 +4,7 @@ import { appConfig } from '@saubio/config';
 import { resolveRoleHome } from '../../utils/auth';
 import { useLogoutMutation, useSession } from '@saubio/utils';
 import { LoadingIndicator } from '@saubio/ui';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -91,17 +92,15 @@ export function SiteHeader() {
       <div className="mx-auto flex h-24 w-full max-w-7xl items-center justify-between gap-8 px-6 py-4 sm:px-10 lg:h-20">
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2" onClick={closeMobileMenu}>
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-saubio-sun text-saubio-forest font-semibold">
-              SB
-            </div>
-            <div className="flex flex-col leading-tight">
-              <span className="text-lg font-semibold text-saubio-forest">
-                Saubio
-              </span>
-              <span className="text-xs uppercase tracking-[0.32em] text-saubio-moss">
-                Rein · Schnell · Grün
-              </span>
-            </div>
+            <Image
+              src="/saubio-wordmark.svg"
+              alt="Saubio"
+              width={190}
+              height={64}
+              priority
+              className="h-12 w-auto"
+            />
+            <span className="sr-only">Saubio</span>
           </Link>
           <button
             type="button"
