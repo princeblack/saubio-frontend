@@ -13,15 +13,14 @@ export function SiteFooter() {
       <div className="section-container grid gap-10 lg:grid-cols-[2fr_1fr_1fr_1fr]">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-saubio-sun text-saubio-forest font-semibold">
-              SB
-            </div>
-            <div>
-              <p className="text-lg font-semibold">Saubio</p>
-              <p className="text-xs uppercase tracking-[0.32em] text-saubio-cream/60">
-                Rein · Schnell · Grün
-              </p>
-            </div>
+            <Image
+              src="/saubio-wordmark.svg"
+              alt="Saubio"
+              width={190}
+              height={64}
+              className="h-12 w-auto"
+            />
+            <span className="sr-only">Saubio</span>
           </div>
           <p className="text-sm text-saubio-cream/70">{t('footer.description')}</p>
           <form className="flex w-full max-w-sm items-center gap-3">
