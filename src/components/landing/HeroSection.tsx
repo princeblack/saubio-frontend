@@ -45,7 +45,7 @@ export function HeroSection() {
       as="section"
       id="hero"
       centered
-      padding="compact"
+      padding="spacious"
       className="grid gap-10 rounded-5xl bg-hero-gradient text-white lg:grid-cols-[1.1fr_0.9fr]"
     >
       <div className="space-y-6">
