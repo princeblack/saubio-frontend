@@ -2,21 +2,12 @@
 
 import { SectionContainer, SectionHeading, SectionTitle } from '@saubio/ui';
 import { useTranslation } from 'react-i18next';
-import { CheckCircle } from 'lucide-react';
+import { IconCalendarCheck, IconSend, IconMapPin } from 'lucide-react';
 
-const steps = [
-  {
-    titleKey: 'how.steps.plan.title',
-    bodyKey: 'how.steps.plan.body',
-  },
-  {
-    titleKey: 'how.steps.match.title',
-    bodyKey: 'how.steps.match.body',
-  },
-  {
-    titleKey: 'how.steps.relax.title',
-    bodyKey: 'how.steps.relax.body',
-  },
+const stepConfig = [
+  { icon: IconMapPin, titleKey: 'how.steps.plan.title', bodyKey: 'how.steps.plan.body' },
+  { icon: IconCalendarCheck, titleKey: 'how.steps.match.title', bodyKey: 'how.steps.match.body' },
+  { icon: IconSend, titleKey: 'how.steps.relax.title', bodyKey: 'how.steps.relax.body' },
 ];
 
 export function HowItWorks() {
@@ -31,14 +22,14 @@ export function HowItWorks() {
           {t('how.description', 'In drei Schritten zur passenden Reinigung: Anfrage stellen, Matching bestätigen, entspannen.')} 
         </p>
       </div>
-      <div className="mt-10 grid gap-6 sm:grid-cols-3">
-        {steps.map((step) => (
-          <div key={step.titleKey} className="flex h-full flex-col gap-4 rounded-4xl border border-saubio-moss/20 bg-saubio-cream/50 p-6 text-left">
-            <div className="flex items-center gap-3 text-saubio-forest">
-              <CheckCircle className="h-6 w-6" />
-              <h3 className="text-base font-semibold">{t(step.titleKey)}</h3>
+      <div className="mt-10 grid gap-10 sm:grid-cols-3">
+        {stepConfig.map(({ icon: Icon, titleKey, bodyKey }) => (
+          <div key={titleKey} className="text-center">
+            <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-3xl bg-saubio-cream">
+              <Icon className="h-10 w-10 text-saubio-forest" />
             </div>
-            <p className="text-sm text-saubio-slate/80">{t(step.bodyKey)}</p>
+            <h3 className="mt-6 text-lg font-semibold text-saubio-forest">{t(titleKey)}</h3>
+            <p className="mt-3 text-sm text-saubio-slate/80">{t(bodyKey)}</p>
           </div>
         ))}
       </div>
