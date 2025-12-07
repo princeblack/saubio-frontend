@@ -1,8 +1,9 @@
 'use client';
 
 import { SectionContainer, SectionTitle } from '@saubio/ui';
-import { useTranslation } from 'react-i18next';
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export function CitiesSection() {
   const { t } = useTranslation();
