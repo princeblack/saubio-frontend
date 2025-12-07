@@ -15,26 +15,19 @@ import { SiteFooter } from '../components/layout/SiteFooter';
 import { SiteHeader } from '../components/layout/SiteHeader';
 
 export const metadata: Metadata = {
-  title: 'Saubio – Nettoyage durable en Allemagne',
+  title: 'Saubio – Nachhaltige Reinigungsservices in Deutschland',
   description:
-    'Saubio connecte particuliers et entreprises avec des prestataires de nettoyage certifiés, produits écologiques et support 7j/7.',
-  keywords: [
-    'saubio',
-    'nettoyage durable',
-    'prestataire ménage',
-    'services de nettoyage Allemagne',
-    'ménage éco',
-  ],
+    'Saubio bringt Privat- und Geschäftskund:innen mit geprüften Reinigungskräften in deutschen Großstädten zusammen – inkl. Öko-Produkten und Support.',
+  keywords: ['Saubio', 'Reinigungsservice', 'Putzfrau Berlin', 'Nachhaltige Reinigung', 'Haushaltshilfe Deutschland'],
   alternates: {
     canonical: 'https://saubio.de/',
   },
   openGraph: {
     title: 'Saubio – Services de nettoyage professionnels',
-    description:
-      'Réservez un prestataire de confiance, comparez les tarifs et suivez vos missions avec Saubio.',
+    description: 'Buchen Sie geprüfte Reinigungskräfte, vergleichen Sie Preise und verfolgen Sie Ihre Einsätze mit Saubio.',
     url: 'https://saubio.de/',
     siteName: 'Saubio',
-    locale: 'fr_FR',
+    locale: 'de_DE',
     type: 'website',
   },
 };
@@ -47,11 +40,8 @@ export default function HomePage() {
     url: 'https://saubio.de',
     logo: 'https://saubio.de/saubio-wordmark.svg',
     description:
-      'Plateforme Saubio : prestataires de nettoyage certifiés, produits écologiques et support client 7j/7.',
-    areaServed: {
-      '@type': 'Country',
-      name: 'Germany',
-    },
+      'Saubio vermittelt zertifizierte Reinigungskräfte in Deutschland – mit Öko-Produkten und persönlichem Support.',
+    areaServed: { '@type': 'Country', name: 'Germany' },
     contactPoint: [
       {
         '@type': 'ContactPoint',
