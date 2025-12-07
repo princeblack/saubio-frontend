@@ -57,9 +57,9 @@ export function CitiesSection() {
             <span key={city}>• {city}</span>
           ))}
         </div>
-        <a href="#" className="mt-6 inline-flex text-sm font-semibold text-saubio-forest">
+        <Link href="/villes" className="mt-6 inline-flex text-sm font-semibold text-saubio-forest">
           {t('cities.link')}
-        </a>
+        </Link>
       </div>
     </SectionContainer>
   );
