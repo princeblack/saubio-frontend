@@ -1,6 +1,4 @@
 'use client';
-
-import type { Metadata } from 'next';
 import {
   SectionContainer,
   SectionDescription,
@@ -10,11 +8,6 @@ import {
 import { SiteFooter } from '../../components/layout/SiteFooter';
 import { SiteHeader } from '../../components/layout/SiteHeader';
 import { useTranslation } from 'react-i18next';
-
-export const metadata: Metadata = {
-  title: 'Saubio – Tarifs et estimations',
-  description: 'Comprenez comment les prestataires Saubio fixent leurs tarifs horaires et obtenez une fourchette indicative.',
-};
 
 export default function TarifsPage() {
   const { t } = useTranslation();

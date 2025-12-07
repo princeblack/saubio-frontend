@@ -1,15 +1,8 @@
 'use client';
-
-import type { Metadata } from 'next';
 import { SectionContainer, SectionDescription, SectionHeading, SectionTitle } from '@saubio/ui';
 import { SiteFooter } from '../../components/layout/SiteFooter';
 import { SiteHeader } from '../../components/layout/SiteHeader';
 import { useTranslation } from 'react-i18next';
-
-export const metadata: Metadata = {
-  title: 'Saubio – Services de nettoyage',
-  description: 'Découvrez les offres résidentielles, professionnelles et spécialisées proposées par Saubio.',
-};
 
 export default function ServicesPage() {
   const { t } = useTranslation();

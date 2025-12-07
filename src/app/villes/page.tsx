@@ -1,15 +1,8 @@
 'use client';
-
-import type { Metadata } from 'next';
 import { SectionContainer, SectionHeading, SectionTitle } from '@saubio/ui';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-export const metadata: Metadata = {
-  title: 'Saubio – Villes disponibles',
-  description: 'Consultez la liste complète des villes allemandes desservies par Saubio et ses partenaires.',
-};
 
 function groupCities(cities: string[]): Record<string, string[]> {
   return cities.reduce<Record<string, string[]>>((map, city) => {

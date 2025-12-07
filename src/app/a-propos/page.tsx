@@ -1,8 +1,6 @@
 'use client';
 
 'use client';
-
-import type { Metadata } from 'next';
 import {
   SectionContainer,
   SectionDescription,
@@ -12,12 +10,6 @@ import {
 import { SiteFooter } from '../../components/layout/SiteFooter';
 import { SiteHeader } from '../../components/layout/SiteHeader';
 import { useTranslation } from 'react-i18next';
-
-export const metadata: Metadata = {
-  title: 'Saubio – Über uns',
-  description:
-    'Erfahren Sie, warum Saubio nachhaltige Reinigungsservices mit geprüften Teams in Deutschland anbietet.',
-};
 
 export default function AproposPage() {
   const { t } = useTranslation();
