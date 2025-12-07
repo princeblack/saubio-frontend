@@ -43,7 +43,19 @@
       "Münster"
     ],
     "mapText": "Carte des principales zones Saubio",
-    "link": "Voir toutes les villes"
+    "link": "Voir toutes les villes",
+    "markers": [
+      { "top": "120", "left": "160" },
+      { "top": "90", "left": "200" },
+      { "top": "150", "left": "210" },
+      { "top": "180", "left": "140" },
+      { "top": "130", "left": "110" },
+      { "top": "200", "left": "190" },
+      { "top": "230", "left": "170" },
+      { "top": "95", "left": "150" },
+      { "top": "210", "left": "120" },
+      { "top": "165", "left": "250" }
+    ]
   },
   "benefits": {
     "heading": "Saubio",

@@ -16,7 +16,6 @@ export function HowItWorks() {
   return (
     <SectionContainer as="section" padding="spacious" className="rounded-5xl bg-white" id="how-it-works">
       <div className="text-center">
-        <SectionHeading>{t('how.heading', 'So funktioniert Saubio')}</SectionHeading>
         <SectionTitle align="center">{t('how.title', 'So einfach geht’s')}</SectionTitle>
         <p className="mt-4 text-sm text-saubio-slate/80">
           {t('how.description', 'In drei Schritten zur passenden Reinigung: Anfrage stellen, Matching bestätigen, entspannen.')} 

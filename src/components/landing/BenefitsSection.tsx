@@ -17,7 +17,6 @@ export function BenefitsSection() {
   return (
     <SectionContainer as="section" padding="spacious" className="rounded-5xl bg-saubio-forest text-white" id="benefits">
       <div className="text-center">
-        <SectionHeading tone="sun">{t('benefits.heading')}</SectionHeading>
         <SectionTitle align="center" className="text-white">{t('benefits.title')}</SectionTitle>
         <p className="mt-4 text-sm text-white/80">{t('benefits.description')}</p>
       </div>
