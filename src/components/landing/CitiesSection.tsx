@@ -13,10 +13,12 @@ export function CitiesSection() {
       <div className="relative hidden flex-1 lg:block">
         <svg viewBox="0 0 320 360" className="h-full w-full rounded-4xl border border-saubio-forest/10 bg-white p-6 text-saubio-forest/40">
           <path
-            d="M150 40C110 50 80 90 85 130C90 165 120 190 110 220C100 255 50 265 60 300C70 330 120 330 150 320C195 305 240 325 265 300C290 275 270 230 290 200C310 170 320 130 300 105C280 75 230 65 200 45C185 35 165 35 150 40Z"
+            d="M165 30L185 48L210 50L225 75L215 100L230 125L215 150L230 185L215 215L225 250L210 278L225 305L205 330L175 318L150 335L130 320L110 330L95 300L105 270L90 235L100 205L90 175L100 140L90 115L105 90L95 60L120 45L140 50Z"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
           {markers.map((marker, index) => (
             <circle key={index} cx={marker.left} cy={marker.top} r="6" fill="#0A3D2E" stroke="#FFE28A" strokeWidth="2" />
