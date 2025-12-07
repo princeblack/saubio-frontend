@@ -2,11 +2,34 @@
 
 import { SectionContainer, SectionTitle } from '@saubio/ui';
 import { useTranslation } from 'react-i18next';
+import { useEffect, useMemo, useState } from 'react';
 
 export function CitiesSection() {
   const { t } = useTranslation();
-  const cities = t('cities.list', { returnObjects: true }) as string[];
+  const defaultCities = useMemo(
+    () => [...(t('cities.list', { returnObjects: true }) as string[])],
+    [t]
+  );
   const markers = t('cities.markers', { returnObjects: true }) as Array<{ top: string; left: string }>;
+  const [cities, setCities] = useState(defaultCities);
+
+  useEffect(() => {
+    setCities(defaultCities);
+    const controller = new AbortController();
+    const base = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '');
+    const endpoint = base ? `${base}/directory/cities` : '/api/directory/cities';
+
+    fetch(endpoint, { signal: controller.signal })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        if (Array.isArray(data?.cities) && data.cities.length) {
+          setCities(data.cities);
+        }
+      })
+      .catch(() => undefined);
+
+    return () => controller.abort();
+  }, [defaultCities]);
 
   return (
     <SectionContainer as="section" padding="spacious" className="rounded-5xl bg-saubio-mist/50 lg:flex" id="cities">
