@@ -80,6 +80,11 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link href="/community" className="hover:text-white">
+                {t('footer.links.community')}
+              </Link>
+            </li>
+            <li>
               <Link href="/datenschutz" className="hover:text-white">
                 {t('footer.links.privacy')}
               </Link>
