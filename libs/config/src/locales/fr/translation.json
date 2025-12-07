@@ -18,6 +18,33 @@
       "employee": "Console opérations"
     }
   },
+  "cities": {
+    "title": "Saubio est disponible dans ces villes",
+    "list": [
+      "Berlin",
+      "Potsdam",
+      "Munich",
+      "Hamburg",
+      "Köln",
+      "Frankfurt am Main",
+      "Düsseldorf",
+      "Stuttgart",
+      "Leipzig",
+      "Dortmund",
+      "Hannover",
+      "Dresden",
+      "Bremen",
+      "Mannheim",
+      "Nürnberg",
+      "Bonn",
+      "Duisburg",
+      "Wiesbaden",
+      "Essen",
+      "Münster"
+    ],
+    "mapText": "Carte des principales zones Saubio",
+    "link": "Voir toutes les villes"
+  },
   "benefits": {
     "heading": "Saubio",
     "title": "Vos avantages",

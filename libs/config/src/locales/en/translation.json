@@ -18,6 +18,33 @@
       "employee": "Operations console"
     }
   },
+  "cities": {
+    "title": "Book Saubio in these cities",
+    "list": [
+      "Berlin",
+      "Potsdam",
+      "Munich",
+      "Hamburg",
+      "Cologne",
+      "Frankfurt am Main",
+      "Düsseldorf",
+      "Stuttgart",
+      "Leipzig",
+      "Dortmund",
+      "Hanover",
+      "Dresden",
+      "Bremen",
+      "Mannheim",
+      "Nuremberg",
+      "Bonn",
+      "Duisburg",
+      "Wiesbaden",
+      "Essen",
+      "Münster"
+    ],
+    "mapText": "Saubio coverage map",
+    "link": "All cities"
+  },
   "benefits": {
     "heading": "Saubio",
     "title": "Your benefits",

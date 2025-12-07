@@ -1,6 +1,7 @@
 import {
   AboutSection,
   BenefitsSection,
+  CitiesSection,
   FinalCta,
   HeroSection,
   HowItWorks,
@@ -26,6 +27,7 @@ export default function HomePage() {
         <ServiceGrid />
         <MatchingModes />
         <Testimonials />
+        <CitiesSection />
         {/* <FinalCta /> */}
       </main>
       <SiteFooter />

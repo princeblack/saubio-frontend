@@ -1,5 +1,6 @@
 export { AboutSection } from './AboutSection';
 export { BenefitsSection } from './BenefitsSection';
+export { CitiesSection } from './CitiesSection';
 export { ConfiguratorPreview } from './ConfiguratorPreview';
 export { EcoHighlight } from './EcoHighlight';
 export { FinalCta } from './FinalCta';

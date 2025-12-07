@@ -18,6 +18,33 @@
       "employee": "Operations-Konsole"
     }
   },
+  "cities": {
+    "title": "Jetzt in diesen Städten buchen",
+    "list": [
+      "Berlin",
+      "Potsdam",
+      "München",
+      "Hamburg",
+      "Köln",
+      "Frankfurt am Main",
+      "Düsseldorf",
+      "Stuttgart",
+      "Leipzig",
+      "Dortmund",
+      "Hannover",
+      "Dresden",
+      "Bremen",
+      "Mannheim",
+      "Nürnberg",
+      "Bonn",
+      "Duisburg",
+      "Wiesbaden",
+      "Essen",
+      "Münster"
+    ],
+    "mapText": "Saubio-Einsatzgebiete in Deutschland",
+    "link": "Alle Städte"
+  },
   "benefits": {
     "heading": "Saubio",
     "title": "Ihre Vorteile",
