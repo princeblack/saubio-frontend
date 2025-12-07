@@ -1,5 +1,6 @@
 import {
   AboutSection,
+  BenefitsSection,
   FinalCta,
   HeroSection,
   HowItWorks,
@@ -21,6 +22,7 @@ export default function HomePage() {
         <HeroSection />
         <HowItWorks />
         <AboutSection />
+        <BenefitsSection />
         <ServiceGrid />
         <MatchingModes />
         <Testimonials />

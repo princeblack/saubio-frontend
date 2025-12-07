@@ -1,4 +1,5 @@
 export { AboutSection } from './AboutSection';
+export { BenefitsSection } from './BenefitsSection';
 export { ConfiguratorPreview } from './ConfiguratorPreview';
 export { EcoHighlight } from './EcoHighlight';
 export { FinalCta } from './FinalCta';

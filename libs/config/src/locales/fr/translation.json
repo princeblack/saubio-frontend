@@ -18,6 +18,27 @@
       "employee": "Console opérations"
     }
   },
+  "benefits": {
+    "heading": "Saubio",
+    "title": "Vos avantages",
+    "description": "Comparez, assurez et pilotez votre nettoyage en toute tranquillité.",
+    "match": {
+      "title": "Le bon prestataire",
+      "body": "Comparez profils, notes et tarifs pour retenir l’équipe idéale."
+    },
+    "insured": {
+      "title": "Assurance incluse",
+      "body": "Chaque mission est couverte par notre assurance responsabilité jusqu’à 5 M€."
+    },
+    "quality": {
+      "title": "Qualité reconnue",
+      "body": "Tableau de bord Ops, audits réguliers et indicateurs de satisfaction."
+    },
+    "support": {
+      "title": "Support réactif",
+      "body": "Équipe Saubio disponible 6 j/7 par e-mail, téléphone ou WhatsApp."
+    }
+  },
   "promo": {
     "label": "Offre de lancement",
     "message": "-15 % sur le nettoyage bio · Valable à {{cities}} jusqu'au {{date}}",

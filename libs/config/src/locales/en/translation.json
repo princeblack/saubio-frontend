@@ -18,6 +18,27 @@
       "employee": "Operations console"
     }
   },
+  "benefits": {
+    "heading": "Saubio",
+    "title": "Your benefits",
+    "description": "Compare, insure and manage your cleaning projects effortlessly.",
+    "match": {
+      "title": "Ideal provider",
+      "body": "Browse profiles, ratings and prices to select the perfect fit."
+    },
+    "insured": {
+      "title": "Insured service",
+      "body": "Every mission is backed by Saubio’s liability coverage up to €5 million."
+    },
+    "quality": {
+      "title": "Trusted quality",
+      "body": "Ops dashboards, audits and satisfaction metrics keep the bar high."
+    },
+    "support": {
+      "title": "Responsive support",
+      "body": "Customer care available 6 days a week via e-mail, phone or WhatsApp."
+    }
+  },
   "promo": {
     "label": "Launch offer",
     "message": "15% off eco cleaning · Available in {{cities}} until {{date}}",

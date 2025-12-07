@@ -18,6 +18,27 @@
       "employee": "Operations-Konsole"
     }
   },
+  "benefits": {
+    "heading": "Saubio",
+    "title": "Ihre Vorteile",
+    "description": "Vergleichen, buchen und absichern – Saubio begleitet Sie von A bis Z.",
+    "match": {
+      "title": "Ihre ideale Reinigungskraft",
+      "body": "Vergleichen Sie Profile, Bewertungen und Preise mit wenigen Klicks."
+    },
+    "insured": {
+      "title": "Haftpflichtversichert",
+      "body": "Jeder Einsatz ist bis zu 5 Mio. € haftpflichtversichert – zu Ihrem Schutz."
+    },
+    "quality": {
+      "title": "Ausgezeichnete Qualität",
+      "body": "Ops-Dashboards, Prüfungen und Kundenzufriedenheit sorgen für Top-Niveau."
+    },
+    "support": {
+      "title": "Zuverlässiger Support",
+      "body": "Unser Team ist 6 Tage pro Woche erreichbar und antwortet innerhalb weniger Minuten."
+    }
+  },
   "promo": {
     "label": "Launch-Angebot",
     "message": "-15 % auf Bio-Reinigung · Gilt in {{cities}} bis {{date}}",
