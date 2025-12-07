@@ -14,6 +14,9 @@ export default function HomePage() {
   return (
     <>
       <SiteHeader />
+      <div className="bg-amber-100 text-amber-900 text-center py-3 text-sm font-medium">
+        Saubio est actuellement en développement. Les services sont indisponibles pour le moment.
+      </div>
       <main className="space-y-10 pb-24">
         <HeroSection />
         <HowItWorks />
