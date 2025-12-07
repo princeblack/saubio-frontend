@@ -1,10 +1,16 @@
 'use client';
 
+import type { Metadata } from 'next';
 import { SectionContainer, SectionDescription, SectionHeading, SectionTitle } from '@saubio/ui';
 import Link from 'next/link';
 import { SiteFooter } from '../../components/layout/SiteFooter';
 import { SiteHeader } from '../../components/layout/SiteHeader';
 import { useTranslation } from 'react-i18next';
+
+export const metadata: Metadata = {
+  title: 'Saubio – Guides & actus',
+  description: 'Conseils pratiques pour organiser vos missions de nettoyage et adopter de bonnes pratiques écologiques.',
+};
 
 export default function GuidesPage() {
   const { t } = useTranslation();

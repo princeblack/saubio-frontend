@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import {
   SectionContainer,
   SectionDescription,
@@ -6,6 +7,12 @@ import {
 } from '@saubio/ui';
 import { SiteFooter } from '../../components/layout/SiteFooter';
 import { SiteHeader } from '../../components/layout/SiteHeader';
+
+export const metadata: Metadata = {
+  title: 'Saubio – Datenschutzerklärung',
+  description:
+    'Alle Informationen über die Verarbeitung personenbezogener Daten auf der Plattform saubio.de gemäß DSGVO.',
+};
 
 const sections = [
   {

@@ -1,5 +1,6 @@
 'use client';
 
+import type { Metadata } from 'next';
 import {
   SectionContainer,
   SectionDescription,
@@ -12,6 +13,11 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+
+export const metadata: Metadata = {
+  title: 'Saubio – Guide',
+  description: 'Retrouvez les guides pratiques Saubio pour organiser vos missions de nettoyage.',
+};
 
 export default function GuideDetailPage() {
   const router = useRouter();

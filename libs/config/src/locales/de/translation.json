@@ -55,7 +55,11 @@
       { "top": "95", "left": "150" },
       { "top": "210", "left": "120" },
       { "top": "165", "left": "250" }
-    ]
+    ],
+    "headingAll": "Saubio",
+    "allTitle": "Alle verfügbaren Städte",
+    "descriptionAll": "Hier sehen Sie, in welchen deutschen Städten Saubio bereits aktiv ist.",
+    "backHome": "Zurück zur Startseite"
   },
   "benefits": {
     "heading": "Saubio",

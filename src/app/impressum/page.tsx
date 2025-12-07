@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import {
   SectionContainer,
   SectionDescription,
@@ -6,6 +7,11 @@ import {
 } from '@saubio/ui';
 import { SiteFooter } from '../../components/layout/SiteFooter';
 import { SiteHeader } from '../../components/layout/SiteHeader';
+
+export const metadata: Metadata = {
+  title: 'Saubio – Impressum',
+  description: 'Rechtliche Angaben zur Saubio GmbH, verantwortlich für die Plattform saubio.de.',
+};
 
 const sections = [
   {

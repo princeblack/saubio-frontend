@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import {
   SectionContainer,
   SectionDescription,
@@ -6,6 +7,12 @@ import {
 } from '@saubio/ui';
 import { SiteFooter } from '../../components/layout/SiteFooter';
 import { SiteHeader } from '../../components/layout/SiteHeader';
+
+export const metadata: Metadata = {
+  title: 'Saubio – Allgemeine Geschäftsbedingungen',
+  description:
+    'Lesen Sie die Vertragsbedingungen für Kund:innen und Dienstleister:innen, die Saubio zur Buchung von Reinigungsleistungen nutzen.',
+};
 
 const sections = [
   {
