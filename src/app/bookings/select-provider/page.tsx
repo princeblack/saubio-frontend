@@ -4,8 +4,18 @@ import { Suspense, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { providerDirectoryQueryOptions, formatEuro, formatDateTime } from '@saubio/utils';
-import type { ProviderDirectoryFilters, ProviderDirectoryItem } from '@saubio/models';
+import {
+  providerDirectoryQueryOptions,
+  providerDirectoryDetailsQueryOptions,
+  formatEuro,
+  formatDateTime,
+} from '@saubio/utils';
+import type {
+  ProviderDirectoryDetails,
+  ProviderDirectoryFilters,
+  ProviderDirectoryItem,
+  ProviderReviewSummary,
+} from '@saubio/models';
 import {
   SectionTitle,
   SectionDescription,
@@ -13,6 +23,7 @@ import {
   Skeleton,
   Pill,
 } from '@saubio/ui';
+import { MapPin, Star, CheckCircle2, ShieldCheck, X } from 'lucide-react';
 
 const ratingOptions = [0, 3, 4, 4.5];
 const missionOptions = [10, 25, 50];
@@ -75,7 +86,20 @@ function SelectProviderPageContent() {
 
   const providers = providerQuery.data ?? [];
 
+  const openDetails = (provider: ProviderDirectoryItem) => {
+    setDetailsProvider(provider);
+  };
+
+  const closeDetails = () => {
+    setDetailsProvider(null);
+  };
+  const [detailsProvider, setDetailsProvider] = useState<ProviderDirectoryItem | null>(null);
+  const detailsQuery = useQuery({
+    ...providerDirectoryDetailsQueryOptions(detailsProvider?.id ?? null),
+  });
+
   const handleSelect = (provider: ProviderDirectoryItem) => {
+    setDetailsProvider(null);
     const params = new URLSearchParams(searchParams?.toString() ?? '');
     params.set('providerIds', provider.id);
     params.set('providerName', provider.displayName ?? provider.id);
@@ -189,61 +213,57 @@ function SelectProviderPageContent() {
   const renderProviderCard = (provider: ProviderDirectoryItem) => (
     <SurfaceCard
       key={provider.id}
-      padding="lg"
-      className="flex flex-col justify-between gap-4 border border-saubio-forest/10"
+      padding="md"
+      className="flex h-full flex-col gap-3 border border-saubio-mist/70 shadow-sm"
     >
-      <div className="space-y-2">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-lg font-semibold text-saubio-forest">{provider.displayName}</p>
-            <p className="text-xs uppercase tracking-wide text-saubio-slate/50">
-              {provider.primaryCity ?? t('selectProvider.card.noCity', 'Zone non précisée')}
-            </p>
-          </div>
-          <div className="text-right">
-            <p className="text-sm text-saubio-slate/60">{t('selectProvider.card.rate', 'Tarif')}</p>
-            <p className="text-xl font-semibold text-saubio-forest">
-              {formatEuro(provider.hourlyRateCents / 100)}
-            </p>
-          </div>
+      <div className="flex items-center gap-3">
+        <ProviderAvatar provider={provider} />
+        <div className="min-w-0 flex-1">
+          <p
+            className="truncate whitespace-nowrap text-sm font-semibold leading-tight text-saubio-forest sm:text-base"
+            title={provider.displayName}
+          >
+            {provider.displayName}
+          </p>
+          <p className="text-xs text-saubio-slate/60">
+            {provider.primaryCity ?? t('selectProvider.card.noCity', 'Zone non précisée')}
+          </p>
         </div>
-        <div className="flex flex-wrap gap-2 text-xs text-saubio-slate/60">
-          <Pill tone="forest">
-            {t('selectProvider.card.rating', '{{rating}} ★', {
-              rating: provider.ratingAverage?.toFixed(1) ?? '—',
-            })}
-          </Pill>
-          <Pill tone="mist">
-            {t('selectProvider.card.missions', '{{count}} missions', {
+        <button
+          type="button"
+          onClick={() => openDetails(provider)}
+          className="text-xs font-semibold text-saubio-forest transition hover:text-saubio-moss"
+        >
+          {t('selectProvider.card.viewMore', 'Voir plus')}
+        </button>
+      </div>
+      <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-saubio-slate/70">
+        <div className="flex items-center gap-1 font-semibold text-saubio-forest">
+          <Star className="h-4 w-4 fill-saubio-sun text-saubio-sun" />
+          <span>{provider.ratingAverage?.toFixed(1) ?? '—'}</span>
+          <span className="font-normal text-saubio-slate/60">
+            {t('selectProvider.card.ratingCount', '({{count}} avis)', { count: provider.ratingCount })}
+          </span>
+        </div>
+        <div className="flex items-center gap-1">
+          <CheckCircle2 className="h-4 w-4 text-saubio-forest" />
+          <span>
+            {t('selectProvider.card.missionsCount', '{{count}} missions', {
               count: provider.completedMissions,
             })}
-          </Pill>
-          {provider.offersEco ? (
-            <Pill tone="sun">{t('selectProvider.card.eco', 'Éco')}</Pill>
-          ) : null}
-          {provider.acceptsAnimals ? (
-            <Pill tone="forest">{t('selectProvider.card.animals', 'OK animaux')}</Pill>
-          ) : null}
+          </span>
         </div>
-        <p className="text-sm text-saubio-slate/80">
-          {provider.bio ??
-            t(
-              'selectProvider.card.defaultBio',
-              'Prestataire expérimenté·e, disponible sur plusieurs quartiers.'
-            )}
-        </p>
-        <div className="flex flex-wrap gap-2 text-xs text-saubio-slate/60">
-          {provider.languages.slice(0, 4).map((language) => (
-            <Pill key={`${provider.id}-${language}`} tone="mist">
-              {language.toUpperCase()}
-            </Pill>
-          ))}
-        </div>
+      </div>
+      <div className="flex items-center justify-between text-sm text-saubio-slate/70">
+        <span>{t('selectProvider.card.rateLabel', 'Tarif horaire')}</span>
+        <span className="text-xl font-semibold text-saubio-forest">
+          {formatEuro(provider.hourlyRateCents / 100)}
+        </span>
       </div>
       <button
         type="button"
         onClick={() => handleSelect(provider)}
-        className="rounded-full bg-saubio-forest px-4 py-2 text-sm font-semibold text-white transition hover:bg-saubio-moss"
+        className="mt-auto rounded-full bg-saubio-forest px-4 py-2 text-sm font-semibold text-white transition hover:bg-saubio-moss"
       >
         {t('selectProvider.card.select', 'Choisir ce prestataire')}
       </button>
@@ -280,18 +300,26 @@ function SelectProviderPageContent() {
             <SurfaceCard padding="lg" className="text-center">
               <p className="text-sm text-saubio-slate/70">
                 {t(
-                  'selectProvider.empty',
+                  'selectProvider.list.empty',
                   'Aucun prestataire ne correspond à vos filtres. Ajustez vos critères ou contactez notre équipe.'
                 )}
               </p>
             </SurfaceCard>
           ) : (
-            <div className="grid gap-4 lg:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
               {providers.map((provider) => renderProviderCard(provider))}
             </div>
           )}
         </div>
       </div>
+      <ProviderDetailsModal
+        baseProvider={detailsProvider}
+        details={detailsQuery.data ?? undefined}
+        reviews={detailsQuery.data?.reviews ?? []}
+        isLoading={detailsQuery.isFetching}
+        onClose={closeDetails}
+        onSelect={handleSelect}
+      />
     </div>
   );
 }
@@ -303,3 +331,181 @@ export default function SelectProviderPage() {
     </Suspense>
   );
 }
+
+type AvatarSize = 'md' | 'lg';
+
+const ProviderAvatar = ({ provider, size = 'md' }: { provider: ProviderDirectoryItem; size?: AvatarSize }) => {
+  const dimension = size === 'lg' ? 72 : 48;
+  if (provider.photoUrl) {
+    return (
+      <img
+        src={provider.photoUrl}
+        alt={provider.displayName}
+        width={dimension}
+        height={dimension}
+        className="rounded-full object-cover"
+        loading="lazy"
+      />
+    );
+  }
+  const initials = provider.displayName
+    .split(' ')
+    .slice(0, 2)
+    .map((part) => part.charAt(0))
+    .join('')
+    .toUpperCase();
+  const palette =
+    provider.gender === 'female'
+      ? 'bg-rose-100 text-rose-600'
+      : provider.gender === 'male'
+        ? 'bg-sky-100 text-sky-600'
+        : 'bg-saubio-mist/60 text-saubio-slate/70';
+  return (
+    <div
+      className={`flex items-center justify-center rounded-full text-sm font-semibold ${palette}`}
+      style={{ width: dimension, height: dimension }}
+    >
+      {initials || 'S'}
+    </div>
+  );
+};
+
+type ProviderDetailsModalProps = {
+  baseProvider: ProviderDirectoryItem | null;
+  details: ProviderDirectoryDetails | null | undefined;
+  reviews: ProviderReviewSummary[];
+  isLoading: boolean;
+  onClose: () => void;
+  onSelect: (provider: ProviderDirectoryItem) => void;
+};
+
+const ProviderDetailsModal = ({
+  baseProvider,
+  details,
+  reviews,
+  isLoading,
+  onClose,
+  onSelect,
+}: ProviderDetailsModalProps) => {
+  const { t } = useTranslation();
+  if (!baseProvider) {
+    return null;
+  }
+  const mergedDetails: ProviderDirectoryDetails = details ?? { ...baseProvider, reviews: reviews ?? [] };
+  const reviewList = details?.reviews ?? reviews ?? [];
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-saubio-slate/70 px-4 py-6 backdrop-blur-sm">
+      <SurfaceCard padding="lg" className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto space-y-5">
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-4 top-4 rounded-full border border-saubio-mist/80 p-1 text-saubio-slate/60 transition hover:border-saubio-forest hover:text-saubio-forest"
+        >
+          <X className="h-4 w-4" />
+        </button>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+          <ProviderAvatar provider={mergedDetails} size="lg" />
+          <div className="flex-1 space-y-1">
+            <p className="text-lg font-semibold text-saubio-forest">{mergedDetails.displayName}</p>
+            <div className="flex flex-wrap items-center gap-3 text-xs text-saubio-slate/70">
+              <span className="flex items-center gap-1 font-semibold text-saubio-forest">
+                <Star className="h-4 w-4 fill-saubio-sun text-saubio-sun" />
+                {mergedDetails.ratingAverage?.toFixed(1) ?? '—'}{' '}
+                <span className="font-normal text-saubio-slate/60">
+                  {t('selectProvider.card.ratingCount', '({{count}} avis)', {
+                    count: mergedDetails.ratingCount,
+                  })}
+                </span>
+              </span>
+              <span className="flex items-center gap-1">
+                <CheckCircle2 className="h-4 w-4 text-saubio-forest" />
+                {t('selectProvider.card.missionsCount', '{{count}} missions', {
+                  count: mergedDetails.completedMissions,
+                })}
+              </span>
+              {mergedDetails.verified ? (
+                <span className="flex items-center gap-1 font-semibold text-saubio-forest">
+                  <ShieldCheck className="h-4 w-4" />
+                  {t('selectProvider.details.verified', 'Identité vérifiée')}
+                </span>
+              ) : null}
+            </div>
+            <div className="flex flex-wrap items-center gap-4 text-sm text-saubio-slate/80">
+              <span>
+                {t('selectProvider.card.rateLabel', 'Tarif horaire')} ·{' '}
+                <strong className="text-saubio-forest">{formatEuro(mergedDetails.hourlyRateCents / 100)}</strong>
+              </span>
+              <span className="flex items-center gap-1 text-xs text-saubio-slate/60">
+                <MapPin className="h-4 w-4" />
+                {mergedDetails.primaryCity ?? t('selectProvider.card.noCity', 'Zone non précisée')}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-saubio-slate/50">
+            {t('selectProvider.details.about', 'À propos')}
+          </p>
+          <p className="text-sm text-saubio-slate/80">
+            {mergedDetails.bio ??
+              t('selectProvider.card.defaultBio', 'Prestataire expérimenté·e, disponible sur plusieurs quartiers.')}
+          </p>
+          <div className="flex flex-wrap gap-2 text-xs text-saubio-slate/60">
+            {mergedDetails.languages.map((language) => (
+              <Pill key={`details-language-${language}`} tone="mist">
+                {language.toUpperCase()}
+              </Pill>
+            ))}
+          </div>
+        </div>
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-saubio-slate/50">
+            {t('selectProvider.details.reviews', 'Avis clients')}
+          </p>
+          {isLoading ? (
+            <Skeleton className="h-24 rounded-2xl" />
+          ) : reviewList.length ? (
+            <div className="space-y-3">
+              {reviewList.map((review) => (
+                <div key={review.id} className="rounded-2xl border border-saubio-mist/60 px-4 py-3 text-sm text-saubio-slate/80">
+                  <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-saubio-slate/60">
+                    <span className="font-semibold text-saubio-forest">{review.authorFirstName}</span>
+                    <span>{formatDateTime(new Date(review.createdAt))}</span>
+                  </div>
+                  <div className="mt-1 flex items-center gap-1 text-xs text-saubio-forest">
+                    <Star className="h-4 w-4 fill-saubio-sun text-saubio-sun" />
+                    {review.score.toFixed(1)}
+                  </div>
+                  <p className="mt-1 text-sm">
+                    {review.comment ||
+                      t('selectProvider.details.noReviewText', 'Pas de commentaire fourni.')}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-saubio-slate/60">
+              {t('selectProvider.details.noReviews', 'Aucun avis disponible pour le moment.')}
+            </p>
+          )}
+        </div>
+        <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            onClick={() => onSelect(mergedDetails)}
+            className="w-full rounded-full bg-saubio-forest px-5 py-2 text-sm font-semibold text-white transition hover:bg-saubio-moss sm:w-auto"
+          >
+            {t('selectProvider.details.choose', 'Choisir ce prestataire')}
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-full rounded-full border border-saubio-forest/20 px-5 py-2 text-sm font-semibold text-saubio-forest transition hover:border-saubio-forest/60 sm:w-auto"
+          >
+            {t('selectProvider.details.close', 'Fermer')}
+          </button>
+        </div>
+      </SurfaceCard>
+    </div>
+  );
+};

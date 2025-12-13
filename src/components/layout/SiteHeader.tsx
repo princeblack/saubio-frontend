@@ -6,6 +6,7 @@ import { useLogoutMutation, useSession } from '@saubio/utils';
 import { LoadingIndicator } from '@saubio/ui';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '../../providers/LanguageProvider';
@@ -33,6 +34,7 @@ export function SiteHeader() {
   const session = useSession();
   const logoutMutation = useLogoutMutation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   const citiesList = useMemo(() => {
     const formatter = new Intl.ListFormat(language === 'fr' ? 'fr-FR' : language === 'en' ? 'en-GB' : 'de-DE', {
@@ -86,6 +88,7 @@ export function SiteHeader() {
   }, [mobileMenuOpen]);
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
+  const showLaunchBanner = !pathname || pathname === '/';
 
   return (
     <header className="sticky top-0 z-50 bg-saubio-mist/80 backdrop-blur">
@@ -279,25 +282,27 @@ export function SiteHeader() {
           </div>
         </div>
       ) : null}
-      <div className="bg-saubio-forest text-xs text-saubio-cream">
-        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-2 sm:px-6 sm:py-2.5 lg:px-8">
-          <span className="font-semibold uppercase tracking-[0.38em]">
-            {t('promo.label')}
-          </span>
-          <p className="text-sm lg:text-base">
-            {t('promo.message', {
-              cities: citiesList,
-              date: formattedDate,
-            })}
-          </p>
-          <Link
-            href="#hero"
-            className="rounded-full bg-saubio-sun px-4 py-2 text-xs font-semibold text-saubio-forest hover:bg-yellow-300"
-          >
-            {t('promo.cta')}
-          </Link>
+      {showLaunchBanner ? (
+        <div className="bg-saubio-forest text-xs text-saubio-cream">
+          <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-2 sm:px-6 sm:py-2.5 lg:px-8">
+            <span className="font-semibold uppercase tracking-[0.38em]">
+              {t('promo.label')}
+            </span>
+            <p className="text-sm lg:text-base">
+              {t('promo.message', {
+                cities: citiesList,
+                date: formattedDate,
+              })}
+            </p>
+            <Link
+              href="#hero"
+              className="rounded-full bg-saubio-sun px-4 py-2 text-xs font-semibold text-saubio-forest hover:bg-yellow-300"
+            >
+              {t('promo.cta')}
+            </Link>
+          </div>
         </div>
-      </div>
+      ) : null}
     </header>
   );
 }

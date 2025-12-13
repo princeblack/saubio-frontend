@@ -17,6 +17,8 @@ import type {
   UpdateProviderAvailabilityPayload,
   CreateProviderTimeOffPayload,
   ProviderAvailabilityOverview,
+  ProviderServiceCatalogResponse,
+  ServiceCategory,
 } from '@saubio/models';
 import {
   providerDashboardQueryKey,
@@ -39,6 +41,8 @@ import {
   providerAvailabilityQueryOptions,
   providerInvitationsQueryKey,
   providerInvitationsQueryOptions,
+  providerServiceCatalogQueryKey,
+  providerServiceCatalogQueryOptions,
 } from './api-queries';
 import { createApiClient } from './api-client';
 import type { ProviderBookingInvitation } from '@saubio/models';
@@ -97,6 +101,10 @@ export const useProviderDocuments = () => {
   return useQuery(providerDocumentsQueryOptions());
 };
 
+export const useProviderServiceCatalog = () => {
+  return useQuery(providerServiceCatalogQueryOptions());
+};
+
 export const useUpdateProviderProfileMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -107,6 +115,20 @@ export const useUpdateProviderProfileMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: providerProfileQueryKey() });
       queryClient.invalidateQueries({ queryKey: providerDashboardQueryKey });
+    },
+  });
+};
+
+export const useUpdateProviderServiceCatalogMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation<ProviderServiceCatalogResponse, unknown, { serviceTypes: ServiceCategory[] }>({
+    mutationFn: async (payload) => {
+      const client = clientFactory();
+      return client.updateProviderServiceCatalog(payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: providerServiceCatalogQueryKey });
+      queryClient.invalidateQueries({ queryKey: providerProfileQueryKey() });
     },
   });
 };

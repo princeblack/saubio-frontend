@@ -11,6 +11,8 @@ const SOFT_ALLOWED_PREFIXES = [
   '/prestataire/onboarding',
   '/prestataire/onboarding/identity',
   '/prestataire/profile',
+  '/prestataire/disponibilites',
+  '/prestataire/profile/services',
 ];
 
 interface ProviderOnboardingGateProps {

@@ -3,6 +3,8 @@ import { Manrope } from 'next/font/google';
 import './global.css';
 import { LanguageProvider } from '../providers/LanguageProvider';
 import { QueryProvider } from '../providers/QueryProvider';
+import { BookingFlowWatcher } from '../components/bookings/BookingFlowWatcher';
+import { CookieBanner } from '../components/system/CookieBanner';
 
 const manrope = Manrope({
   subsets: ['latin'],
@@ -25,7 +27,11 @@ export default function RootLayout({
     <html lang="de" className={manrope.variable}>
       <body suppressHydrationWarning className="bg-saubio-mist text-saubio-slate">
         <LanguageProvider>
-          <QueryProvider>{children}</QueryProvider>
+          <QueryProvider>
+            <BookingFlowWatcher />
+            {children}
+            <CookieBanner />
+          </QueryProvider>
         </LanguageProvider>
       </body>
     </html>

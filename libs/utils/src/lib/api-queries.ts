@@ -1,5 +1,5 @@
 import type { QueryKey } from '@tanstack/react-query';
-import { createApiClient, ApiClient } from './api-client';
+import { createApiClient, ApiClient, ApiError } from './api-client';
 import type {
   BookingRequest,
   HealthResponse,
@@ -17,6 +17,7 @@ import type {
   ProviderProfile,
   ProviderDirectoryFilters,
   ProviderDirectoryItem,
+  ProviderDirectoryDetails,
   PaymentRecord,
   PayoutBatchSummary,
   ProviderDocumentSummary,
@@ -42,6 +43,8 @@ import type {
   PriceEstimate,
   PriceEstimateParams,
   ProviderBookingInvitation,
+  ProviderServiceCatalogResponse,
+  PostalCodeLookupResponse,
 } from '@saubio/models';
 
 type BaseClientLike = Pick<ApiClient, 'health'>;
@@ -58,10 +61,12 @@ type ProviderPaymentsClientLike = Pick<ApiClient, 'listProviderPayments'>;
 type ProviderResourcesClientLike = Pick<ApiClient, 'listProviderResources'>;
 type ProviderProfileClientLike = Pick<ApiClient, 'getProviderProfile'>;
 type ProviderDirectoryClientLike = Pick<ApiClient, 'listProviderDirectory'>;
+type ProviderDirectoryDetailsClientLike = Pick<ApiClient, 'getProviderDirectoryDetails'>;
 type ProviderInvitationsClientLike = Pick<ApiClient, 'listProviderInvitations'>;
 type PricingEstimateClientLike = Pick<ApiClient, 'getPriceEstimate'>;
 type ProviderOnboardingStatusClientLike = Pick<ApiClient, 'getProviderOnboardingStatus'>;
 type ProviderAvailabilityClientLike = Pick<ApiClient, 'getProviderAvailability'>;
+type ProviderServicesClientLike = Pick<ApiClient, 'getProviderServiceCatalog'>;
 type AdminUsersClientLike = Pick<ApiClient, 'listAdminUsers' | 'updateAdminUser'>;
 type AdminSupportClientLike = Pick<ApiClient, 'listAdminSupport'>;
 type AdminTicketsClientLike = Pick<ApiClient, 'listAdminTickets'>;
@@ -84,6 +89,7 @@ type ProviderSuggestionClientLike = Pick<ApiClient, 'listProviderSuggestions'>;
 type PayoutBatchesClientLike = Pick<ApiClient, 'listPayoutBatches'>;
 type ProviderDocumentsClientLike = Pick<ApiClient, 'listProviderDocuments'>;
 type AdminBookingsClientLike = Pick<ApiClient, 'listBookings'>;
+type PostalCodeLookupClientLike = Pick<ApiClient, 'lookupPostalCode'>;
 
 const ensureClient = <T>(client?: T, fallback?: T) => client ?? fallback ?? (createApiClient() as unknown as T);
 
@@ -156,6 +162,14 @@ export const providerAvailabilityQueryOptions = (client?: ProviderAvailabilityCl
     ensureClient(client, createApiClient()).getProviderAvailability(),
 });
 
+export const providerServiceCatalogQueryKey: QueryKey = ['api', 'provider', 'services'];
+
+export const providerServiceCatalogQueryOptions = (client?: ProviderServicesClientLike) => ({
+  queryKey: providerServiceCatalogQueryKey,
+  queryFn: async (): Promise<ProviderServiceCatalogResponse> =>
+    ensureClient(client, createApiClient()).getProviderServiceCatalog(),
+});
+
 export const payoutBatchesQueryKey: QueryKey = ['api', 'payments', 'payouts'];
 
 export const payoutBatchesQueryOptions = (client?: PayoutBatchesClientLike) => ({
@@ -178,6 +192,57 @@ export const providerDirectoryQueryOptions = (
   queryKey: providerDirectoryQueryKey(filters),
   queryFn: async (): Promise<ProviderDirectoryItem[]> =>
     ensureClient(client, createApiClient()).listProviderDirectory(filters ?? {}),
+});
+
+export const providerDirectoryDetailsQueryKey = (providerId: string | null): QueryKey => [
+  'api',
+  'providers',
+  'directory',
+  'details',
+  providerId ?? '',
+];
+
+export const providerDirectoryDetailsQueryOptions = (
+  providerId: string | null,
+  client?: ProviderDirectoryDetailsClientLike
+) => ({
+  queryKey: providerDirectoryDetailsQueryKey(providerId),
+  enabled: Boolean(providerId),
+  queryFn: async (): Promise<ProviderDirectoryDetails | null> => {
+    if (!providerId) {
+      return null;
+    }
+    return ensureClient(client, createApiClient()).getProviderDirectoryDetails(providerId);
+  },
+});
+
+export const postalCodeLookupQueryKey = (postalCode: string | null): QueryKey => [
+  'api',
+  'geo',
+  'postal',
+  postalCode ?? '',
+];
+
+export const postalCodeLookupQueryOptions = (
+  postalCode: string | null,
+  client?: PostalCodeLookupClientLike
+) => ({
+  queryKey: postalCodeLookupQueryKey(postalCode),
+  enabled: Boolean(postalCode && postalCode.length === 5),
+  staleTime: 1000 * 60 * 60,
+  queryFn: async (): Promise<PostalCodeLookupResponse | null> => {
+    if (!postalCode || postalCode.length !== 5) {
+      return null;
+    }
+    try {
+      return await ensureClient(client, createApiClient()).lookupPostalCode(postalCode);
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return null;
+      }
+      throw error;
+    }
+  },
 });
 
 export const providerInvitationsQueryKey: QueryKey = ['api', 'provider', 'invitations'];

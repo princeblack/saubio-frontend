@@ -4,7 +4,12 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { useProviderOnboardingStatus, useProviderSignupFeeIntentMutation, useRequireRole } from '@saubio/utils';
+import {
+  ApiError,
+  useProviderOnboardingStatus,
+  useProviderSignupFeeIntentMutation,
+  useRequireRole,
+} from '@saubio/utils';
 import { SectionTitle, SurfaceCard, LoadingIndicator } from '@saubio/ui';
 
 export default function ProviderSignupFeePage() {
@@ -35,6 +40,20 @@ export default function ProviderSignupFeePage() {
     );
   }
 
+  const resolveErrorMessage = (error?: unknown) => {
+    const fallback = t(
+      'providerOnboardingChecklist.signupFee.error',
+      'Impossible de lancer le paiement pour le moment.'
+    );
+    if (error instanceof ApiError) {
+      const body = error.body as { message?: string } | undefined;
+      if (body?.message) {
+        return body.message;
+      }
+    }
+    return fallback;
+  };
+
   const startPayment = () => {
     setPaymentMessage(null);
     setIsRedirecting(true);
@@ -54,14 +73,10 @@ export default function ProviderSignupFeePage() {
           return;
         }
 
-        setPaymentMessage(
-          t('providerOnboardingChecklist.signupFee.error', 'Impossible de lancer le paiement pour le moment.')
-        );
+        setPaymentMessage(resolveErrorMessage());
       },
-      onError: () => {
-        setPaymentMessage(
-          t('providerOnboardingChecklist.signupFee.error', 'Impossible de lancer le paiement pour le moment.')
-        );
+      onError: (error) => {
+        setPaymentMessage(resolveErrorMessage(error));
       },
       onSettled: () => {
         setIsRedirecting(false);

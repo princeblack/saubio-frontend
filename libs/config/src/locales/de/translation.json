@@ -45,16 +45,46 @@
     "mapText": "Saubio-Einsatzgebiete in Deutschland",
     "link": "Alle Städte",
     "markers": [
-      { "top": "120", "left": "160" },
-      { "top": "90", "left": "200" },
-      { "top": "150", "left": "210" },
-      { "top": "180", "left": "140" },
-      { "top": "130", "left": "110" },
-      { "top": "200", "left": "190" },
-      { "top": "230", "left": "170" },
-      { "top": "95", "left": "150" },
-      { "top": "210", "left": "120" },
-      { "top": "165", "left": "250" }
+      {
+        "top": "120",
+        "left": "160"
+      },
+      {
+        "top": "90",
+        "left": "200"
+      },
+      {
+        "top": "150",
+        "left": "210"
+      },
+      {
+        "top": "180",
+        "left": "140"
+      },
+      {
+        "top": "130",
+        "left": "110"
+      },
+      {
+        "top": "200",
+        "left": "190"
+      },
+      {
+        "top": "230",
+        "left": "170"
+      },
+      {
+        "top": "95",
+        "left": "150"
+      },
+      {
+        "top": "210",
+        "left": "120"
+      },
+      {
+        "top": "165",
+        "left": "250"
+      }
     ],
     "headingAll": "Saubio",
     "allTitle": "Alle verfügbaren Städte",
@@ -193,6 +223,33 @@
       "cta": "Abmelden"
     }
   },
+  "selectProvider": {
+    "title": "Wählen Sie Ihren Dienstleister",
+    "subtitle": "Vergleichen Sie die verfügbaren Profile für Ihren Zeitraum und wählen Sie den passenden Profi aus.",
+    "list": {
+      "empty": "Kein Dienstleister passt aktuell zu Ihren Filtern. Passen Sie die Kriterien an oder kontaktieren Sie unser Team."
+    },
+    "card": {
+      "viewMore": "Mehr anzeigen",
+      "ratingCount": "({{count}} Bewertungen)",
+      "missionsCount": "{{count}} Einsätze",
+      "rateLabel": "Stundensatz",
+      "eco": "Bio-Option",
+      "animals": "Haustiere ok",
+      "noCity": "Gebiet nicht angegeben",
+      "defaultBio": "Erfahrener Dienstleister, verfügbar in mehreren Stadtteilen.",
+      "select": "Diesen Dienstleister wählen"
+    },
+    "details": {
+      "verified": "Identität verifiziert",
+      "about": "Über mich",
+      "reviews": "Kundenbewertungen",
+      "noReviews": "Noch keine Bewertungen verfügbar.",
+      "noReviewText": "Keine zusätzliche Anmerkung.",
+      "choose": "Diesen Dienstleister wählen",
+      "close": "Schließen"
+    }
+  },
   "providerRegister": {
     "title": "Als Saubio-Partner registrieren",
     "subtitle": "Stellen Sie uns Ihr Angebot vor. Unser Ops-Team prüft Solo-Selbstständige und Firmen innerhalb von 48 Stunden.",
@@ -320,6 +377,497 @@
       "eco": "Bio-Option",
       "tax": "MwSt. (19 %)",
       "total": "Geschätzter Gesamtpreis"
+    }
+  },
+  "bookingPlanner": {
+    "services": {
+      "residential": {
+        "label": "Haushaltsreinigung",
+        "description": "Regelmäßige oder einmalige Reinigung von Wohnungen und Häusern.",
+        "included": {
+          "0": "Böden saugen & wischen",
+          "1": "Staub wischen",
+          "2": "Bad & WC reinigen",
+          "3": "Küche und Oberflächen pflegen",
+          "4": "Müll entsorgen"
+        }
+      },
+      "office": {
+        "label": "Büroreinigung",
+        "description": "Reinigung von Büros, Praxisräumen oder Co-Working-Flächen außerhalb der Öffnungszeiten.",
+        "included": {
+          "0": "Arbeitsplätze & Tische reinigen",
+          "1": "Sanitärbereiche säubern",
+          "2": "Besprechungsräume herrichten",
+          "3": "Teeküchen auffrischen",
+          "4": "Abfallbehälter leeren"
+        }
+      },
+      "industrial": {
+        "label": "Gewerbliche Grundreinigung",
+        "description": "Intensive Reinigung von Produktions- oder Lagerflächen inklusive anspruchsvoller Beläge.",
+        "included": {
+          "0": "Hartböden maschinell reinigen",
+          "1": "Arbeitsbereiche und Regale entstauben",
+          "2": "Sanitärcontainer säubern",
+          "3": "Materialstationen ordnen",
+          "4": "Entsorgung nach Vorgaben"
+        }
+      },
+      "windows": {
+        "label": "Fenster & Glas",
+        "description": "Professionelle Reinigung von Fensterflächen, Rahmen und leicht erreichbaren Glasflächen.",
+        "included": {
+          "0": "Fenster innen & außen reinigen",
+          "1": "Rahmen & Falze säubern",
+          "2": "Spiegel & Glastrennwände pflegen",
+          "3": "Schaufenster streifenfrei reinigen"
+        }
+      },
+      "disinfection": {
+        "label": "Desinfektion & Hygiene",
+        "description": "Gezielte Reinigung mit geprüften Mitteln für stark frequentierte Bereiche.",
+        "included": {
+          "0": "Kontaktflächen desinfizieren",
+          "1": "Sanitärbereiche mit Hygienekonzept",
+          "2": "Küchen & Pausenräume gründlich reinigen",
+          "3": "Desinfektionsmittel nachführen"
+        }
+      },
+      "eco_plus": {
+        "label": "Öko Plus",
+        "description": "Reinigungen ausschließlich mit zertifizierten, nachhaltigen Produkten.",
+        "included": {
+          "0": "Biologisch abbaubare Mittel",
+          "1": "Verwendung eigener Materialien möglich",
+          "2": "Spezielle Pflege sensibler Oberflächen",
+          "3": "Beratung zu nachhaltigen Routinen"
+        }
+      },
+      "carpet": {
+        "label": "Teppichreinigung",
+        "description": "Pflege und Tiefenreinigung von Teppichen und Läufern.",
+        "included": {
+          "0": "Trockenschaum oder Sprühextraktion",
+          "1": "Fleckenbehandlung",
+          "2": "Geruchsbeseitigung",
+          "3": "Materialschonende Pflege"
+        }
+      },
+      "upholstery": {
+        "label": "Polsterreinigung",
+        "description": "Reinigung von Sofas, Sesseln und Stühlen inklusive Fleckenbehandlung.",
+        "included": {
+          "0": "Stoff- und Lederpflege",
+          "1": "Spezialreiniger für empfindliche Materialien",
+          "2": "Vorbehandlung hartnäckiger Flecken",
+          "3": "Trocknungszeiten abstimmen"
+        }
+      },
+      "spring": {
+        "label": "Frühjahrs-/Grundreinigung",
+        "description": "Umfassende Komplettreinigung inklusive schwer zugänglicher Bereiche.",
+        "included": {
+          "0": "Schränke ausräumen & reinigen",
+          "1": "Heizkörper & Leisten säubern",
+          "2": "Fenster & Rahmen reinigen",
+          "3": "Entfernung von Kalk- und Fettrückständen"
+        }
+      },
+      "final": {
+        "label": "Endreinigung / Übergabe",
+        "description": "Reinigung nach Umzug, Renovierung oder Bauarbeiten inklusive Übergabe-Check.",
+        "included": {
+          "0": "Baustaub entfernen",
+          "1": "Oberflächen gründlich reinigen",
+          "2": "Sanitäranlagen entkalken",
+          "3": "Müll und Verpackungen entsorgen"
+        }
+      },
+      "cluttered": {
+        "label": "Haushalt mit erhöhtem Aufwand",
+        "description": "Unterstützung bei stark verschmutzten oder unorganisierten Haushalten.",
+        "included": {
+          "0": "Sortieren & Vorarbeiten",
+          "1": "Zusätzliche Zeitpuffer",
+          "2": "Koordination mit Kund:in",
+          "3": "Entsorgung größerer Mengen"
+        }
+      },
+      "construction": {
+        "label": "Baureinigung",
+        "description": "Nach Bau- oder Renovierungsarbeiten.",
+        "included": {
+          "0": "Entfernung von feinem Baustaub",
+          "1": "Beseitigung von Farbresten & Putzspritzern",
+          "2": "Fenster- & Rahmenreinigung nach Bauarbeiten",
+          "3": "Intensive Bodenreinigung",
+          "4": "Entsorgung leichter Bauabfälle"
+        }
+      },
+      "move_out": {
+        "label": "Umzugsreinigung",
+        "description": "Spezielle Reinigung im Rahmen eines Umzugs.",
+        "included": {
+          "0": "Reinigung leerer Räume",
+          "1": "Komplette Küchenreinigung inklusive Geräte",
+          "2": "Intensivreinigung von Bädern",
+          "3": "Fensterreinigung",
+          "4": "Übergabefertige Endkontrolle"
+        }
+      },
+      "pigeon_cleanup": {
+        "label": "Taubenkot entfernen",
+        "description": "Spezialreinigung bei kontaminierten Flächen.",
+        "included": {
+          "0": "Entfernen von Taubenkot",
+          "1": "Desinfektion der betroffenen Fläche",
+          "2": "Hochdruckreinigung bei Bedarf",
+          "3": "Arbeiten mit Schutzkleidung"
+        }
+      },
+      "restaurant": {
+        "label": "Gastronomiereinigung",
+        "description": "Für Restaurants, Cafés und gastronomische Betriebe.",
+        "included": {
+          "0": "Professionelle Küchenreinigung",
+          "1": "Entfettung von Böden & Geräten",
+          "2": "Sanitärreinigung",
+          "3": "Essbereiche und Tische reinigen",
+          "4": "Schankanlagenoberflächen pflegen"
+        }
+      },
+      "heavy_dirty": {
+        "label": "Stark verschmutzte Wohnung",
+        "description": "Für extrem verschmutzte Wohnungen (über Standard hinaus).",
+        "included": {
+          "0": "Entfernung starker Verschmutzungen",
+          "1": "Tiefenreinigung von Küche & Bad",
+          "2": "Geruchsbeseitigung",
+          "3": "Zusatzzeit & Spezialmittel"
+        }
+      },
+      "carpet_laundry": {
+        "label": "Teppichwäscherei",
+        "description": "Externer oder spezialisierter Teppichservice.",
+        "included": {
+          "0": "Abholung & Lieferung (optional)",
+          "1": "Industrielle Tiefenwäsche",
+          "2": "Geruchsentfernung",
+          "3": "Antiallergische Behandlung"
+        }
+      },
+      "wintergarden": {
+        "label": "Wintergarten reinigen",
+        "description": "Reinigung von Wintergärten und verglasten Anbauten.",
+        "included": {
+          "0": "Glasflächen innen & außen reinigen",
+          "1": "Rahmen & Schienen säubern",
+          "2": "Bodenreinigung im Wintergarten",
+          "3": "Entfernung von Grünbelag"
+        }
+      },
+      "nicotine_removal": {
+        "label": "Nikotingeruch entfernen",
+        "description": "Spezialservice zur Beseitigung von Nikotinrückständen.",
+        "included": {
+          "0": "Reinigung von Wänden & Decken",
+          "1": "Geruchsneutralisation",
+          "2": "Flächen und Vorhänge reinigen",
+          "3": "Intensive Behandlung von Raucherbereichen"
+        }
+      },
+      "fire_damage": {
+        "label": "Brandreinigung",
+        "description": "Reinigung nach einem Brandereignis.",
+        "included": {
+          "0": "Entfernung von Ruß",
+          "1": "Geruchsneutralisation",
+          "2": "Reinigung beschädigter Oberflächen",
+          "3": "Entsorgung verbrannter Gegenstände"
+        }
+      },
+      "clearout": {
+        "label": "Entrümpelung",
+        "description": "Beseitigung und Entsorgung von Hausrat.",
+        "included": {
+          "0": "Entfernung von Möbeln & Gegenständen",
+          "1": "Sortierung und Verpackung",
+          "2": "Transport & Entsorgung organisieren",
+          "3": "Optionale Grundreinigung danach"
+        }
+      },
+      "wood_terrace": {
+        "label": "Holzterrasse reinigen",
+        "description": "Reinigung von Holzterrassen und ähnlichen Außenflächen.",
+        "included": {
+          "0": "Hochdruck- oder Handreinigung",
+          "1": "Moos- und Algenentfernung",
+          "2": "Fugenreinigung",
+          "3": "Pflege & Schutzmittel auftragen"
+        }
+      },
+      "water_damage": {
+        "label": "Wasserschadenreinigung",
+        "description": "Einsatz nach einem Wasserschaden.",
+        "included": {
+          "0": "Erste Wasserentfernung (wenn möglich)",
+          "1": "Trocknungsmaßnahmen einleiten",
+          "2": "Desinfektion der betroffenen Bereiche",
+          "3": "Reinigung der Oberflächen"
+        }
+      },
+      "hoarder": {
+        "label": "Messie Wohnung",
+        "description": "Service für extrem vermüllte oder verwahrloste Haushalte.",
+        "included": {
+          "0": "Komplette Entrümpelung",
+          "1": "Tiefenreinigung aller Räume",
+          "2": "Geruchsbeseitigung",
+          "3": "Flächendesinfektion"
+        }
+      },
+      "deep_disinfection": {
+        "label": "Desinfizierende Reinigung",
+        "description": "Fokus auf intensive Desinfektion über den Standard hinaus.",
+        "included": {
+          "0": "Viruzide & bakterizide Flächendesinfektion",
+          "1": "Komplettdesinfektion von Bad & Küche",
+          "2": "Einsatz medizinisch geprüfter Mittel",
+          "3": "Geeignet für sensible Bereiche"
+        }
+      }
+    },
+    "frequency": {
+      "options": {
+        "once": {
+          "label": "Einmalig",
+          "tagline": "Maximale Flexibilität",
+          "features": {
+            "0": "Einzelner Einsatz",
+            "1": "Freie Terminwahl"
+          }
+        },
+        "weekly": {
+          "label": "Wöchentlich",
+          "tagline": "Bis zu -7 %",
+          "features": {
+            "0": "Fester Stammprofi",
+            "1": "Kein Mindestvertrag",
+            "2": "Regelmäßiger Rhythmus"
+          }
+        },
+        "biweekly": {
+          "label": "Alle 14 Tage",
+          "tagline": "Bis zu -5 %",
+          "features": {
+            "0": "Fester Stammprofi",
+            "1": "Kein Mindestvertrag",
+            "2": "Regelmäßige Einsätze"
+          }
+        }
+      }
+    },
+    "eco": {
+      "options": {
+        "standard": "Standardprodukte",
+        "bio": "BIO / ökologische Produkte"
+      }
+    },
+    "soilLevels": {
+      "light": "Leicht",
+      "normal": "Normal",
+      "strong": "Stark",
+      "extreme": "Extrem"
+    },
+    "wishes": {
+      "residential": {
+        "bathroom": "Bad / Sanitär",
+        "kitchen": "Küche",
+        "oven": "Backofen",
+        "fridge": "Kühlschrank",
+        "floors": "Böden reinigen",
+        "balcony": "Balkon",
+        "windows": "Fenster",
+        "dusting": "Staubwischen",
+        "closets": "Schränke",
+        "furniture": "Möbel / Flächen",
+        "radiators": "Heizkörper",
+        "doors": "Türen",
+        "carpet": "Teppich saugen",
+        "cellar": "Keller",
+        "windows_inout": "Fenster innen/außen",
+        "bedding": "Komplette Bettwäsche",
+        "appliances": "Großgeräte reinigen"
+      },
+      "office": {
+        "workstations": "Arbeitsplätze",
+        "meeting": "Konferenzräume",
+        "kitchenette": "Kaffeeküche",
+        "restrooms": "Sanitärflächen",
+        "windows": "Fenster",
+        "floorcare": "Bodenpflege",
+        "reception": "Empfang",
+        "trash": "Müllentsorgung",
+        "it": "IT-Equipment",
+        "breakroom": "Pausebereich",
+        "archiving": "Leichtes Archivieren"
+      },
+      "industrial": {
+        "machines": "Maschinen",
+        "storage": "Lagerflächen",
+        "highdust": "Hochstaub",
+        "sanitary": "Sanitärbereiche",
+        "production": "Produktionslinien",
+        "loading": "Laderampen",
+        "decontamination": "Leichte Dekontamination",
+        "resin": "Harz-/Sicherheitsboden",
+        "technical": "Technikräume"
+      },
+      "windows": {
+        "altbau": "Altbaufenster",
+        "awning": "Vordach",
+        "frames": "Mit Rahmen",
+        "fugen": "Fugen / Falze",
+        "inside": "Nur innen",
+        "outside": "Nur außen",
+        "inside_outside": "Innen & außen",
+        "jalousie": "Jalousien",
+        "roller": "Rollläden",
+        "sill": "Fensterbänke",
+        "sprossen": "Sprossenfenster",
+        "skylight": "Oberlichter",
+        "wintergarden": "Wintergarten",
+        "rain_protection": "Schutzbeschichtung",
+        "film": "Folien (De-/Montage)",
+        "outdoor_ads": "Außenwerbung"
+      },
+      "disinfection": {
+        "surface": "Oberflächen",
+        "equipment": "Equipment",
+        "vehicle": "Fahrzeuge",
+        "sanitary": "Sanitärbereiche",
+        "ulv": "ULV / Berieselung",
+        "touchpoints": "Häufige Kontaktpunkte",
+        "frontdesk": "Empfang / Kundenbereich"
+      },
+      "carpet": {
+        "livingroom": "Wohnzimmerteppich",
+        "runner": "Läufer",
+        "stairs": "Treppen",
+        "office": "Büroteppich",
+        "bauarbeiten": "Bauarbeiten",
+        "blood": "Blut",
+        "erbrochenes": "Erbrochenes",
+        "flecken": "Flecken",
+        "laufspuren": "Laufspuren",
+        "move": "Umzug",
+        "redwine": "Rotwein",
+        "urine": "Urin",
+        "waterdamage": "Wasserschaden",
+        "odor": "Geruchsentfernung",
+        "protector": "Schutzbeschichtung",
+        "fastdry": "Schnelltrocknung"
+      },
+      "spring": {
+        "bathroom": "Bad / Sanitär",
+        "armaturen": "Armaturen",
+        "bathtub": "Badewanne",
+        "shower": "Dusche",
+        "tiles": "Fliesen / Fugen",
+        "sink": "Waschbecken",
+        "wc": "WC-Bereich",
+        "kitchen": "Küche",
+        "countertop": "Arbeitsplatte",
+        "oven": "Backofen",
+        "hood": "Dunstabzug",
+        "dishes": "Geschirr",
+        "fridge": "Kühlschrank",
+        "cooktop": "Kochfeld",
+        "machines": "Küchenmaschinen",
+        "microwave": "Mikrowelle",
+        "drawers": "Schubladen",
+        "sinkarea": "Spülbereich",
+        "dusting": "Staubwischen",
+        "furniture": "Möbel / Flächen",
+        "tables": "Tische / Stühle",
+        "closet_outside": "Schrank außen",
+        "closet_inside": "Schrank innen",
+        "bed": "Bett / Gestell",
+        "nightstand": "Nachttisch",
+        "pictures": "Bilder / Rahmen",
+        "lamps": "Lampen",
+        "tv": "TV / HiFi",
+        "windowsills": "Fensterbänke",
+        "switches": "Lichtschalter",
+        "sockets": "Steckdosen",
+        "heating": "Heizung",
+        "cobwebs": "Spinnweben",
+        "floors": "Böden reinigen",
+        "baseboards": "Sockelleisten",
+        "carpet": "Teppich saugen",
+        "couch": "Couch saugen",
+        "doors": "Türen",
+        "vent": "Lüftung",
+        "balcony": "Balkon",
+        "cellar": "Keller",
+        "garage": "Garage",
+        "wine": "Weinkeller",
+        "library": "Bibliothek / Ordnen"
+      },
+      "final": {
+        "balcony": "Balkon",
+        "basenrein": "Besenrein",
+        "bathroom": "Bad / Sanitär",
+        "cellar": "Keller",
+        "floors": "Böden reinigen",
+        "kitchen": "Küche",
+        "tenant_change": "Mieterwechsel",
+        "handover": "Objektübergabe",
+        "closet_inside": "Schrank innen",
+        "closet_outside": "Schrank außen",
+        "doors": "Türen",
+        "paint": "Kleine Lackkorrekturen",
+        "waste": "Kartons / Abfall entsorgen",
+        "metal": "Metallpolitur"
+      },
+      "cluttered": {
+        "balcony": "Balkon",
+        "bathroom": "Bad / Sanitär",
+        "cleanout": "Entrümpelung",
+        "desinfection": "Desinfektion",
+        "disposal": "Entsorgung",
+        "feces": "Fäkalien",
+        "keller": "Keller",
+        "kitchen": "Küche",
+        "furniture": "Möbel / Flächen",
+        "inventory": "Inventar erfassen",
+        "recycling": "Deponie / Recycling koordinieren",
+        "odor": "Geruchsbehandlung"
+      },
+      "default": {
+        "floors": "Böden",
+        "windows": "Fenster",
+        "sanitary": "Sanitär"
+      }
+    },
+    "upholstery": {
+      "items": {
+        "sofa_two": "2-Sitzer",
+        "sofa_three": "3-Sitzer",
+        "corner_small": "Eck-Couch klein",
+        "corner_large": "Eck-Couch groß",
+        "armchair": "Sessel",
+        "stool": "Hocker",
+        "chair_with_back": "Stuhl mit Lehne",
+        "chair_without_back": "Stuhl ohne Lehne",
+        "custom_couch": "Couch individuell"
+      },
+      "addons": {
+        "anti_dust": "Anti-Milben-Behandlung",
+        "leather": "Leder & Kunstleder",
+        "decor_cushions": "Dekokissen"
+      }
     }
   },
   "bookingList": {
@@ -806,10 +1354,13 @@
       "services": "Leistungen",
       "pricing": "Preise",
       "blog": "Guides & News",
+      "faq": "FAQ",
       "community": "Community-Richtlinien",
       "imprint": "Impressum",
       "privacy": "Datenschutz",
-      "terms": "AGB"
+      "terms": "AGB",
+      "withdrawal": "Widerrufsbelehrung",
+      "liability": "Haftpflichtversicherung"
     },
     "contact": {
       "address": "Karl-Marx-Allee 92, 10243 Berlin",
@@ -817,6 +1368,24 @@
       "email": "support@saubio.de"
     },
     "copyright": "© {{year}} Saubio · Alle Rechte vorbehalten"
+  },
+  "cookie": {
+    "title": "Diese Website verwendet Cookies.",
+    "body": "Wir nutzen Cookies, die für den technischen Betrieb unserer Plattform unbedingt erforderlich sind. Darüber hinaus verwenden wir – sofern Sie zustimmen – Cookies, um Einstellungen zu speichern, die Leistung zu analysieren, Inhalte externer Anbieter einzubinden und personalisierte Werbung anzuzeigen.",
+    "consent": "Mit einem Klick auf „OK“ stimmen Sie der Nutzung von Cookies für Präferenzen, Statistiken und Marketing zu und erlauben uns, bestimmte Daten an externe Dienstleister weiterzugeben (inkl. Partner außerhalb der EU).",
+    "decline": "Wenn Sie nicht zustimmen, beschränken wir uns auf technisch notwendige Cookies.",
+    "more": "Weitere Informationen und Auswahlmöglichkeiten finden Sie unter „Einstellungen“ und in unseren Datenschutzhinweisen.",
+    "labels": {
+      "preferences": "Präferenzen",
+      "stats": "Statistiken",
+      "marketing": "Marketing"
+    },
+    "buttons": {
+      "accept": "OK",
+      "essential": "Nur notwendige Cookies",
+      "settings": "Einstellungen",
+      "save": "Auswahl speichern"
+    }
   },
   "language": {
     "label": "Sprache wechseln",
@@ -857,7 +1426,8 @@
       "availabilityTimeOff": "Auszeit eintragen",
       "statsSection": "Statistiken",
       "statsReliability": "Zuverlässigkeit & Status",
-      "statsReviews": "Kundenbewertungen"
+      "statsReviews": "Kundenbewertungen",
+      "servicesSection": "Serviceangebote"
     },
     "admin": {
       "dashboard": "Dashboard",
@@ -1249,6 +1819,106 @@
       "documentsLabel": "{{count}} Dokument(e) gesendet",
       "noDocuments": "Noch kein Dokument hochgeladen",
       "cta": "Dokumente verwalten"
+    },
+    "payout": {
+      "requiredTitle": "Zahlungen aktivieren",
+      "requiredDescription": "Hinterlegen Sie Ihre Bankdaten, damit wir Einsätze auszahlen können. Der sichere Prozess läuft über Mollie.",
+      "reviewTitle": "Überprüfung läuft",
+      "reviewDescription": "Mollie prüft gerade Ihre Auszahlungsdaten. Öffnen Sie das Portal erneut, falls Anpassungen nötig sind.",
+      "rejectedTitle": "Auszahlung nicht validiert",
+      "rejectedDescription": "Einige Angaben müssen korrigiert werden. Öffnen Sie das Mollie-Portal erneut, um die Aktivierung abzuschließen.",
+      "readyTitle": "Zahlungen aktiviert",
+      "readyDescription": "Ihre Auszahlungsdaten sind bestätigt. Nach jeder Mission wird automatisch überwiesen.",
+      "method": "Methode",
+      "bank": "Banküberweisung",
+      "card": "Karte",
+      "last4": "Letzte Ziffern",
+      "status": "Status",
+      "statusLabel": {
+        "pending": "Zu vervollständigen",
+        "in_review": "In Prüfung",
+        "verified": "Verifiziert",
+        "rejected": "Abgelehnt"
+      },
+      "statusHint": {
+        "pending": "Fügen Sie Ihre Bankdaten hinzu, um die Prüfung zu starten.",
+        "in_review": "Mollie prüft Ihre Angaben. Dies kann einige Minuten dauern.",
+        "rejected": "Die Angaben wurden abgelehnt. Öffnen Sie das Portal erneut, um die erforderlichen Anpassungen vorzunehmen.",
+        "verified": "Ihre Auszahlungen sind einsatzbereit."
+      },
+      "cta": "Auszahlungsdaten vervollständigen",
+      "opening": "Portal wird geöffnet…",
+      "error": "Onboarding-Link kann derzeit nicht erstellt werden."
+    }
+  },
+  "providerServicesPage": {
+    "title": "Serviceangebote",
+    "subtitle": "Wählen Sie aus, welche Leistungen Sie aktuell übernehmen, damit wir passende Einsätze vorschlagen.",
+    "success": "Ihre Auswahl wurde gespeichert.",
+    "additionalInfo": "Kund:innen können im Freitext zusätzliche Wünsche nennen. Wenn Sie diese Aufgaben übernehmen können, dürfen Sie die Anfrage selbstverständlich annehmen.",
+    "selectionHint": "Mindestens ein Service sollte ausgewählt bleiben, um relevante Anfragen zu erhalten.",
+    "save": "Auswahl speichern",
+    "saving": "Speichern…",
+    "filterLabel": "Services filtern",
+    "filterPlaceholder": "Nach Name suchen…",
+    "emptyFiltered": "Keine Services entsprechen Ihrer Suche.",
+    "selectAll": "Alle Services auswählen",
+    "unselectAll": "Auswahl zurücksetzen"
+  },
+  "providersLanding": {
+    "hero": {
+      "eyebrow": "Flexibel arbeiten mit Saubio",
+      "title": "Werde Teil unseres Dienstleister-Netzwerks",
+      "description": "Saubio bringt erfahrene Reinigungskräfte mit verlässlichen Kund:innen zusammen. Wir übernehmen Marketing, Rechnungen und Support – du konzentrierst dich auf deine Einsätze.",
+      "primaryCta": "Jetzt als Dienstleister registrieren",
+      "secondaryCta": "Mehr erfahren",
+      "figureAlt": "Saubio Dienstleisterteam",
+      "caption": "Gemeinsam mit geprüften Profis in ganz Deutschland"
+    },
+    "perks": {
+      "planning": {
+        "title": "Planbare Aufträge",
+        "description": "Du entscheidest selbst, welche Stadtteile und Uhrzeiten passen – wir zeigen dir passende Anfragen in Echtzeit."
+      },
+      "payments": {
+        "title": "Faire Bezahlung",
+        "description": "Transparente Nettopreise pro Stunde, pünktliche Auszahlungen und Bonusprogramme für Stammkund:innen."
+      },
+      "insurance": {
+        "title": "Versichert & begleitet",
+        "description": "Berufshaftpflicht-Schutz, Support bei Fragen und digitale Tools für Dokumente, Rechnungen und Planung."
+      },
+      "sustainability": {
+        "title": "Nachhaltige Missionen",
+        "description": "Saubio setzt auf geprüfte Öko-Produkte und Kund:innen, die Wert auf langfristige Zusammenarbeit legen."
+      }
+    },
+    "benefits": {
+      "heading": "Vorteile für Partner:innen",
+      "title": "Warum Saubio?",
+      "description": "Wir kombinieren persönliche Betreuung mit digitalen Tools: so kannst du Aufträge planen, Bewertungen sammeln und faire Honorare sichern."
+    },
+    "steps": {
+      "heading": "In drei Schritten startklar",
+      "title": "So läuft das Onboarding",
+      "profile": {
+        "label": "1. Kurzes Profil",
+        "body": "Sag uns, ob du als Einzelperson oder kleines Team startest. Wir prüfen deine Basisdaten innerhalb von 24h."
+      },
+      "onboarding": {
+        "label": "2. Onboarding-Call",
+        "body": "Unser Team bespricht Verfügbarkeit, Wunschgebiete und erklärt dir die App. Du erhältst Zugang zum Partner-Portal."
+      },
+      "firstMission": {
+        "label": "3. Erste Mission buchen",
+        "body": "Wähle passende Aufträge oder lass dich automatisch matchen. Du bestätigst Einsätze mit einem Klick."
+      }
+    },
+    "final": {
+      "heading": "Bereit für neue Aufträge?",
+      "title": "Starte jetzt als Saubio-Dienstleister:in",
+      "description": "Registriere dich kostenlos, stelle dein Profil ein und erhalte deine ersten geprüften Anfragen. Unser Team begleitet dich vom ersten Gespräch bis zum regelmäßigen Kundenstamm.",
+      "secondaryCta": "Weitere Infos zum Ablauf"
     }
   },
   "providerAvailabilityPage": {

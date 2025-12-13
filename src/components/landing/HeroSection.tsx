@@ -44,14 +44,16 @@ export function HeroSection() {
     <SectionContainer
       as="section"
       id="hero"
-      centered
+      centered={false}
       padding="spacious"
-      className="grid gap-10 rounded-5xl bg-hero-gradient text-white lg:grid-cols-[1.1fr_0.9fr]"
+      maxWidth="full"
+      className="rounded-none bg-hero-gradient text-white"
     >
-      <div className="space-y-6">
-        <SectionHeading tone="sun" className="!text-saubio-sun">
-          {t('hero.badge')}
-        </SectionHeading>
+      <div className="mx-auto grid w-full max-w-7xl gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="space-y-6">
+          <SectionHeading tone="sun" className="!text-saubio-sun">
+            {t('hero.badge')}
+          </SectionHeading>
         <SectionTitle as="h1" size="large" className="!text-white">
           {t('hero.titleLine')}
           <br />
@@ -60,7 +62,7 @@ export function HeroSection() {
         <SectionDescription size="large" className="!text-white/85">
           {t('hero.description')}
         </SectionDescription>
-        {/* <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-3">
           <AnalyticsCard
             variant="glass"
             size="compact"
@@ -82,12 +84,12 @@ export function HeroSection() {
             value={stats.eco.value}
             icon={<Leaf className="h-4 w-4" />}
           />
-        </div> */}
-      </div>
-      <div className="relative">
-        <div className="absolute -top-8 -right-6 hidden h-32 w-32 rounded-full border-4 border-saubio-sun/60 md:block" />
-        <div className="relative flex h-full flex-col rounded-5xl bg-white/10 p-6 backdrop-blur">
-          <div className="flex flex-1 flex-col gap-6 rounded-4xl bg-white/90 p-6 text-saubio-forest shadow-soft-lg">
+        </div>
+        </div>
+        <div className="relative mx-auto w-full max-w-xl justify-self-end">
+          <div className="absolute -top-8 -right-6 hidden h-32 w-32 rounded-full border-4 border-saubio-sun/60 md:block" />
+          <div className="relative flex h-full flex-col rounded-5xl bg-white/10 p-6 backdrop-blur">
+            <div className="flex flex-1 flex-col gap-6 rounded-4xl bg-white/90 p-6 text-saubio-forest shadow-soft-lg">
             <span className="text-xs font-semibold uppercase tracking-[0.3em] text-saubio-moss">
               {t('hero.postalLabel', 'Où souhaitez-vous être servi ?')}
             </span>
@@ -114,13 +116,13 @@ export function HeroSection() {
             </form>
             <div className="flex flex-wrap gap-3">
               <Link
-                href="/register"
+                href="/providers"
                 className="flex-1 rounded-full border border-saubio-forest/20 px-6 py-3 text-center text-sm font-semibold text-saubio-forest hover:border-saubio-forest"
               >
                 {t('hero.secondaryCta')}
               </Link>
               <Link
-                href="/register/provider"
+                href="/register"
                 className="flex-1 rounded-full border border-saubio-forest/10 px-6 py-3 text-center text-sm font-semibold text-saubio-forest/80 hover:border-saubio-forest"
               >
                 {t('hero.tertiaryCta')}
@@ -130,6 +132,7 @@ export function HeroSection() {
           <p className="mt-4 text-center text-xs text-white/70">
             {t('hero.postalDisclaimer', 'Vos informations resteront confidentielles.')}
           </p>
+        </div>
         </div>
       </div>
     </SectionContainer>

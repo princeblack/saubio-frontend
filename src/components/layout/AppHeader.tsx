@@ -8,6 +8,7 @@ import { useMemo } from 'react';
 import type { ReactNode } from 'react';
 import { Bell, LifeBuoy, CircleUser, Menu, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { resolveRoleHome } from '../../utils/auth';
+import { useLanguage } from '../../providers/LanguageProvider';
 
 interface AppHeaderProps {
   sidebarCollapsed: boolean;
@@ -17,6 +18,7 @@ interface AppHeaderProps {
 
 export function AppHeader({ sidebarCollapsed, onToggleSidebar, onOpenMobileSidebar }: AppHeaderProps) {
   const { t } = useTranslation();
+  const { language, changeLanguage } = useLanguage();
   const session = useSession();
   const logoutMutation = useLogoutMutation();
 
@@ -94,6 +96,26 @@ export function AppHeader({ sidebarCollapsed, onToggleSidebar, onOpenMobileSideb
           </Link>
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
+          <select
+            aria-label={t('language.label')}
+            className="hidden rounded-full border border-saubio-forest/15 bg-white/80 px-3 py-1.5 text-xs font-semibold text-saubio-slate/70 shadow-soft-lg/40 transition hover:border-saubio-forest/40 md:block"
+            value={language}
+            onChange={(event) => changeLanguage(event.target.value)}
+          >
+            <option value="de">{t('language.de')}</option>
+            <option value="en">{t('language.en')}</option>
+            <option value="fr">{t('language.fr')}</option>
+          </select>
+          <select
+            aria-label={t('language.label')}
+            className="rounded-full border border-saubio-forest/15 bg-white/80 px-2.5 py-1 text-[11px] font-semibold text-saubio-slate/70 shadow-soft-lg/40 transition hover:border-saubio-forest/40 md:hidden"
+            value={language}
+            onChange={(event) => changeLanguage(event.target.value)}
+          >
+            <option value="de">DE</option>
+            <option value="en">EN</option>
+            <option value="fr">FR</option>
+          </select>
           <NotificationBell
             href={notificationsHref}
             label={t('appNav.notifications')}

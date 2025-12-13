@@ -45,16 +45,46 @@
     "mapText": "Carte des principales zones Saubio",
     "link": "Voir toutes les villes",
     "markers": [
-      { "top": "120", "left": "160" },
-      { "top": "90", "left": "200" },
-      { "top": "150", "left": "210" },
-      { "top": "180", "left": "140" },
-      { "top": "130", "left": "110" },
-      { "top": "200", "left": "190" },
-      { "top": "230", "left": "170" },
-      { "top": "95", "left": "150" },
-      { "top": "210", "left": "120" },
-      { "top": "165", "left": "250" }
+      {
+        "top": "120",
+        "left": "160"
+      },
+      {
+        "top": "90",
+        "left": "200"
+      },
+      {
+        "top": "150",
+        "left": "210"
+      },
+      {
+        "top": "180",
+        "left": "140"
+      },
+      {
+        "top": "130",
+        "left": "110"
+      },
+      {
+        "top": "200",
+        "left": "190"
+      },
+      {
+        "top": "230",
+        "left": "170"
+      },
+      {
+        "top": "95",
+        "left": "150"
+      },
+      {
+        "top": "210",
+        "left": "120"
+      },
+      {
+        "top": "165",
+        "left": "250"
+      }
     ],
     "headingAll": "Saubio",
     "allTitle": "Toutes les villes disponibles",
@@ -193,6 +223,33 @@
       "cta": "Se déconnecter"
     }
   },
+  "selectProvider": {
+    "title": "Choisissez votre prestataire",
+    "subtitle": "Comparez les profils disponibles pour votre créneau et sélectionnez celui qui correspond le mieux à vos besoins.",
+    "list": {
+      "empty": "Aucun prestataire ne correspond à vos filtres. Ajustez vos critères ou contactez notre équipe."
+    },
+    "card": {
+      "viewMore": "Voir plus",
+      "ratingCount": "({{count}} avis)",
+      "missionsCount": "{{count}} missions",
+      "rateLabel": "Tarif horaire",
+      "eco": "Option bio",
+      "animals": "OK animaux",
+      "noCity": "Zone non précisée",
+      "defaultBio": "Prestataire expérimenté·e, disponible sur plusieurs quartiers.",
+      "select": "Choisir ce prestataire"
+    },
+    "details": {
+      "verified": "Identité vérifiée",
+      "about": "À propos",
+      "reviews": "Avis clients",
+      "noReviews": "Aucun avis disponible pour le moment.",
+      "noReviewText": "Pas de commentaire fourni.",
+      "choose": "Choisir ce prestataire",
+      "close": "Fermer"
+    }
+  },
   "providerRegister": {
     "title": "Rejoindre les prestataires Saubio",
     "subtitle": "Présentez votre activité. Notre équipe opérations valide indépendants et entreprises sous 48 h.",
@@ -320,6 +377,497 @@
       "eco": "Option bio",
       "tax": "TVA (19 %)",
       "total": "Total estimé"
+    }
+  },
+  "bookingPlanner": {
+    "services": {
+      "residential": {
+        "label": "Ménage résidentiel",
+        "description": "Nettoyage ponctuel ou régulier d'appartements et de maisons.",
+        "included": {
+          "0": "Aspiration et lavage des sols",
+          "1": "Dépoussiérage des surfaces",
+          "2": "Nettoyage des salles de bain et WC",
+          "3": "Entretien de la cuisine et des plans de travail",
+          "4": "Vidage des poubelles"
+        }
+      },
+      "office": {
+        "label": "Nettoyage de bureaux",
+        "description": "Nettoyage des bureaux, cabinets ou espaces de coworking en dehors des horaires.",
+        "included": {
+          "0": "Postes de travail nettoyés",
+          "1": "Sanitaires désinfectés",
+          "2": "Salles de réunion prêtes",
+          "3": "Kitchenettes rafraîchies",
+          "4": "Poubelles vidées"
+        }
+      },
+      "industrial": {
+        "label": "Nettoyage industriel approfondi",
+        "description": "Entretien intensif des zones de production ou d'entrepôt, sols sensibles inclus.",
+        "included": {
+          "0": "Nettoyage mécanisé des sols",
+          "1": "Dépoussiérage des zones de travail et rayonnages",
+          "2": "Nettoyage des sanitaires mobiles",
+          "3": "Organisation des stations de matériel",
+          "4": "Évacuation selon les consignes"
+        }
+      },
+      "windows": {
+        "label": "Nettoyage vitres & vitrines",
+        "description": "Nettoyage professionnel des vitrages, cadres et surfaces facilement accessibles.",
+        "included": {
+          "0": "Vitres intérieure/extérieure",
+          "1": "Cadres et joints nettoyés",
+          "2": "Miroirs et cloisons vitrées",
+          "3": "Vitrines sans trace"
+        }
+      },
+      "disinfection": {
+        "label": "Désinfection & hygiène",
+        "description": "Intervention ciblée avec produits certifiés pour zones très fréquentées.",
+        "included": {
+          "0": "Points de contact désinfectés",
+          "1": "Sanitaires selon protocole",
+          "2": "Nettoyage des cuisines et salles de pause",
+          "3": "Réassort des consommables"
+        }
+      },
+      "eco_plus": {
+        "label": "Eco Plus",
+        "description": "Prestations uniquement avec produits durables certifiés.",
+        "included": {
+          "0": "Produits biodégradables",
+          "1": "Utilisation de vos matériels possible",
+          "2": "Soin des surfaces sensibles",
+          "3": "Conseils routines durables"
+        }
+      },
+      "carpet": {
+        "label": "Nettoyage de tapis",
+        "description": "Entretien et nettoyage en profondeur des tapis et couloirs.",
+        "included": {
+          "0": "Mousse sèche ou injection-extraction",
+          "1": "Traitement des taches",
+          "2": "Suppression des odeurs",
+          "3": "Soins respectueux des fibres"
+        }
+      },
+      "upholstery": {
+        "label": "Nettoyage de mobilier tissu",
+        "description": "Nettoyage des canapés, fauteuils et chaises avec traitement des taches.",
+        "included": {
+          "0": "Entretien tissus et cuir",
+          "1": "Produits spécifiques matériaux sensibles",
+          "2": "Pré-traitement des taches tenaces",
+          "3": "Temps de séchage coordonnés"
+        }
+      },
+      "spring": {
+        "label": "Grand ménage / printemps",
+        "description": "Nettoyage complet avec zones difficiles d'accès.",
+        "included": {
+          "0": "Placards vidés et nettoyés",
+          "1": "Radiateurs et plinthes essuyés",
+          "2": "Vitres et cadres nettoyés",
+          "3": "Élimination du calcaire et de la graisse"
+        }
+      },
+      "final": {
+        "label": "Nettoyage final / remise",
+        "description": "Après déménagement ou travaux, contrôle de remise inclus.",
+        "included": {
+          "0": "Élimination des poussières de chantier",
+          "1": "Nettoyage approfondi des surfaces",
+          "2": "Détartrage des sanitaires",
+          "3": "Évacuation des déchets et emballages"
+        }
+      },
+      "cluttered": {
+        "label": "Logement très en désordre",
+        "description": "Aide pour logements très sales ou désorganisés.",
+        "included": {
+          "0": "Tri et préparation",
+          "1": "Marge de temps supplémentaire",
+          "2": "Coordination avec le client",
+          "3": "Évacuation de gros volumes"
+        }
+      },
+      "construction": {
+        "label": "Nettoyage après chantier",
+        "description": "Après travaux de construction ou rénovation.",
+        "included": {
+          "0": "Retrait des poussières fines",
+          "1": "Suppression des traces de peinture/plâtre",
+          "2": "Vitres et cadres après travaux",
+          "3": "Nettoyage intensif des sols",
+          "4": "Évacuation des petits gravats"
+        }
+      },
+      "move_out": {
+        "label": "Nettoyage de déménagement",
+        "description": "Service spécifique lors d'un déménagement.",
+        "included": {
+          "0": "Pièces vides nettoyées",
+          "1": "Cuisine complète appareils inclus",
+          "2": "Nettoyage intensif des salles d'eau",
+          "3": "Vitres nettoyées",
+          "4": "Contrôle prêt pour remise"
+        }
+      },
+      "pigeon_cleanup": {
+        "label": "Décrassage de fientes",
+        "description": "Nettoyage spécialisé des zones contaminées.",
+        "included": {
+          "0": "Évacuation des fientes de pigeons",
+          "1": "Désinfection des surfaces",
+          "2": "Nettoyage haute pression si besoin",
+          "3": "Intervention avec équipements de protection"
+        }
+      },
+      "restaurant": {
+        "label": "Nettoyage restauration",
+        "description": "Pour restaurants, cafés et établissements alimentaires.",
+        "included": {
+          "0": "Cuisines professionnelles nettoyées",
+          "1": "Dégraissage des sols et équipements",
+          "2": "Nettoyage des sanitaires",
+          "3": "Salles et tables entretenues",
+          "4": "Surfaces de bar/pompes polies"
+        }
+      },
+      "heavy_dirty": {
+        "label": "Logement très sale",
+        "description": "Pour les logements avec saleté importante.",
+        "included": {
+          "0": "Élimination des salissures tenaces",
+          "1": "Nettoyage en profondeur cuisine et salle de bain",
+          "2": "Neutralisation des odeurs",
+          "3": "Temps et produits spécifiques"
+        }
+      },
+      "carpet_laundry": {
+        "label": "Blanchisserie de tapis",
+        "description": "Service spécialisé ou externe pour tapis.",
+        "included": {
+          "0": "Enlèvement et retour si proposé",
+          "1": "Lavage industriel en profondeur",
+          "2": "Suppression des odeurs",
+          "3": "Traitement anti-allergique"
+        }
+      },
+      "wintergarden": {
+        "label": "Nettoyage véranda",
+        "description": "Entretien des vérandas et structures vitrées.",
+        "included": {
+          "0": "Vitres intérieures/extérieures",
+          "1": "Cadres et rails nettoyés",
+          "2": "Sol du jardin d'hiver nettoyé",
+          "3": "Élimination des dépôts verts"
+        }
+      },
+      "nicotine_removal": {
+        "label": "Suppression odeurs de nicotine",
+        "description": "Service dédié à l'élimination des résidus de nicotine.",
+        "included": {
+          "0": "Murs et plafonds nettoyés",
+          "1": "Neutralisation des odeurs",
+          "2": "Nettoyage des surfaces et rideaux",
+          "3": "Traitement intensif des zones fumeurs"
+        }
+      },
+      "fire_damage": {
+        "label": "Nettoyage après incendie",
+        "description": "Intervention après sinistre incendie.",
+        "included": {
+          "0": "Élimination de la suie",
+          "1": "Neutralisation des odeurs",
+          "2": "Nettoyage des surfaces endommagées",
+          "3": "Évacuation des objets brûlés"
+        }
+      },
+      "clearout": {
+        "label": "Débarras complet",
+        "description": "Évacuation et traitement des biens ménagers.",
+        "included": {
+          "0": "Retrait des meubles et objets",
+          "1": "Tri et emballage",
+          "2": "Organisation du transport et de l'évacuation",
+          "3": "Nettoyage de base optionnel"
+        }
+      },
+      "wood_terrace": {
+        "label": "Nettoyage terrasse bois",
+        "description": "Entretien des terrasses en bois et zones extérieures.",
+        "included": {
+          "0": "Nettoyage haute pression ou manuel",
+          "1": "Suppression mousse et algues",
+          "2": "Nettoyage des joints",
+          "3": "Application soins/protection"
+        }
+      },
+      "water_damage": {
+        "label": "Nettoyage après dégâts des eaux",
+        "description": "Intervention après sinistre lié à l'eau.",
+        "included": {
+          "0": "Pompage initial si possible",
+          "1": "Lancement des mesures de séchage",
+          "2": "Désinfection des zones touchées",
+          "3": "Nettoyage des surfaces impactées"
+        }
+      },
+      "hoarder": {
+        "label": "Appartement syllogomanie",
+        "description": "Intervention pour logements extrêmement encombrés ou insalubres.",
+        "included": {
+          "0": "Débarras complet",
+          "1": "Nettoyage en profondeur de toutes les pièces",
+          "2": "Suppression des odeurs",
+          "3": "Désinfection des surfaces"
+        }
+      },
+      "deep_disinfection": {
+        "label": "Nettoyage désinfectant",
+        "description": "Accent sur une désinfection poussée au-delà des standards.",
+        "included": {
+          "0": "Désinfection virucide et bactéricides",
+          "1": "Assainissement complet de la cuisine et salle de bain",
+          "2": "Produits homologués médicalement",
+          "3": "Adapté aux zones sensibles"
+        }
+      }
+    },
+    "frequency": {
+      "options": {
+        "once": {
+          "label": "Ponctuel",
+          "tagline": "Flexibilité totale",
+          "features": {
+            "0": "Nettoyage unique",
+            "1": "Créneau libre"
+          }
+        },
+        "weekly": {
+          "label": "Chaque semaine",
+          "tagline": "Jusqu’à -7 %",
+          "features": {
+            "0": "Prestataire attitré",
+            "1": "Sans engagement",
+            "2": "Rythme régulier"
+          }
+        },
+        "biweekly": {
+          "label": "Tous les 15 jours",
+          "tagline": "Jusqu’à -5 %",
+          "features": {
+            "0": "Prestataire attitré",
+            "1": "Sans engagement",
+            "2": "Visites régulières"
+          }
+        }
+      }
+    },
+    "eco": {
+      "options": {
+        "standard": "Produits standards",
+        "bio": "BIO / produits verts"
+      }
+    },
+    "soilLevels": {
+      "light": "Léger",
+      "normal": "Normal",
+      "strong": "Intensif",
+      "extreme": "Extrême"
+    },
+    "wishes": {
+      "residential": {
+        "bathroom": "Salle de bain / sanitaires",
+        "kitchen": "Cuisine",
+        "oven": "Four",
+        "fridge": "Réfrigérateur",
+        "floors": "Nettoyage des sols",
+        "balcony": "Balcon",
+        "windows": "Fenêtres",
+        "dusting": "Dépoussiérage",
+        "closets": "Placards",
+        "furniture": "Mobilier / surfaces",
+        "radiators": "Radiateurs",
+        "doors": "Portes",
+        "carpet": "Aspiration tapis",
+        "cellar": "Cave",
+        "windows_inout": "Fenêtres intérieur/extérieur",
+        "bedding": "Changement complet de literie",
+        "appliances": "Gros électroménager"
+      },
+      "office": {
+        "workstations": "Postes de travail",
+        "meeting": "Salles de réunion",
+        "kitchenette": "Kitchenette",
+        "restrooms": "Sanitaires",
+        "windows": "Fenêtres",
+        "floorcare": "Entretien des sols",
+        "reception": "Accueil",
+        "trash": "Gestion des déchets",
+        "it": "Matériel IT",
+        "breakroom": "Espace pause",
+        "archiving": "Archivage léger"
+      },
+      "industrial": {
+        "machines": "Machines",
+        "storage": "Zones de stockage",
+        "highdust": "Poussière en hauteur",
+        "sanitary": "Sanitaires",
+        "production": "Lignes de production",
+        "loading": "Quais de chargement",
+        "decontamination": "Décontamination légère",
+        "resin": "Sol résine / sécurité",
+        "technical": "Locaux techniques"
+      },
+      "windows": {
+        "altbau": "Fenêtres anciennes",
+        "awning": "Auvent",
+        "frames": "Avec cadres",
+        "fugen": "Joints / feuillures",
+        "inside": "Intérieur uniquement",
+        "outside": "Extérieur uniquement",
+        "inside_outside": "Intérieur & extérieur",
+        "jalousie": "Stores / jalousies",
+        "roller": "Volets roulants",
+        "sill": "Appuis de fenêtre",
+        "sprossen": "Fenêtres à croisillons",
+        "skylight": "Puits de lumière",
+        "wintergarden": "Véranda",
+        "rain_protection": "Protection pluie",
+        "film": "Film (pose/dépose)",
+        "outdoor_ads": "Publicité extérieure"
+      },
+      "disinfection": {
+        "surface": "Surfaces",
+        "equipment": "Équipements",
+        "vehicle": "Véhicules",
+        "sanitary": "Sanitaires",
+        "ulv": "ULV / brumisation",
+        "touchpoints": "Points de contact",
+        "frontdesk": "Accueil / zone clients"
+      },
+      "carpet": {
+        "livingroom": "Tapis salon",
+        "runner": "Couloir / runner",
+        "stairs": "Escaliers",
+        "office": "Tapis de bureau",
+        "bauarbeiten": "Après travaux",
+        "blood": "Sang",
+        "erbrochenes": "Vomissures",
+        "flecken": "Taches",
+        "laufspuren": "Traces de passage",
+        "move": "Déménagement",
+        "redwine": "Vin rouge",
+        "urine": "Urine",
+        "waterdamage": "Dégâts des eaux",
+        "odor": "Traitement des odeurs",
+        "protector": "Traitement protecteur",
+        "fastdry": "Séchage rapide"
+      },
+      "spring": {
+        "bathroom": "Salle de bain / sanitaires",
+        "armaturen": "Robinetterie",
+        "bathtub": "Baignoire",
+        "shower": "Douche",
+        "tiles": "Carrelage / joints",
+        "sink": "Lavabo",
+        "wc": "WC",
+        "kitchen": "Cuisine",
+        "countertop": "Plan de travail",
+        "oven": "Four",
+        "hood": "Hotte",
+        "dishes": "Vaisselle",
+        "fridge": "Réfrigérateur",
+        "cooktop": "Plaques de cuisson",
+        "machines": "Appareils de cuisine",
+        "microwave": "Micro-ondes",
+        "drawers": "Tiroirs",
+        "sinkarea": "Zone d'évier",
+        "dusting": "Dépoussiérage",
+        "furniture": "Mobilier / surfaces",
+        "tables": "Tables / chaises",
+        "closet_outside": "Placards extérieurs",
+        "closet_inside": "Placards intérieurs",
+        "bed": "Cadre de lit",
+        "nightstand": "Table de chevet",
+        "pictures": "Cadres / tableaux",
+        "lamps": "Lampes",
+        "tv": "TV / hi-fi",
+        "windowsills": "Appuis de fenêtre",
+        "switches": "Interrupteurs",
+        "sockets": "Prises",
+        "heating": "Chauffage",
+        "cobwebs": "Toiles d’araignée",
+        "floors": "Nettoyage des sols",
+        "baseboards": "Plinthes",
+        "carpet": "Aspiration tapis",
+        "couch": "Aspiration canapé",
+        "doors": "Portes",
+        "vent": "Ventilation",
+        "balcony": "Balcon",
+        "cellar": "Cave",
+        "garage": "Garage",
+        "wine": "Cave à vin",
+        "library": "Bibliothèque / rangement"
+      },
+      "final": {
+        "balcony": "Balcon",
+        "basenrein": "Balayage complet",
+        "bathroom": "Salle de bain / sanitaires",
+        "cellar": "Cave",
+        "floors": "Nettoyage des sols",
+        "kitchen": "Cuisine",
+        "tenant_change": "Changement de locataire",
+        "handover": "Assistance remise des clés",
+        "closet_inside": "Placards intérieurs",
+        "closet_outside": "Placards extérieurs",
+        "doors": "Portes",
+        "paint": "Retouches peinture",
+        "waste": "Évacuation cartons/déchets",
+        "metal": "Polissage métallique"
+      },
+      "cluttered": {
+        "balcony": "Balcon",
+        "bathroom": "Salle de bain / sanitaires",
+        "cleanout": "Débarras",
+        "desinfection": "Désinfection",
+        "disposal": "Évacuation",
+        "feces": "Déjections",
+        "keller": "Cave",
+        "kitchen": "Cuisine",
+        "furniture": "Mobilier / surfaces",
+        "inventory": "Inventaire",
+        "recycling": "Coordination déchetterie",
+        "odor": "Traitement des odeurs"
+      },
+      "default": {
+        "floors": "Sols",
+        "windows": "Fenêtres",
+        "sanitary": "Sanitaires"
+      }
+    },
+    "upholstery": {
+      "items": {
+        "sofa_two": "Canapé 2 places",
+        "sofa_three": "Canapé 3 places",
+        "corner_small": "Canapé d'angle (petit)",
+        "corner_large": "Canapé d'angle (grand)",
+        "armchair": "Fauteuil",
+        "stool": "Tabouret",
+        "chair_with_back": "Chaise avec dossier",
+        "chair_without_back": "Chaise sans dossier",
+        "custom_couch": "Canapé sur mesure"
+      },
+      "addons": {
+        "anti_dust": "Anti-acariens",
+        "leather": "Cuir & similicuir",
+        "decor_cushions": "Coussins décoratifs"
+      }
     }
   },
   "bookingList": {
@@ -806,10 +1354,13 @@
       "services": "Services",
       "pricing": "Tarifs",
       "blog": "Guides & actus",
+      "faq": "FAQ",
       "community": "Community-Richtlinien",
       "imprint": "Impressum",
       "privacy": "Confidentialité",
-      "terms": "CGV"
+      "terms": "CGV",
+      "withdrawal": "Droit de rétractation",
+      "liability": "Assurance responsabilité"
     },
     "contact": {
       "address": "Karl-Marx-Allee 92, 10243 Berlin",
@@ -817,6 +1368,24 @@
       "email": "support@saubio.de"
     },
     "copyright": "© {{year}} Saubio · Tous droits réservés"
+  },
+  "cookie": {
+    "title": "Ce site utilise des cookies.",
+    "body": "Nous utilisons des cookies strictement nécessaires au fonctionnement technique de la plateforme. Avec votre accord, nous utilisons aussi des cookies pour mémoriser vos préférences, analyser les performances, intégrer du contenu externe et afficher de la publicité personnalisée.",
+    "consent": "En cliquant sur « OK », vous acceptez l'utilisation de cookies pour les préférences, les statistiques et le marketing et autorisez le partage de certaines données avec des prestataires externes, y compris hors UE.",
+    "decline": "Sans consentement, nous nous limitons aux cookies strictement nécessaires.",
+    "more": "Plus d’informations et toutes les options se trouvent dans « Paramètres » et dans notre politique de confidentialité.",
+    "labels": {
+      "preferences": "Préférences",
+      "stats": "Statistiques",
+      "marketing": "Marketing"
+    },
+    "buttons": {
+      "accept": "OK",
+      "essential": "Cookies nécessaires seulement",
+      "settings": "Paramètres",
+      "save": "Enregistrer"
+    }
   },
   "language": {
     "label": "Changer de langue",
@@ -826,47 +1395,24 @@
   },
   "sidebar": {
     "client": {
-      "dashboard": "Tableau de bord",
-      "bookings": "Réservations",
-      "new": "Nouvelle demande",
-      "notifications": "Notifications",
-      "support": "Support",
-      "profile": "Profil"
+      "mandates": "Mandats SEPA"
     },
     "provider": {
       "dashboard": "Tableau de bord",
-      "missions": "Demandes & missions",
+      "missions": "Missions",
       "profileSection": "Profil & identité",
       "profilePublic": "Profil public",
-      "profileAddress": "Adresses",
-      "profileAreas": "Zones d’intervention",
-      "profileIdentity": "Documents d’identité",
-      "earningsSection": "Revenus & tarifs",
-      "earningsOverview": "Mes revenus",
-      "earningsPricing": "Tarifs horaires",
-      "earningsInvoices": "Factures & versements",
-      "supportSection": "Aide & ressources",
+      "profileAddress": "Adresse & zone d'intervention",
+      "earningsPricing": "Tarifs & prix",
+      "servicesSection": "Services proposés",
+      "earningsSection": "Paiements & documents",
+      "earningsOverview": "Aperçu des revenus",
+      "earningsInvoices": "Factures & documents",
+      "supportSection": "Support & onboarding",
       "supportLibrary": "Centre de ressources",
-      "supportChecklist": "Checklist d’activation",
-      "documentsShortcut": "Mes documents",
-      "pricingShortcut": "Mes tarifs",
-      "invoicesShortcut": "Mes factures",
-      "zonesShortcut": "Mes zones",
-      "availabilitySection": "Disponibilités",
-      "availabilitySchedule": "Gérer mes créneaux",
-      "availabilityTimeOff": "Déclarer une absence",
-      "statsSection": "Statistiques",
-      "statsReliability": "Fiabilité & statut",
-      "statsReviews": "Avis clients"
-    },
-    "admin": {
-      "dashboard": "Tableau de bord",
-      "users": "Utilisateurs",
-      "providers": "Demandes prestataires",
-      "bookings": "Réservations",
-      "support": "Support",
-      "operations": "Opérations",
-      "tickets": "Tickets"
+      "supportChecklist": "Checklist d'onboarding",
+      "availabilitySection": "Disponibilités & planning",
+      "statsSection": "Statistiques & avis"
     }
   },
   "clientDashboard": {
@@ -1249,6 +1795,106 @@
       "documentsLabel": "{{count}} document(s) envoyés",
       "noDocuments": "Aucun document envoyé pour le moment",
       "cta": "Gérer mes documents"
+    },
+    "payout": {
+      "requiredTitle": "Activez vos paiements",
+      "requiredDescription": "Ajoutez vos coordonnées bancaires pour recevoir vos missions. Ce processus sécurisé est géré par Mollie.",
+      "reviewTitle": "Vérification en cours",
+      "reviewDescription": "Vos informations bancaires sont en cours d’analyse chez Mollie. Vous pourrez rouvrir le portail si nécessaire.",
+      "rejectedTitle": "Paiement non validé",
+      "rejectedDescription": "Certaines informations doivent être corrigées. Relancez le portail Mollie pour finaliser l’activation.",
+      "readyTitle": "Paiements activés",
+      "readyDescription": "Vos coordonnées sont validées. Vous recevrez automatiquement vos versements après chaque mission.",
+      "method": "Méthode",
+      "bank": "Virement bancaire",
+      "card": "Carte bancaire",
+      "last4": "Derniers chiffres",
+      "status": "Statut",
+      "statusLabel": {
+        "pending": "À compléter",
+        "in_review": "Vérification en cours",
+        "verified": "Vérifié",
+        "rejected": "Rejeté"
+      },
+      "statusHint": {
+        "pending": "Ajoutez vos coordonnées bancaires pour lancer la vérification.",
+        "in_review": "Mollie analyse vos informations. Cette étape peut prendre quelques minutes.",
+        "rejected": "Les informations ont été refusées. Rouvrez le portail pour corriger les champs demandés.",
+        "verified": "Vos paiements sont prêts."
+      },
+      "cta": "Compléter mes informations de paiement",
+      "opening": "Ouverture du portail…",
+      "error": "Impossible de créer le lien d’onboarding pour le moment."
+    }
+  },
+  "providerServicesPage": {
+    "title": "Services proposés",
+    "subtitle": "Sélectionnez les types de prestations que vous offrez afin de recevoir des missions adaptées.",
+    "success": "Votre sélection a été enregistrée.",
+    "additionalInfo": "Les client·e·s peuvent ajouter des souhaits supplémentaires dans le champ libre. Si vous pouvez les réaliser, vous pouvez accepter la mission correspondante.",
+    "selectionHint": "Conservez au moins un service sélectionné pour recevoir des demandes pertinentes.",
+    "save": "Enregistrer la sélection",
+    "saving": "Enregistrement…",
+    "filterLabel": "Filtrer les services",
+    "filterPlaceholder": "Rechercher par nom…",
+    "emptyFiltered": "Aucun service ne correspond à votre recherche.",
+    "selectAll": "Tout sélectionner",
+    "unselectAll": "Tout désélectionner"
+  },
+  "providersLanding": {
+    "hero": {
+      "eyebrow": "Travaillez avec flexibilité grâce à Saubio",
+      "title": "Rejoignez notre réseau de prestataires certifiés",
+      "description": "Saubio met en relation des pros expérimentés avec des clients fiables. Nous gérons marketing, facturation et support pour que vous puissiez vous concentrer sur vos missions.",
+      "primaryCta": "S’inscrire comme prestataire",
+      "secondaryCta": "En savoir plus",
+      "figureAlt": "Équipe de prestataires Saubio",
+      "caption": "À vos côtés avec des pros vérifiés partout en Allemagne"
+    },
+    "perks": {
+      "planning": {
+        "title": "Missions planifiables",
+        "description": "Choisissez les quartiers et horaires qui vous conviennent – nous vous suggérons les demandes correspondantes en temps réel."
+      },
+      "payments": {
+        "title": "Rémunération équitable",
+        "description": "Tarifs nets transparents à l’heure, paiements ponctuels et bonus pour vos clients fidèles."
+      },
+      "insurance": {
+        "title": "Assuré & accompagné",
+        "description": "Protection RC pro, support réactif et outils digitaux pour vos documents, factures et planning."
+      },
+      "sustainability": {
+        "title": "Missions responsables",
+        "description": "Saubio collabore avec des clients attachés aux partenariats durables et aux produits éco certifiés."
+      }
+    },
+    "benefits": {
+      "heading": "Avantages pour les partenaires",
+      "title": "Pourquoi Saubio ?",
+      "description": "Nous combinons accompagnement humain et outils digitaux pour organiser vos missions, recueillir des avis et sécuriser une rémunération juste."
+    },
+    "steps": {
+      "heading": "Prêt·e en trois étapes",
+      "title": "Comment se passe l’onboarding",
+      "profile": {
+        "label": "1. Mini-profil",
+        "body": "Indiquez si vous démarrez seul·e ou en petite équipe. Nous vérifions vos infos en moins de 24h."
+      },
+      "onboarding": {
+        "label": "2. Appel d’onboarding",
+        "body": "Nous passons en revue vos disponibilités, zones d’intervention et l’app Saubio. Vous recevez l’accès au portail partenaire."
+      },
+      "firstMission": {
+        "label": "3. Première mission",
+        "body": "Choisissez les missions adaptées ou laissez le matching agir. Confirmez vos interventions en un clic."
+      }
+    },
+    "final": {
+      "heading": "Prêt·e pour de nouvelles missions ?",
+      "title": "Devenez prestataire Saubio dès maintenant",
+      "description": "Inscrivez-vous gratuitement, complétez votre profil et recevez vos premières demandes vérifiées. Notre équipe vous accompagne du premier appel jusqu’aux clients réguliers.",
+      "secondaryCta": "Plus d’infos sur l’onboarding"
     }
   },
   "providerAvailabilityPage": {
@@ -1433,11 +2079,6 @@
     },
     "noIncidents": "Aucun incident présentement.",
     "noServices": "Pas de service enregistré."
-  },
-  "sidebar": {
-    "client": {
-      "mandates": "Mandats SEPA"
-    }
   },
   "clientMandates": {
     "title": "Mandats bancaires & historique SEPA",

@@ -5,12 +5,10 @@ import {
   CircleUser,
   Wallet,
   LifeBuoy,
-  MapPin,
-  IdCard,
   Coins,
-  ReceiptText,
   CalendarClock,
   LineChart,
+  Sparkles,
 } from 'lucide-react';
 
 export const providerSidebarItems: SidebarItem[] = [
@@ -25,27 +23,29 @@ export const providerSidebarItems: SidebarItem[] = [
     icon: <BriefcaseBusiness className="h-5 w-5" />,
   },
   {
-    href: '/prestataire/profile',
+    href: '/prestataire/profile/identity',
     labelKey: 'sidebar.provider.profileSection',
     icon: <CircleUser className="h-5 w-5" />,
     children: [
       {
-        href: '/prestataire/profile',
+        href: '/prestataire/profile/identity',
         labelKey: 'sidebar.provider.profilePublic',
       },
       {
-        href: '/prestataire/profile#address',
+        href: '/prestataire/profile/address',
         labelKey: 'sidebar.provider.profileAddress',
       },
-      {
-        href: '/prestataire/profile#service-areas',
-        labelKey: 'sidebar.provider.profileAreas',
-      },
-      {
-        href: '/prestataire/onboarding/identity',
-        labelKey: 'sidebar.provider.profileIdentity',
-      },
     ],
+  },
+  {
+    href: '/prestataire/profile/pricing',
+    labelKey: 'sidebar.provider.earningsPricing',
+    icon: <Coins className="h-5 w-5" />,
+  },
+  {
+    href: '/prestataire/profile/services',
+    labelKey: 'sidebar.provider.servicesSection',
+    icon: <Sparkles className="h-5 w-5" />,
   },
   {
     href: '/prestataire/revenus',
@@ -57,11 +57,7 @@ export const providerSidebarItems: SidebarItem[] = [
         labelKey: 'sidebar.provider.earningsOverview',
       },
       {
-        href: '/prestataire/profile#pricing',
-        labelKey: 'sidebar.provider.earningsPricing',
-      },
-      {
-        href: '/prestataire/revenus#invoices',
+        href: '/prestataire/revenus/documents',
         labelKey: 'sidebar.provider.earningsInvoices',
       },
     ],
@@ -82,53 +78,13 @@ export const providerSidebarItems: SidebarItem[] = [
     ],
   },
   {
-    href: '/prestataire/onboarding/identity',
-    labelKey: 'sidebar.provider.documentsShortcut',
-    icon: <IdCard className="h-5 w-5" />,
-  },
-  {
     href: '/prestataire/disponibilites',
     labelKey: 'sidebar.provider.availabilitySection',
     icon: <CalendarClock className="h-5 w-5" />,
-    children: [
-      {
-        href: '/prestataire/disponibilites',
-        labelKey: 'sidebar.provider.availabilitySchedule',
-      },
-      {
-        href: '/prestataire/disponibilites#time-off',
-        labelKey: 'sidebar.provider.availabilityTimeOff',
-      },
-    ],
   },
   {
     href: '/prestataire/statistiques',
     labelKey: 'sidebar.provider.statsSection',
     icon: <LineChart className="h-5 w-5" />,
-    children: [
-      {
-        href: '/prestataire/statistiques',
-        labelKey: 'sidebar.provider.statsReliability',
-      },
-      {
-        href: '/prestataire/statistiques#reviews',
-        labelKey: 'sidebar.provider.statsReviews',
-      },
-    ],
-  },
-  {
-    href: '/prestataire/profile#pricing',
-    labelKey: 'sidebar.provider.pricingShortcut',
-    icon: <Coins className="h-5 w-5" />,
-  },
-  {
-    href: '/prestataire/revenus#invoices',
-    labelKey: 'sidebar.provider.invoicesShortcut',
-    icon: <ReceiptText className="h-5 w-5" />,
-  },
-  {
-    href: '/prestataire/profile#service-areas',
-    labelKey: 'sidebar.provider.zonesShortcut',
-    icon: <MapPin className="h-5 w-5" />,
   },
 ];

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Suspense, useMemo } from 'react';
+import { Suspense, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,7 @@ import {
 } from '@saubio/utils';
 import { ErrorState } from '../../../../components/feedback/ErrorState';
 import { LoadingIndicator, Pill, SurfaceCard } from '@saubio/ui';
+import { clearBookingPlannerState } from '../../../utils/bookingPlannerStorage';
 
 function CheckoutPaymentPageContent() {
   const searchParams = useSearchParams();
@@ -21,6 +22,10 @@ function CheckoutPaymentPageContent() {
   const router = useRouter();
   const { t } = useTranslation();
   const session = useSession();
+
+  useEffect(() => {
+    clearBookingPlannerState();
+  }, []);
 
   const bookingQuery = useQuery({
     ...bookingDetailQueryOptions(bookingId ?? ''),

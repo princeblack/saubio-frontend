@@ -20,6 +20,7 @@ import { SiteHeader } from '../../../../components/layout/SiteHeader';
 import { SiteFooter } from '../../../../components/layout/SiteFooter';
 import { CountrySelect } from '../../../../components/forms/CountrySelect';
 import { countries } from '@saubio/utils';
+import { FlowStepper } from '../../../../components/common/FlowStepper';
 
 type WizardStep = 'account' | 'identity' | 'address' | 'phone' | 'success';
 
@@ -93,11 +94,15 @@ function ProviderRegisterPageContent() {
     setPhoneMessage(null);
   }, [phoneForm.dialCode, phoneForm.phoneNumber]);
 
-  const progress = useMemo(() => {
-    const index = steps.findIndex((step) => step.id === currentStep);
-    const ratio = index / (steps.length - 1);
-    return Math.max(0, Math.min(100, Math.round(ratio * 100)));
-  }, [currentStep]);
+  const localizedSteps = useMemo(
+    () =>
+      steps.map((step) => ({
+        id: step.id,
+        label: t(`providerRegister.steps.${step.id}.title`, step.title),
+        description: t(`providerRegister.steps.${step.id}.description`, step.description),
+      })),
+    [t]
+  );
 
   const resolveNextStep = () => {
     const status = onboardingStatusQuery.data;
@@ -641,39 +646,14 @@ function ProviderRegisterPageContent() {
       <SiteHeader />
       <section className="bg-saubio-mist/60 py-16">
         <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6">
-          <div>
+          <div className="space-y-4">
             <p className="text-xs font-semibold uppercase tracking-[0.4em] text-saubio-slate/60">
               {t('providerRegister.progress.title', 'Votre progression')}
             </p>
-            <div className="mt-3 flex items-center justify-between">
-              <p className="text-xl font-semibold text-saubio-forest">
-                {t('providerRegister.progress.subtitle', 'Devenir prestataire')}
-              </p>
-              <span className="text-sm font-semibold text-saubio-forest">{progress}%</span>
-            </div>
-            <div className="mt-2 h-2 rounded-full bg-white/60">
-              <div
-                className="h-2 rounded-full bg-saubio-forest transition-all"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            <ul className="mt-4 grid gap-3 text-xs uppercase tracking-[0.25em] text-saubio-slate/50 sm:grid-cols-5">
-              {steps.map((step) => {
-                const index = steps.findIndex((item) => item.id === currentStep);
-                const stepIndex = steps.findIndex((item) => item.id === step.id);
-                const done = stepIndex < index || currentStep === 'success';
-                return (
-                  <li
-                    key={step.id}
-                    className={`rounded-full px-3 py-1 text-center ${
-                      done ? 'bg-saubio-forest text-white' : 'bg-white/80 text-saubio-slate/50'
-                    }`}
-                  >
-                    {step.title}
-                  </li>
-                );
-              })}
-            </ul>
+            <p className="text-xl font-semibold text-saubio-forest">
+              {t('providerRegister.progress.subtitle', 'Devenir prestataire')}
+            </p>
+            <FlowStepper steps={localizedSteps} activeStepId={currentStep} />
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">

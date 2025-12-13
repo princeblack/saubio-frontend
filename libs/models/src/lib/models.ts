@@ -18,7 +18,33 @@ export type ServiceCategory =
   | 'industrial'
   | 'windows'
   | 'disinfection'
-  | 'eco_plus';
+  | 'eco_plus'
+  | 'carpet'
+  | 'upholstery'
+  | 'spring'
+  | 'final'
+  | 'cluttered'
+  | 'construction'
+  | 'move_out'
+  | 'pigeon_cleanup'
+  | 'restaurant'
+  | 'heavy_dirty'
+  | 'carpet_laundry'
+  | 'wintergarden'
+  | 'nicotine_removal'
+  | 'fire_damage'
+  | 'clearout'
+  | 'wood_terrace'
+  | 'water_damage'
+  | 'hoarder'
+  | 'deep_disinfection';
+
+export interface ProviderServiceType {
+  id: ServiceCategory;
+  title: string;
+  description: string;
+  includedOptions: string[];
+}
 
 export type BookingMode = 'manual' | 'smart_match';
 

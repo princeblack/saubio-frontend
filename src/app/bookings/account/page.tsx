@@ -16,6 +16,7 @@ import {
 } from '@saubio/utils';
 import { LoadingIndicator, Pill, SurfaceCard } from '@saubio/ui';
 import { ErrorState } from '../../../components/feedback/ErrorState';
+import { clearBookingPlannerState } from '../../../utils/bookingPlannerStorage';
 
 type CheckoutSummary = {
   bookingId?: string;
@@ -121,6 +122,12 @@ function BookingAccountPageContent() {
   }, [bookingId, guestToken]);
 
   useEffect(() => {
+    if (summary.bookingId) {
+      clearBookingPlannerState();
+    }
+  }, [summary.bookingId]);
+
+  useEffect(() => {
     if (!session.user || !bookingId) {
       return;
     }
@@ -218,6 +225,7 @@ function BookingAccountPageContent() {
     }
     createBookingMutation.mutate(payloadFromPlanner, {
       onSuccess: (data) => {
+        clearBookingPlannerState();
         router.push(`/client/checkout/payment?bookingId=${data.id}`);
       },
       onError: (error) => {

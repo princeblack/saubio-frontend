@@ -67,6 +67,11 @@ export function SiteFooter() {
                 {t('footer.links.blog')}
               </Link>
             </li>
+            <li>
+              <Link href="/faq" className="hover:text-white">
+                {t('footer.links.faq')}
+              </Link>
+            </li>
           </ul>
         </div>
         <div className="space-y-3">
@@ -92,6 +97,16 @@ export function SiteFooter() {
             <li>
               <Link href="/agb" className="hover:text-white">
                 {t('footer.links.terms')}
+              </Link>
+            </li>
+            <li>
+              <Link href="/widerrufsbelehrung" className="hover:text-white">
+                {t('footer.links.withdrawal')}
+              </Link>
+            </li>
+            <li>
+              <Link href="/haftpflichtversicherung" className="hover:text-white">
+                {t('footer.links.liability')}
               </Link>
             </li>
           </ul>

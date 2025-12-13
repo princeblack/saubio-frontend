@@ -12,6 +12,7 @@ import type {
   ProfileAuditEntry,
   ProfileSummary,
   ProviderProfile,
+  ProviderServiceType,
   ProviderServiceZone,
   ServiceCategory,
   SupportCategory,
@@ -185,6 +186,14 @@ export interface PriceEstimate {
   };
 }
 
+export interface PostalCodeLookupResponse {
+  postalCode: string;
+  city: string;
+  area?: string;
+  state?: string;
+  normalizedCity: string;
+}
+
 export interface SupportTicketFilters {
   status?: SupportStatus;
   priority?: SupportPriority;
@@ -312,6 +321,20 @@ export interface ProviderDirectoryItem {
   yearsExperience?: number;
   bio?: string;
   photoUrl?: string;
+  gender?: string | null;
+}
+
+export interface ProviderReviewSummary {
+  id: string;
+  authorFirstName: string;
+  comment?: string;
+  score: number;
+  createdAt: string;
+}
+
+export interface ProviderDirectoryDetails extends ProviderDirectoryItem {
+  verified?: boolean;
+  reviews: ProviderReviewSummary[];
 }
 
 export interface ProviderDashboardMissionSummary {
@@ -406,6 +429,11 @@ export interface ProviderDashboardResponse {
   quality: ProviderDashboardQuality;
   payments: ProviderDashboardPaymentsSummary;
   resources: ProviderResourceItem[];
+}
+
+export interface ProviderServiceCatalogResponse {
+  serviceTypes: ProviderServiceType[];
+  selected: ServiceCategory[];
 }
 
 export interface UpdateProviderProfilePayload {
@@ -537,9 +565,12 @@ export interface ProviderOnboardingTask {
     | 'account'
     | 'identity'
     | 'address'
+    | 'service_areas'
     | 'phone'
     | 'profile'
     | 'pricing'
+    | 'availability'
+    | 'schedule'
     | 'payments'
     | 'id_check'
     | 'signup_fee'

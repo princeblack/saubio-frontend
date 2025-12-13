@@ -72,7 +72,7 @@ export default function HomePage() {
         <BenefitsSection />
         <ServiceGrid />
         <MatchingModes />
-        {/* <Testimonials /> */}
+        <Testimonials />
         {/* <CitiesSection /> */}
         {/* <FinalCta /> */}
       </main>

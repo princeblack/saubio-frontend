@@ -45,16 +45,46 @@
     "mapText": "Saubio coverage map",
     "link": "All cities",
     "markers": [
-      { "top": "120", "left": "160" },
-      { "top": "90", "left": "200" },
-      { "top": "150", "left": "210" },
-      { "top": "180", "left": "140" },
-      { "top": "130", "left": "110" },
-      { "top": "200", "left": "190" },
-      { "top": "230", "left": "170" },
-      { "top": "95", "left": "150" },
-      { "top": "210", "left": "120" },
-      { "top": "165", "left": "250" }
+      {
+        "top": "120",
+        "left": "160"
+      },
+      {
+        "top": "90",
+        "left": "200"
+      },
+      {
+        "top": "150",
+        "left": "210"
+      },
+      {
+        "top": "180",
+        "left": "140"
+      },
+      {
+        "top": "130",
+        "left": "110"
+      },
+      {
+        "top": "200",
+        "left": "190"
+      },
+      {
+        "top": "230",
+        "left": "170"
+      },
+      {
+        "top": "95",
+        "left": "150"
+      },
+      {
+        "top": "210",
+        "left": "120"
+      },
+      {
+        "top": "165",
+        "left": "250"
+      }
     ],
     "headingAll": "Saubio",
     "allTitle": "All available cities",
@@ -193,6 +223,33 @@
       "cta": "Sign out"
     }
   },
+  "selectProvider": {
+    "title": "Choose your provider",
+    "subtitle": "Compare available professionals for your time slot and pick the one that matches your expectations.",
+    "list": {
+      "empty": "No provider matches your filters right now. Adjust your criteria or contact our team."
+    },
+    "card": {
+      "viewMore": "View more",
+      "ratingCount": "({{count}} reviews)",
+      "missionsCount": "{{count}} jobs",
+      "rateLabel": "Hourly rate",
+      "eco": "Eco option",
+      "animals": "Pets welcome",
+      "noCity": "Area not specified",
+      "defaultBio": "Experienced provider covering several districts.",
+      "select": "Choose this provider"
+    },
+    "details": {
+      "verified": "ID verified",
+      "about": "About",
+      "reviews": "Client reviews",
+      "noReviews": "No review available yet.",
+      "noReviewText": "No comment provided.",
+      "choose": "Choose this provider",
+      "close": "Close"
+    }
+  },
   "providerRegister": {
     "title": "Register as a Saubio provider",
     "subtitle": "Tell us about your activity. Our ops team validates freelancers and companies within 48h.",
@@ -320,6 +377,497 @@
       "eco": "Eco option",
       "tax": "VAT (19%)",
       "total": "Estimated total"
+    }
+  },
+  "bookingPlanner": {
+    "services": {
+      "residential": {
+        "label": "Residential cleaning",
+        "description": "Recurring or one-off cleaning for flats and houses.",
+        "included": {
+          "0": "Vacuum and mop floors",
+          "1": "Dust all surfaces",
+          "2": "Clean bathrooms and toilets",
+          "3": "Care for kitchen and worktops",
+          "4": "Empty bins"
+        }
+      },
+      "office": {
+        "label": "Office cleaning",
+        "description": "Cleaning offices, practices or co-working areas outside opening hours.",
+        "included": {
+          "0": "Clean desks and workstations",
+          "1": "Sanitise washrooms",
+          "2": "Prepare meeting rooms",
+          "3": "Refresh kitchenettes",
+          "4": "Empty waste bins"
+        }
+      },
+      "industrial": {
+        "label": "Industrial deep cleaning",
+        "description": "Intensive servicing of production or storage areas with demanding floors.",
+        "included": {
+          "0": "Machine scrub hard floors",
+          "1": "Dust work areas and shelving",
+          "2": "Clean sanitary containers",
+          "3": "Organise material stations",
+          "4": "Dispose of waste per guidelines"
+        }
+      },
+      "windows": {
+        "label": "Window & glass cleaning",
+        "description": "Professional cleaning of window panes, frames and reachable glass surfaces.",
+        "included": {
+          "0": "Clean inside and outside panes",
+          "1": "Wipe frames and seals",
+          "2": "Polish mirrors and glass partitions",
+          "3": "Streak-free shopfronts"
+        }
+      },
+      "disinfection": {
+        "label": "Disinfection & hygiene",
+        "description": "Targeted cleaning with certified agents for high-traffic areas.",
+        "included": {
+          "0": "Disinfect touch points",
+          "1": "Sanitary areas with hygiene concepts",
+          "2": "Deep clean kitchens & break rooms",
+          "3": "Replenish disinfectant supplies"
+        }
+      },
+      "eco_plus": {
+        "label": "Eco Plus",
+        "description": "Cleanings exclusively with certified sustainable products.",
+        "included": {
+          "0": "Biodegradable detergents",
+          "1": "Use of client materials possible",
+          "2": "Special care for delicate surfaces",
+          "3": "Advice on sustainable routines"
+        }
+      },
+      "carpet": {
+        "label": "Carpet cleaning",
+        "description": "Care and deep cleaning of carpets and runners.",
+        "included": {
+          "0": "Dry foam or spray extraction",
+          "1": "Spot treatment",
+          "2": "Odour removal",
+          "3": "Gentle fibre care"
+        }
+      },
+      "upholstery": {
+        "label": "Upholstery cleaning",
+        "description": "Cleaning sofas, armchairs and chairs with stain treatment.",
+        "included": {
+          "0": "Fabric and leather care",
+          "1": "Special detergents for delicate materials",
+          "2": "Pretreat stubborn stains",
+          "3": "Coordinate drying times"
+        }
+      },
+      "spring": {
+        "label": "Spring / deep cleaning",
+        "description": "Comprehensive full cleaning including hard-to-reach areas.",
+        "included": {
+          "0": "Empty and clean cupboards",
+          "1": "Wipe radiators and skirting",
+          "2": "Clean windows and frames",
+          "3": "Remove limescale and grease"
+        }
+      },
+      "final": {
+        "label": "Final / handover cleaning",
+        "description": "Cleaning after move, renovation or construction including handover check.",
+        "included": {
+          "0": "Remove construction dust",
+          "1": "Thorough surface cleaning",
+          "2": "Descale sanitary fixtures",
+          "3": "Dispose of waste and packaging"
+        }
+      },
+      "cluttered": {
+        "label": "High-effort household",
+        "description": "Support for heavily soiled or unorganised homes.",
+        "included": {
+          "0": "Sorting and prep work",
+          "1": "Additional time buffers",
+          "2": "Coordinate with client",
+          "3": "Dispose of large volumes"
+        }
+      },
+      "construction": {
+        "label": "Post-construction cleaning",
+        "description": "After building or renovation works.",
+        "included": {
+          "0": "Remove fine construction dust",
+          "1": "Eliminate paint and plaster marks",
+          "2": "Clean windows and frames post works",
+          "3": "Intensive floor cleaning",
+          "4": "Dispose of light debris"
+        }
+      },
+      "move_out": {
+        "label": "Move-out cleaning",
+        "description": "Special cleaning as part of a move.",
+        "included": {
+          "0": "Clean empty rooms",
+          "1": "Complete kitchen including appliances",
+          "2": "Deep-clean bathrooms",
+          "3": "Window cleaning",
+          "4": "Handover-ready inspection"
+        }
+      },
+      "pigeon_cleanup": {
+        "label": "Pigeon dropping removal",
+        "description": "Specialist cleaning of contaminated areas.",
+        "included": {
+          "0": "Remove pigeon droppings",
+          "1": "Disinfect affected surfaces",
+          "2": "Pressure washing if needed",
+          "3": "Work with protective gear"
+        }
+      },
+      "restaurant": {
+        "label": "Hospitality cleaning",
+        "description": "For restaurants, cafés and hospitality venues.",
+        "included": {
+          "0": "Professional kitchen cleaning",
+          "1": "Degrease floors and equipment",
+          "2": "Clean sanitary areas",
+          "3": "Clean dining areas and tables",
+          "4": "Polish bar or tap surfaces"
+        }
+      },
+      "heavy_dirty": {
+        "label": "Heavily soiled home",
+        "description": "For homes with heavy grime beyond standard scope.",
+        "included": {
+          "0": "Remove stubborn dirt",
+          "1": "Deep-clean kitchen and bathroom",
+          "2": "Neutralise odours",
+          "3": "Extra time and special products"
+        }
+      },
+      "carpet_laundry": {
+        "label": "Carpet laundry service",
+        "description": "External or specialised carpet service.",
+        "included": {
+          "0": "Collection and delivery if needed",
+          "1": "Industrial deep washing",
+          "2": "Odour removal",
+          "3": "Anti-allergic treatment"
+        }
+      },
+      "wintergarden": {
+        "label": "Winter garden cleaning",
+        "description": "Cleaning conservatories and glazed extensions.",
+        "included": {
+          "0": "Clean glass inside and out",
+          "1": "Clean frames and rails",
+          "2": "Clean flooring inside winter garden",
+          "3": "Remove green deposits"
+        }
+      },
+      "nicotine_removal": {
+        "label": "Nicotine odour removal",
+        "description": "Special service removing nicotine residues.",
+        "included": {
+          "0": "Clean walls and ceilings",
+          "1": "Neutralise odours",
+          "2": "Clean surfaces and curtains",
+          "3": "Intensive treatment of smoking areas"
+        }
+      },
+      "fire_damage": {
+        "label": "Fire damage cleaning",
+        "description": "Cleaning after a fire event.",
+        "included": {
+          "0": "Remove soot",
+          "1": "Neutralise smells",
+          "2": "Clean damaged surfaces",
+          "3": "Dispose of burnt items"
+        }
+      },
+      "clearout": {
+        "label": "Clear-out service",
+        "description": "Removing and disposing of household goods.",
+        "included": {
+          "0": "Remove furniture and items",
+          "1": "Sort and pack belongings",
+          "2": "Organise transport and disposal",
+          "3": "Optional basic cleaning afterwards"
+        }
+      },
+      "wood_terrace": {
+        "label": "Wooden deck cleaning",
+        "description": "Cleaning wooden terraces and similar outdoor areas.",
+        "included": {
+          "0": "Pressure or manual cleaning",
+          "1": "Remove moss and algae",
+          "2": "Clean joints",
+          "3": "Apply care and protective products"
+        }
+      },
+      "water_damage": {
+        "label": "Water damage cleaning",
+        "description": "Intervention after water damage.",
+        "included": {
+          "0": "Initial water removal (if possible)",
+          "1": "Initiate drying measures",
+          "2": "Disinfect affected areas",
+          "3": "Clean impacted surfaces"
+        }
+      },
+      "hoarder": {
+        "label": "Hoarder apartment",
+        "description": "Service for extremely cluttered or neglected homes.",
+        "included": {
+          "0": "Complete clear-out",
+          "1": "Deep clean all rooms",
+          "2": "Remove odours",
+          "3": "Disinfect surfaces"
+        }
+      },
+      "deep_disinfection": {
+        "label": "Disinfecting cleaning",
+        "description": "Focus on intensive disinfection beyond standard hygiene.",
+        "included": {
+          "0": "Virucidal and bactericidal surface disinfection",
+          "1": "Complete disinfection of bathroom and kitchen",
+          "2": "Use medically approved products",
+          "3": "Suitable for sensitive areas"
+        }
+      }
+    },
+    "frequency": {
+      "options": {
+        "once": {
+          "label": "One-time",
+          "tagline": "Full flexibility",
+          "features": {
+            "0": "Single cleaning",
+            "1": "Free choice of slot"
+          }
+        },
+        "weekly": {
+          "label": "Weekly",
+          "tagline": "Up to -7%",
+          "features": {
+            "0": "Dedicated provider",
+            "1": "No minimum contract",
+            "2": "Consistent schedule"
+          }
+        },
+        "biweekly": {
+          "label": "Every 2 weeks",
+          "tagline": "Up to -5%",
+          "features": {
+            "0": "Dedicated provider",
+            "1": "No minimum contract",
+            "2": "Regular visits"
+          }
+        }
+      }
+    },
+    "eco": {
+      "options": {
+        "standard": "Standard products",
+        "bio": "BIO / green products"
+      }
+    },
+    "soilLevels": {
+      "light": "Light",
+      "normal": "Normal",
+      "strong": "Heavy",
+      "extreme": "Extreme"
+    },
+    "wishes": {
+      "residential": {
+        "bathroom": "Bathroom & sanitary",
+        "kitchen": "Kitchen",
+        "oven": "Oven",
+        "fridge": "Fridge",
+        "floors": "Floor cleaning",
+        "balcony": "Balcony",
+        "windows": "Windows",
+        "dusting": "Dusting",
+        "closets": "Closets",
+        "furniture": "Furniture & surfaces",
+        "radiators": "Radiators",
+        "doors": "Doors",
+        "carpet": "Vacuum carpets",
+        "cellar": "Basement",
+        "windows_inout": "Windows inside/outside",
+        "bedding": "Complete bedding change",
+        "appliances": "Clean large appliances"
+      },
+      "office": {
+        "workstations": "Workstations",
+        "meeting": "Meeting rooms",
+        "kitchenette": "Kitchenette",
+        "restrooms": "Restrooms",
+        "windows": "Windows",
+        "floorcare": "Floor care",
+        "reception": "Reception",
+        "trash": "Waste removal",
+        "it": "IT equipment",
+        "breakroom": "Break room",
+        "archiving": "Light archiving"
+      },
+      "industrial": {
+        "machines": "Machines",
+        "storage": "Storage areas",
+        "highdust": "High dust",
+        "sanitary": "Sanitary areas",
+        "production": "Production lines",
+        "loading": "Loading docks",
+        "decontamination": "Light decontamination",
+        "resin": "Resin/safety flooring",
+        "technical": "Technical rooms"
+      },
+      "windows": {
+        "altbau": "Heritage windows",
+        "awning": "Awning",
+        "frames": "With frames",
+        "fugen": "Grooves & seals",
+        "inside": "Inside only",
+        "outside": "Outside only",
+        "inside_outside": "Inside & outside",
+        "jalousie": "Blinds",
+        "roller": "Roller shutters",
+        "sill": "Window sills",
+        "sprossen": "Divided light windows",
+        "skylight": "Skylights",
+        "wintergarden": "Winter garden",
+        "rain_protection": "Protective coating",
+        "film": "Film (install/remove)",
+        "outdoor_ads": "Outdoor advertising"
+      },
+      "disinfection": {
+        "surface": "Surfaces",
+        "equipment": "Equipment",
+        "vehicle": "Vehicles",
+        "sanitary": "Sanitary areas",
+        "ulv": "ULV / misting",
+        "touchpoints": "High-touch points",
+        "frontdesk": "Reception / customer area"
+      },
+      "carpet": {
+        "livingroom": "Living room carpet",
+        "runner": "Runner",
+        "stairs": "Stairs",
+        "office": "Office carpet",
+        "bauarbeiten": "Post-construction",
+        "blood": "Blood",
+        "erbrochenes": "Vomit",
+        "flecken": "Stains",
+        "laufspuren": "Heavy traffic marks",
+        "move": "Move-out",
+        "redwine": "Red wine",
+        "urine": "Urine",
+        "waterdamage": "Water damage",
+        "odor": "Odor removal",
+        "protector": "Protective coating",
+        "fastdry": "Fast drying"
+      },
+      "spring": {
+        "bathroom": "Bathroom & sanitary",
+        "armaturen": "Fixtures",
+        "bathtub": "Bathtub",
+        "shower": "Shower",
+        "tiles": "Tiles & grout",
+        "sink": "Sink",
+        "wc": "WC area",
+        "kitchen": "Kitchen",
+        "countertop": "Countertops",
+        "oven": "Oven",
+        "hood": "Range hood",
+        "dishes": "Dishes",
+        "fridge": "Fridge",
+        "cooktop": "Cooktop",
+        "machines": "Kitchen appliances",
+        "microwave": "Microwave",
+        "drawers": "Drawers",
+        "sinkarea": "Sink area",
+        "dusting": "Dusting",
+        "furniture": "Furniture & surfaces",
+        "tables": "Tables & chairs",
+        "closet_outside": "Closets outside",
+        "closet_inside": "Closets inside",
+        "bed": "Bed frame",
+        "nightstand": "Bedside tables",
+        "pictures": "Pictures & frames",
+        "lamps": "Lamps",
+        "tv": "TV / hi-fi",
+        "windowsills": "Window sills",
+        "switches": "Light switches",
+        "sockets": "Power outlets",
+        "heating": "Heating elements",
+        "cobwebs": "Cobweb removal",
+        "floors": "Floor cleaning",
+        "baseboards": "Baseboards",
+        "carpet": "Vacuum carpets",
+        "couch": "Vacuum couch",
+        "doors": "Doors",
+        "vent": "Ventilation",
+        "balcony": "Balcony",
+        "cellar": "Basement",
+        "garage": "Garage",
+        "wine": "Wine cellar",
+        "library": "Library / organising"
+      },
+      "final": {
+        "balcony": "Balcony",
+        "basenrein": "Broom clean",
+        "bathroom": "Bathroom & sanitary",
+        "cellar": "Basement",
+        "floors": "Floor cleaning",
+        "kitchen": "Kitchen",
+        "tenant_change": "Tenant change",
+        "handover": "Handover support",
+        "closet_inside": "Closets inside",
+        "closet_outside": "Closets outside",
+        "doors": "Doors",
+        "paint": "Small paint touch-ups",
+        "waste": "Box / waste removal",
+        "metal": "Metal polishing"
+      },
+      "cluttered": {
+        "balcony": "Balcony",
+        "bathroom": "Bathroom & sanitary",
+        "cleanout": "Clear-out",
+        "desinfection": "Disinfection",
+        "disposal": "Disposal",
+        "feces": "Feces",
+        "keller": "Basement",
+        "kitchen": "Kitchen",
+        "furniture": "Furniture & surfaces",
+        "inventory": "Inventory / catalog",
+        "recycling": "Coordinate recycling center",
+        "odor": "Odor treatment"
+      },
+      "default": {
+        "floors": "Floors",
+        "windows": "Windows",
+        "sanitary": "Sanitary areas"
+      }
+    },
+    "upholstery": {
+      "items": {
+        "sofa_two": "2-seater sofa",
+        "sofa_three": "3-seater sofa",
+        "corner_small": "Corner sofa (small)",
+        "corner_large": "Corner sofa (large)",
+        "armchair": "Armchair",
+        "stool": "Stool",
+        "chair_with_back": "Chair with backrest",
+        "chair_without_back": "Chair without backrest",
+        "custom_couch": "Custom sofa"
+      },
+      "addons": {
+        "anti_dust": "Anti-mite treatment",
+        "leather": "Leather & faux leather care",
+        "decor_cushions": "Decorative cushions"
+      }
     }
   },
   "bookingList": {
@@ -806,10 +1354,13 @@
       "services": "Services",
       "pricing": "Pricing",
       "blog": "Guides & news",
+      "faq": "FAQ",
       "community": "Community guidelines",
       "imprint": "Imprint",
       "privacy": "Privacy",
-      "terms": "Terms"
+      "terms": "Terms",
+      "withdrawal": "Right of withdrawal",
+      "liability": "Liability insurance"
     },
     "contact": {
       "address": "Karl-Marx-Allee 92, 10243 Berlin",
@@ -817,6 +1368,24 @@
       "email": "support@saubio.de"
     },
     "copyright": "© {{year}} Saubio · All rights reserved"
+  },
+  "cookie": {
+    "title": "This website uses cookies.",
+    "body": "We use cookies that are strictly necessary for the technical operation of our platform. With your consent we also use cookies to store your preferences, analyse performance, embed third-party content and display personalised ads.",
+    "consent": "By clicking “OK” you agree to the use of cookies for preferences, statistics and marketing and allow us to share certain data with external providers, including partners outside the EU.",
+    "decline": "If you do not consent, we will restrict ourselves to the technically necessary cookies only.",
+    "more": "More details and all options can be found under “Settings” and in our privacy policy.",
+    "labels": {
+      "preferences": "Preferences",
+      "stats": "Statistics",
+      "marketing": "Marketing"
+    },
+    "buttons": {
+      "accept": "OK",
+      "essential": "Essential only",
+      "settings": "Settings",
+      "save": "Save selection"
+    }
   },
   "language": {
     "label": "Change language",
@@ -826,47 +1395,24 @@
   },
   "sidebar": {
     "client": {
-      "dashboard": "Dashboard",
-      "bookings": "Bookings",
-      "new": "New booking",
-      "notifications": "Notifications",
-      "support": "Support",
-      "profile": "Profile"
+      "mandates": "SEPA mandates"
     },
     "provider": {
       "dashboard": "Dashboard",
-      "missions": "Requests & jobs",
+      "missions": "Missions",
       "profileSection": "Profile & identity",
-      "profilePublic": "Edit public profile",
-      "profileAddress": "Addresses",
-      "profileAreas": "Service areas",
-      "profileIdentity": "Identity documents",
-      "earningsSection": "Earnings & pricing",
-      "earningsOverview": "Revenue overview",
-      "earningsPricing": "Hourly rates",
-      "earningsInvoices": "Invoices & payouts",
-      "supportSection": "Help & resources",
-      "supportLibrary": "Resource center",
-      "supportChecklist": "Activation checklist",
-      "documentsShortcut": "My documents",
-      "pricingShortcut": "My rates",
-      "invoicesShortcut": "My invoices",
-      "zonesShortcut": "My service areas",
-      "availabilitySection": "Availability",
-      "availabilitySchedule": "Manage availability",
-      "availabilityTimeOff": "Schedule time off",
-      "statsSection": "Statistics",
-      "statsReliability": "Reliability & status",
-      "statsReviews": "Client reviews"
-    },
-    "admin": {
-      "dashboard": "Dashboard",
-      "users": "Users",
-      "providers": "Provider requests",
-      "bookings": "Bookings",
-      "support": "Support",
-      "operations": "Operations",
-      "tickets": "Tickets"
+      "profilePublic": "Public profile",
+      "profileAddress": "Address & service area",
+      "earningsPricing": "Rates & pricing",
+      "servicesSection": "Services offered",
+      "earningsSection": "Payouts & documents",
+      "earningsOverview": "Earnings overview",
+      "earningsInvoices": "Invoices & documents",
+      "supportSection": "Support & onboarding",
+      "supportLibrary": "Resource library",
+      "supportChecklist": "Onboarding checklist",
+      "availabilitySection": "Availability & planning",
+      "statsSection": "Stats & reviews"
     }
   },
   "clientDashboard": {
@@ -1249,6 +1795,106 @@
       "documentsLabel": "{{count}} document(s) sent",
       "noDocuments": "No document submitted yet",
       "cta": "Manage my documents"
+    },
+    "payout": {
+      "requiredTitle": "Activate your payouts",
+      "requiredDescription": "Add your bank details to receive missions. The secure flow is managed by Mollie.",
+      "reviewTitle": "Verification in progress",
+      "reviewDescription": "Mollie is reviewing your payout details. Reopen the portal if adjustments are needed.",
+      "rejectedTitle": "Payout not validated",
+      "rejectedDescription": "Some information has to be corrected. Reopen the Mollie portal to finish the activation.",
+      "readyTitle": "Payouts activated",
+      "readyDescription": "Your payout data is verified. Transfers are triggered automatically after each mission.",
+      "method": "Method",
+      "bank": "Bank transfer",
+      "card": "Card",
+      "last4": "Last digits",
+      "status": "Status",
+      "statusLabel": {
+        "pending": "To be completed",
+        "in_review": "Under review",
+        "verified": "Verified",
+        "rejected": "Rejected"
+      },
+      "statusHint": {
+        "pending": "Add your bank details to start the verification.",
+        "in_review": "Mollie is checking your information. This may take a few minutes.",
+        "rejected": "Details were rejected. Reopen the portal to provide the requested updates.",
+        "verified": "Your payouts are ready."
+      },
+      "cta": "Complete my payout details",
+      "opening": "Opening the portal…",
+      "error": "Unable to create an onboarding link right now."
+    }
+  },
+  "providerServicesPage": {
+    "title": "Services you offer",
+    "subtitle": "Select the service types you currently provide so we can match you with relevant missions.",
+    "success": "Your service selection has been saved.",
+    "additionalInfo": "Customers can add additional wishes via the free-text field. If you can cover those extra tasks, feel free to accept the request.",
+    "selectionHint": "Keep at least one service type selected to receive matching requests.",
+    "save": "Save selection",
+    "saving": "Saving…",
+    "filterLabel": "Filter services",
+    "filterPlaceholder": "Search by name…",
+    "emptyFiltered": "No services match your search.",
+    "selectAll": "Select all services",
+    "unselectAll": "Unselect all"
+  },
+  "providersLanding": {
+    "hero": {
+      "eyebrow": "Flexible work with Saubio",
+      "title": "Join our vetted provider network",
+      "description": "Saubio connects experienced cleaning professionals with reliable clients. We handle marketing, billing and support so you can focus on your missions.",
+      "primaryCta": "Register as a provider",
+      "secondaryCta": "Learn more",
+      "figureAlt": "Saubio provider team",
+      "caption": "Working with trusted pros across Germany"
+    },
+    "perks": {
+      "planning": {
+        "title": "Predictable missions",
+        "description": "Pick the districts and hours that suit you – we show matching requests in real time."
+      },
+      "payments": {
+        "title": "Fair payouts",
+        "description": "Transparent hourly net rates, on-time payouts and loyalty bonuses for recurring clients."
+      },
+      "insurance": {
+        "title": "Insured & supported",
+        "description": "Professional liability coverage, responsive support and digital tools for invoices and planning."
+      },
+      "sustainability": {
+        "title": "Sustainable jobs",
+        "description": "Saubio works with clients who value long-term collaborations and certified eco products."
+      }
+    },
+    "benefits": {
+      "heading": "Benefits for partners",
+      "title": "Why Saubio?",
+      "description": "We combine personal support with smart tools so you can organise missions, collect reviews and secure fair earnings."
+    },
+    "steps": {
+      "heading": "Ready in three steps",
+      "title": "How onboarding works",
+      "profile": {
+        "label": "1. Short profile",
+        "body": "Tell us if you start as an individual or small team. We review your basics within 24h."
+      },
+      "onboarding": {
+        "label": "2. Onboarding call",
+        "body": "We discuss availability, preferred areas and show you the app. You get access to the partner portal."
+      },
+      "firstMission": {
+        "label": "3. First mission",
+        "body": "Pick matching jobs or let smart matching work for you. Confirm missions with one click."
+      }
+    },
+    "final": {
+      "heading": "Ready for new missions?",
+      "title": "Start as a Saubio provider now",
+      "description": "Register for free, set up your profile and receive verified requests. Our team supports you from the first call to recurring clients.",
+      "secondaryCta": "More info about onboarding"
     }
   },
   "providerAvailabilityPage": {
@@ -1455,11 +2101,6 @@
       "empty": "No SEPA event recorded yet."
     },
     "error": "We couldn’t load your mandates or SEPA history."
-  },
-  "sidebar": {
-    "client": {
-      "mandates": "SEPA mandates"
-    }
   },
   "pages": {
     "about": {

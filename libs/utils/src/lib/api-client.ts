@@ -33,6 +33,7 @@ import type {
   ProviderProfile,
   ProviderDirectoryFilters,
   ProviderDirectoryItem,
+  ProviderDirectoryDetails,
   ProviderBookingInvitation,
   ProviderSearchParams,
   ProviderSuggestion,
@@ -79,9 +80,18 @@ import type {
   ListBookingsParams,
   PriceEstimate,
   PriceEstimateParams,
+  ProviderServiceCatalogResponse,
+  ServiceCategory,
+  PostalCodeLookupResponse,
 } from '@saubio/models';
+import { setSession } from './session-store';
+import { forceLogout } from './force-logout';
 
 type FetchFn = typeof fetch;
+
+interface RequestOptions {
+  retryAuth?: boolean;
+}
 
 export interface ApiClientOptions {
   baseUrl?: string;
@@ -117,6 +127,7 @@ interface TokenPersistence {
 let sharedTokens: AuthTokens | undefined;
 const tokenListeners = new Set<TokenListener>();
 let tokenPersistence: TokenPersistence | null = null;
+let refreshPromise: Promise<boolean> | null = null;
 
 const notifyTokenListeners = () => {
   for (const listener of tokenListeners) {
@@ -199,9 +210,13 @@ export class ApiClient {
       throw new Error('Missing refresh token');
     }
 
-    const response = await this.post<AuthResponse>('/auth/refresh', {
-      refreshToken,
-    });
+    const response = await this.post<AuthResponse>(
+      '/auth/refresh',
+      {
+        refreshToken,
+      },
+      { retryAuth: false }
+    );
     this.setTokens(response.tokens);
     return response;
   }
@@ -334,6 +349,10 @@ export class ApiClient {
     const queryString = query.toString();
     const path = queryString ? `/directory/providers?${queryString}` : '/directory/providers';
     return this.get<ProviderDirectoryItem[]>(path);
+  }
+
+  getProviderDirectoryDetails(providerId: string): Promise<ProviderDirectoryDetails> {
+    return this.get<ProviderDirectoryDetails>(`/directory/providers/${providerId}/details`);
   }
 
   listProviderInvitations(): Promise<ProviderBookingInvitation[]> {
@@ -491,6 +510,11 @@ export class ApiClient {
     return this.get<AddressSuggestion[]>(`/geocoding/suggest?${search.toString()}`);
   }
 
+  lookupPostalCode(postalCode: string): Promise<PostalCodeLookupResponse> {
+    const sanitized = postalCode.trim();
+    return this.get<PostalCodeLookupResponse>(`/geo/postal-codes/${encodeURIComponent(sanitized)}`);
+  }
+
   listProviderPayments(): Promise<PaymentRecord[]> {
     return this.get<PaymentRecord[]>('/provider/payments');
   }
@@ -517,6 +541,14 @@ export class ApiClient {
 
   updateProviderProfile(payload: UpdateProviderProfilePayload): Promise<ProviderProfile> {
     return this.put<ProviderProfile>('/provider/profile', payload);
+  }
+
+  getProviderServiceCatalog(): Promise<ProviderServiceCatalogResponse> {
+    return this.get<ProviderServiceCatalogResponse>('/provider/services');
+  }
+
+  updateProviderServiceCatalog(payload: { serviceTypes: ServiceCategory[] }): Promise<ProviderServiceCatalogResponse> {
+    return this.put<ProviderServiceCatalogResponse>('/provider/services', payload);
   }
 
   createProviderOnboarding(payload: CreateProviderOnboardingPayload): Promise<ProviderOnboardingRequest> {
@@ -702,41 +734,62 @@ export class ApiClient {
     return this.patch<ProviderIdentityDocumentSummary>(`/admin/providers/${providerId}/identity`, payload);
   }
 
-  private async get<T>(path: string): Promise<T> {
-    return this.request<T>(path, {
-      method: 'GET',
-    });
+  private async get<T>(path: string, options?: RequestOptions): Promise<T> {
+    return this.request<T>(
+      path,
+      {
+        method: 'GET',
+      },
+      options
+    );
   }
 
-  private async post<T>(path: string, body?: unknown): Promise<T> {
-    return this.request<T>(path, {
-      method: 'POST',
-      body: body ? JSON.stringify(body) : undefined,
-    });
+  private async post<T>(path: string, body?: unknown, options?: RequestOptions): Promise<T> {
+    return this.request<T>(
+      path,
+      {
+        method: 'POST',
+        body: body ? JSON.stringify(body) : undefined,
+      },
+      options
+    );
   }
 
-  private async patch<T>(path: string, body?: unknown): Promise<T> {
-    return this.request<T>(path, {
-      method: 'PATCH',
-      body: body ? JSON.stringify(body) : undefined,
-    });
+  private async patch<T>(path: string, body?: unknown, options?: RequestOptions): Promise<T> {
+    return this.request<T>(
+      path,
+      {
+        method: 'PATCH',
+        body: body ? JSON.stringify(body) : undefined,
+      },
+      options
+    );
   }
 
-  private async put<T>(path: string, body?: unknown): Promise<T> {
-    return this.request<T>(path, {
-      method: 'PUT',
-      body: body ? JSON.stringify(body) : undefined,
-    });
+  private async put<T>(path: string, body?: unknown, options?: RequestOptions): Promise<T> {
+    return this.request<T>(
+      path,
+      {
+        method: 'PUT',
+        body: body ? JSON.stringify(body) : undefined,
+      },
+      options
+    );
   }
 
-  private async delete<T>(path: string, body?: unknown): Promise<T> {
-    return this.request<T>(path, {
-      method: 'DELETE',
-      body: body ? JSON.stringify(body) : undefined,
-    });
+  private async delete<T>(path: string, body?: unknown, options?: RequestOptions): Promise<T> {
+    return this.request<T>(
+      path,
+      {
+        method: 'DELETE',
+        body: body ? JSON.stringify(body) : undefined,
+      },
+      options
+    );
   }
 
-  private async request<T>(path: string, init: RequestInit): Promise<T> {
+  private async request<T>(path: string, init: RequestInit, options: RequestOptions = {}): Promise<T> {
+    const { retryAuth = true } = options;
     const url = joinUrl(this.baseUrl, path);
 
     const headers: Record<string, string> = {
@@ -749,19 +802,37 @@ export class ApiClient {
       headers['Authorization'] = `Bearer ${this.accessToken}`;
     }
 
-    const response = await this.fetchImpl(url, {
-      ...init,
-      headers,
-      credentials: this.includeCredentials ? 'include' : init.credentials,
-    });
+    const response = await this.fetchImpl(
+      url,
+      {
+        ...init,
+        headers,
+        credentials: this.includeCredentials ? 'include' : init.credentials,
+      }
+    );
 
     if (response.status === 204) {
       return undefined as T;
     }
 
-    const contentType = response.headers.get('content-type');
-    const isJson = contentType ? contentType.includes('application/json') : false;
-    const body = isJson ? await response.json() : await response.text();
+    if (response.status === 401) {
+      const hadAuthTokens = Boolean(this.refreshToken);
+      if (retryAuth && (await this.tryRecoverFromUnauthorized())) {
+        return this.request<T>(path, init, { retryAuth: false });
+      }
+      const unauthorizedBody = await this.readBody(response);
+      if (hadAuthTokens) {
+        this.setTokens(undefined);
+        forceLogout();
+      }
+      throw new ApiError(
+        `Request to ${url} failed with status ${response.status}`,
+        response.status,
+        unauthorizedBody
+      );
+    }
+
+    const body = await this.readBody(response);
 
     if (!response.ok) {
       throw new ApiError(
@@ -772,6 +843,44 @@ export class ApiClient {
     }
 
     return body as T;
+  }
+
+  private async tryRecoverFromUnauthorized() {
+    if (!this.refreshToken) {
+      return false;
+    }
+    if (!refreshPromise) {
+      refreshPromise = (async () => {
+        try {
+          const response = await this.refresh();
+          setSession({ user: response.user });
+          return true;
+        } catch (error) {
+          this.setTokens(undefined);
+          return false;
+        } finally {
+          refreshPromise = null;
+        }
+      })();
+    }
+    return refreshPromise;
+  }
+
+  private async readBody(response: Response) {
+    const contentType = response.headers.get('content-type');
+    const isJson = contentType ? contentType.includes('application/json') : false;
+    if (isJson) {
+      try {
+        return await response.json();
+      } catch {
+        return null;
+      }
+    }
+    try {
+      return await response.text();
+    } catch {
+      return null;
+    }
   }
 }
 

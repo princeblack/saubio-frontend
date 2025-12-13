@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   useRequireRole,
@@ -22,7 +23,13 @@ type SlotDraft = {
   isActive: boolean;
 };
 
-const WEEKDAYS = [
+const TIMEZONE_OPTIONS = [
+  { value: 'Europe/Berlin', label: 'Europe/Berlin (Berlin)' },
+  { value: 'Europe/Paris', label: 'Europe/Paris (Paris)' },
+  { value: 'Europe/Madrid', label: 'Europe/Madrid (Madrid)' },
+] as const;
+
+const ORDERED_WEEKDAYS = [
   { value: 1, key: 'monday', fallback: 'Lundi' },
   { value: 2, key: 'tuesday', fallback: 'Mardi' },
   { value: 3, key: 'wednesday', fallback: 'Mercredi' },
@@ -32,11 +39,15 @@ const WEEKDAYS = [
   { value: 0, key: 'sunday', fallback: 'Dimanche' },
 ] as const;
 
-const TIMEZONE_OPTIONS = [
-  { value: 'Europe/Berlin', label: 'Europe/Berlin (Berlin)' },
-  { value: 'Europe/Paris', label: 'Europe/Paris (Paris)' },
-  { value: 'Europe/Madrid', label: 'Europe/Madrid (Madrid)' },
-] as const;
+const HOURS = Array.from({ length: 24 }, (_, index) => index);
+const PIXELS_PER_MINUTE = 0.6;
+
+type SlotComposerState = {
+  startMinutes: number;
+  endMinutes: number;
+  weekdays: number[];
+  sourceSlotId?: string;
+};
 
 const minutesToTime = (minutes: number) => {
   const hours = Math.floor(minutes / 60)
@@ -55,6 +66,18 @@ const timeToMinutes = (value: string) => {
   }
   return parsedHours * 60 + parsedMinutes;
 };
+
+const clampMinutes = (value: number) => Math.min(Math.max(value, 0), 24 * 60);
+const minutesToPosition = (minutes: number) => minutes * PIXELS_PER_MINUTE;
+const CALENDAR_HEIGHT = minutesToPosition(24 * 60);
+
+const orderWeekdays = (weekdays: number[]) => {
+  const lookup = new Set(weekdays);
+  return ORDERED_WEEKDAYS.map((day) => day.value).filter((value) => lookup.has(value));
+};
+
+const WORKDAY_VALUES = ORDERED_WEEKDAYS.filter((day) => day.value >= 1 && day.value <= 5).map((day) => day.value);
+const WEEKEND_VALUES = ORDERED_WEEKDAYS.filter((day) => day.value === 6 || day.value === 0).map((day) => day.value);
 
 const normalizeSlots = (slots: SlotDraft[]) =>
   [...slots]
@@ -145,30 +168,196 @@ export default function ProviderAvailabilityPage() {
     return slotsChanged || timezoneChanged;
   }, [slots, availabilityQuery.data, timezone]);
 
-  const handleSlotChange = (targetId: string, changes: Partial<SlotDraft>) => {
-    setSlots((current) =>
-      current.map((slot) =>
-        slot.id === targetId || slot.tempId === targetId
-          ? {
-              ...slot,
-              ...changes,
+  const matchSlotId = useCallback((slot: SlotDraft, targetId: string) => slot.id === targetId || slot.tempId === targetId, []);
+
+  const [slotComposer, setSlotComposer] = useState<SlotComposerState | null>(null);
+  const removeSlotById = useCallback(
+    (slotId: string) => {
+      setSlots((current) => current.filter((slot) => !matchSlotId(slot, slotId)));
+    },
+    [matchSlotId]
+  );
+
+  const getDefaultComposerEnd = useCallback((value: number) => {
+    const defaultEnd = value + 120;
+    return clampMinutes(defaultEnd);
+  }, []);
+
+  const openComposerForNewRange = useCallback(
+    (weekday: number, startMinutes: number) => {
+      setFormError(null);
+      setSlotComposer({
+        startMinutes: clampMinutes(startMinutes),
+        endMinutes: getDefaultComposerEnd(startMinutes),
+        weekdays: [weekday],
+      });
+    },
+    [getDefaultComposerEnd]
+  );
+
+  const openComposerForSlot = useCallback(
+    (slotId: string) => {
+      const target = slots.find((slot) => matchSlotId(slot, slotId));
+      if (!target) return;
+      setFormError(null);
+      setSlotComposer({
+        startMinutes: target.startMinutes,
+        endMinutes: target.endMinutes,
+        weekdays: [target.weekday],
+        sourceSlotId: target.id ?? target.tempId,
+      });
+    },
+    [slots, matchSlotId]
+  );
+
+  const handleGridClick = useCallback(
+    (weekday: number) => (event: MouseEvent<HTMLDivElement>) => {
+      const bounds = event.currentTarget.getBoundingClientRect();
+      const offsetY = event.clientY - bounds.top;
+      const minutes = clampMinutes(Math.round((offsetY / PIXELS_PER_MINUTE) / 15) * 15);
+      openComposerForNewRange(weekday, minutes);
+    },
+    [openComposerForNewRange]
+  );
+
+  const hasOverlap = useCallback(
+    (weekday: number, start: number, end: number, excludeId?: string) => {
+      return slots.some((slot) => {
+        if (slot.weekday !== weekday || slot.isActive === false) {
+          return false;
+        }
+        if (excludeId && matchSlotId(slot, excludeId)) {
+          return false;
+        }
+        return Math.max(slot.startMinutes, start) < Math.min(slot.endMinutes, end);
+      });
+    },
+    [slots, matchSlotId]
+  );
+
+  const handleComposerWeekdayToggle = useCallback((weekday: number) => {
+    setSlotComposer((current) =>
+      current
+        ? current.sourceSlotId
+          ? { ...current, weekdays: [weekday] }
+          : {
+              ...current,
+              weekdays: orderWeekdays(
+                current.weekdays.includes(weekday)
+                  ? current.weekdays.filter((value) => value !== weekday)
+                  : [...current.weekdays, weekday]
+              ),
             }
-          : slot
-      )
+        : current
     );
+  }, []);
+
+  const handleComposerSelectAll = useCallback((days: number[]) => {
+    setSlotComposer((current) =>
+      current
+        ? current.sourceSlotId
+          ? current
+          : {
+              ...current,
+              weekdays: orderWeekdays([...current.weekdays, ...days]),
+            }
+        : current
+    );
+  }, []);
+
+  const handleComposerTimeChange = useCallback((field: 'startMinutes' | 'endMinutes', value: string) => {
+    const parsed = clampMinutes(timeToMinutes(value));
+    setSlotComposer((current) => (current ? { ...current, [field]: parsed } : current));
+  }, []);
+
+  const handleComposerReset = useCallback(() => {
+    setSlotComposer(null);
+    setFormError(null);
+  }, []);
+
+  const handleComposerSubmit = () => {
+    setFormError(null);
+    if (!slotComposer) return;
+    if (slotComposer.endMinutes <= slotComposer.startMinutes) {
+      setFormError(t('providerAvailabilityPage.validation.invalidRange', 'La fin doit être postérieure au début.'));
+      return;
+    }
+    if (!slotComposer.weekdays.length) {
+      setFormError(t('providerAvailabilityPage.validation.weekdayRequired', 'Sélectionnez au moins un jour.'));
+      return;
+    }
+    if (slotComposer.sourceSlotId) {
+      const targetWeekday = slotComposer.weekdays[0];
+      if (hasOverlap(targetWeekday, slotComposer.startMinutes, slotComposer.endMinutes, slotComposer.sourceSlotId)) {
+        setFormError(t('providerAvailabilityPage.validation.conflict', 'Cette plage chevauche une autre disponibilité.'));
+        return;
+      }
+      setSlots((current) =>
+        current.map((slot) =>
+          matchSlotId(slot, slotComposer.sourceSlotId!)
+            ? {
+                ...slot,
+                weekday: targetWeekday,
+                startMinutes: slotComposer.startMinutes,
+                endMinutes: slotComposer.endMinutes,
+              }
+            : slot
+        )
+      );
+      setSlotComposer(null);
+      return;
+    }
+    const conflictDay = slotComposer.weekdays.find((weekday) =>
+      hasOverlap(weekday, slotComposer.startMinutes, slotComposer.endMinutes)
+    );
+    if (conflictDay !== undefined) {
+      setFormError(t('providerAvailabilityPage.validation.conflict', 'Cette plage chevauche une autre disponibilité.'));
+      return;
+    }
+    const newSlots = slotComposer.weekdays.map((weekday) => ({
+      ...defaultSlotForDay(weekday),
+      startMinutes: slotComposer.startMinutes,
+      endMinutes: slotComposer.endMinutes,
+    }));
+    setSlots((current) => [...current, ...newSlots]);
+    setSlotComposer(null);
   };
 
-  const handleSlotTimeChange = (targetId: string, key: 'startMinutes' | 'endMinutes', value: string) => {
-    handleSlotChange(targetId, { [key]: timeToMinutes(value) });
+  const handleComposerDelete = () => {
+    if (!slotComposer?.sourceSlotId) return;
+    setFormError(null);
+    removeSlotById(slotComposer.sourceSlotId);
+    setSlotComposer(null);
   };
 
-  const handleAddSlot = (weekday: number) => {
-    setSlots((current) => [...current, defaultSlotForDay(weekday)]);
-  };
+  const handleCreateDefaultComposer = useCallback(() => {
+    openComposerForNewRange(ORDERED_WEEKDAYS[0].value, 9 * 60);
+  }, [openComposerForNewRange]);
 
-  const handleRemoveSlot = (targetId: string) => {
-    setSlots((current) => current.filter((slot) => slot.id !== targetId && slot.tempId !== targetId));
-  };
+  const handleToggleSlotActive = useCallback(
+    (slotId: string) => {
+      setSlots((current) =>
+        current.map((slot) =>
+          matchSlotId(slot, slotId)
+            ? {
+                ...slot,
+                isActive: !(slot.isActive ?? true),
+              }
+            : slot
+        )
+      );
+    },
+    [matchSlotId]
+  );
+
+  const handleQuickDeleteSlot = useCallback(
+    (slotId: string) => {
+      setFormError(null);
+      removeSlotById(slotId);
+      setSlotComposer((current) => (current?.sourceSlotId === slotId ? null : current));
+    },
+    [removeSlotById]
+  );
 
   const handleSaveAvailability = () => {
     setFormError(null);
@@ -306,99 +495,312 @@ export default function ProviderAvailabilityPage() {
             </select>
           </div>
 
-          <div className="space-y-5">
-            {WEEKDAYS.map((day) => {
-              const daySlots = slots
-                .filter((slot) => slot.weekday === day.value)
-                .sort((a, b) => a.startMinutes - b.startMinutes);
-              return (
-                <div key={day.value} className="rounded-3xl border border-saubio-mist/60 p-4">
-                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <div className="space-y-6">
+            <div className="rounded-3xl border border-saubio-mist/80 p-4">
+              <div className="flex flex-col gap-4 sm:flex-row">
+                <div className="hidden flex-col pr-4 text-[0.6rem] text-saubio-slate/70 sm:flex">
+                  {HOURS.map((hour) => (
+                    <div
+                      key={`hour-${hour}`}
+                      className="flex items-start border-b border-dashed border-saubio-mist/60"
+                      style={{ height: minutesToPosition(60) }}
+                    >
+                      <span className="-translate-y-2 font-semibold">{hour.toString().padStart(2, '0')}:00</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex flex-1 gap-3 overflow-x-auto">
+                  {ORDERED_WEEKDAYS.map((day) => {
+                    const daySlots = slots
+                      .filter((slot) => slot.weekday === day.value)
+                      .sort((a, b) => a.startMinutes - b.startMinutes);
+                    const isComposerDay = slotComposer?.weekdays?.includes(day.value);
+                    return (
+                      <div key={day.value} className="min-w-[120px] flex-1">
+                        <p className="text-center text-xs font-semibold text-saubio-forest">
+                          {t(`providerAvailabilityPage.weekdays.${day.key}`, day.fallback)}
+                        </p>
+                        <div
+                          className={`relative mt-2 cursor-crosshair overflow-hidden rounded-2xl border ${
+                            isComposerDay ? 'border-saubio-forest shadow-inner shadow-saubio-forest/10' : 'border-saubio-mist'
+                          } bg-white`}
+                          style={{ height: CALENDAR_HEIGHT }}
+                          onClick={handleGridClick(day.value)}
+                        >
+                          <div className="absolute inset-0">
+                            {HOURS.map((hour) => (
+                              <div
+                                key={`line-${day.value}-${hour}`}
+                                className="border-b border-dashed border-saubio-mist/40"
+                                style={{ height: minutesToPosition(60) }}
+                              />
+                            ))}
+                          </div>
+                          {daySlots.length === 0 ? (
+                            <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-[0.65rem] text-saubio-slate/50">
+                              {t('providerAvailabilityPage.schedule.noSlot', 'Aucun créneau défini pour cette journée.')}
+                            </div>
+                          ) : null}
+                          {daySlots.map((slot) => {
+                            const localId = slot.id ?? slot.tempId ?? `${slot.weekday}-${slot.startMinutes}`;
+                            const top = minutesToPosition(slot.startMinutes);
+                            const height = minutesToPosition(slot.endMinutes - slot.startMinutes);
+                            const isInactive = slot.isActive === false;
+                            return (
+                              <div
+                                key={localId}
+                                className={`absolute inset-x-1 rounded-2xl border px-2 py-1.5 text-[0.65rem] font-semibold shadow ${
+                                  isInactive
+                                    ? 'border-dashed border-saubio-slate/40 bg-saubio-slate/10 text-saubio-slate'
+                                    : 'border-saubio-forest/50 bg-saubio-forest/90 text-white'
+                                }`}
+                                style={{ top, height }}
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  openComposerForSlot(localId);
+                                }}
+                              >
+                                <div className="flex items-center justify-between gap-2">
+                                  <span className="text-[0.65rem]">
+                                    {minutesToTime(slot.startMinutes)} → {minutesToTime(slot.endMinutes)}
+                                  </span>
+                                  <div className="flex items-center gap-1">
+                                    <button
+                                      type="button"
+                                      className="rounded-full bg-white/20 p-1 text-xs text-white hover:bg-white/40"
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                        handleToggleSlotActive(localId);
+                                      }}
+                                    >
+                                      {isInactive
+                                        ? t('providerAvailabilityPage.schedule.activate', 'Activer')
+                                        : t('providerAvailabilityPage.schedule.pause', 'Pause')}
+                                    </button>
+                                    <button
+                                      type="button"
+                                      className="rounded-full bg-white/10 p-1 text-xs hover:bg-white/30"
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                        handleQuickDeleteSlot(localId);
+                                      }}
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-[1.35fr,1fr]">
+              <div className="rounded-3xl border border-saubio-mist/80 p-5">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
                     <p className="text-sm font-semibold text-saubio-forest">
-                      {t(`providerAvailabilityPage.weekdays.${day.key}`, day.fallback)}
+                      {slotComposer?.sourceSlotId
+                        ? t('providerAvailabilityPage.composer.editTitle', 'Modifier un créneau')
+                        : t('providerAvailabilityPage.composer.newTitle', 'Nouveau créneau')}
                     </p>
+                    <p className="text-xs text-saubio-slate/70">
+                      {t(
+                        'providerAvailabilityPage.composer.description',
+                        'Sélectionnez directement une plage dans le calendrier ou ajustez les horaires ici.'
+                      )}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCreateDefaultComposer}
+                    className="inline-flex items-center gap-1 rounded-full border border-saubio-forest/30 px-3 py-1 text-xs font-semibold text-saubio-forest transition hover:border-saubio-forest"
+                  >
+                    <Plus className="h-4 w-4" />
+                    {t('providerAvailabilityPage.composer.quickCreate', 'Créneau standard')}
+                  </button>
+                </div>
+
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <div className="space-y-1">
+                    <label className="text-[0.65rem] font-semibold uppercase tracking-wide text-saubio-slate/70">
+                      {t('providerAvailabilityPage.schedule.start', 'Début')}
+                    </label>
+                    <input
+                      type="time"
+                      value={minutesToTime(slotComposer?.startMinutes ?? 9 * 60)}
+                      onChange={(event) => handleComposerTimeChange('startMinutes', event.target.value)}
+                      disabled={!slotComposer}
+                      className="w-full rounded-xl border border-saubio-mist px-3 py-2 text-sm text-saubio-forest focus:border-saubio-forest focus:outline-none disabled:opacity-50"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[0.65rem] font-semibold uppercase tracking-wide text-saubio-slate/70">
+                      {t('providerAvailabilityPage.schedule.end', 'Fin')}
+                    </label>
+                    <input
+                      type="time"
+                      value={minutesToTime(slotComposer?.endMinutes ?? 10 * 60)}
+                      onChange={(event) => handleComposerTimeChange('endMinutes', event.target.value)}
+                      disabled={!slotComposer}
+                      className="w-full rounded-xl border border-saubio-mist px-3 py-2 text-sm text-saubio-forest focus:border-saubio-forest focus:outline-none disabled:opacity-50"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-4 space-y-2">
+                  <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-saubio-slate/70">
+                    {t('providerAvailabilityPage.composer.days', 'Jours concernés')}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {ORDERED_WEEKDAYS.map((day) => {
+                      const isSelected = slotComposer?.weekdays?.includes(day.value);
+                      return (
+                        <button
+                          key={day.value}
+                          type="button"
+                          onClick={() => handleComposerWeekdayToggle(day.value)}
+                          disabled={!slotComposer}
+                          className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+                            isSelected
+                              ? 'bg-saubio-forest text-white shadow'
+                              : 'border border-saubio-mist text-saubio-slate/80 hover:border-saubio-forest'
+                          } disabled:opacity-50`}
+                        >
+                          {t(`providerAvailabilityPage.weekdays.short.${day.key}`, day.fallback.slice(0, 2))}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-xs">
                     <button
                       type="button"
-                      onClick={() => handleAddSlot(day.value)}
-                      className="inline-flex items-center gap-1 rounded-full border border-saubio-forest/30 px-3 py-1 text-xs font-semibold text-saubio-forest transition hover:border-saubio-forest"
+                      disabled={!slotComposer}
+                      onClick={() => handleComposerSelectAll(WORKDAY_VALUES)}
+                      className="rounded-full border border-saubio-mist px-3 py-1 text-saubio-slate/80 transition hover:border-saubio-forest disabled:opacity-50"
                     >
-                      <Plus className="h-4 w-4" />
-                      {t('providerAvailabilityPage.schedule.addSlot', 'Ajouter un créneau')}
+                      {t('providerAvailabilityPage.composer.workdays', 'Jours ouvrés')}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!slotComposer}
+                      onClick={() => handleComposerSelectAll(WEEKEND_VALUES)}
+                      className="rounded-full border border-saubio-mist px-3 py-1 text-saubio-slate/80 transition hover:border-saubio-forest disabled:opacity-50"
+                    >
+                      {t('providerAvailabilityPage.composer.weekend', 'Week-end')}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!slotComposer}
+                      onClick={() => handleComposerSelectAll(ORDERED_WEEKDAYS.map((day) => day.value))}
+                      className="rounded-full border border-saubio-mist px-3 py-1 text-saubio-slate/80 transition hover:border-saubio-forest disabled:opacity-50"
+                    >
+                      {t('providerAvailabilityPage.composer.allDays', 'Tous les jours')}
                     </button>
                   </div>
-                  {daySlots.length === 0 ? (
-                    <p className="text-xs text-saubio-slate/60">
-                      {t('providerAvailabilityPage.schedule.noSlot', 'Aucun créneau défini pour cette journée.')}
-                    </p>
+                </div>
+
+                <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-saubio-slate/70">
+                  {slotComposer ? (
+                    <>
+                      <span className="rounded-full bg-saubio-forest/10 px-3 py-1 text-saubio-forest">
+                        {slotComposer.weekdays.length}{' '}
+                        {t('providerAvailabilityPage.composer.selectedDays', 'jour(s) sélectionné(s)')}
+                      </span>
+                      {slotComposer.sourceSlotId ? (
+                        <span>
+                          {t('providerAvailabilityPage.composer.editingExisting', 'Créneau existant sélectionné.')}
+                        </span>
+                      ) : (
+                        <span>
+                          {t('providerAvailabilityPage.composer.newInfo', 'Nouveau créneau récurrent en préparation.')}
+                        </span>
+                      )}
+                    </>
                   ) : (
-                    <div className="space-y-3">
-                      {daySlots.map((slot) => {
-                        const localId = slot.id ?? slot.tempId ?? `${slot.weekday}-${slot.startMinutes}`;
-                        return (
-                          <div
-                            key={localId}
-                            className="rounded-2xl border border-saubio-forest/10 bg-white/40 p-4 shadow-sm"
-                          >
-                            <div className="grid gap-3 sm:grid-cols-4">
-                              <div className="space-y-1">
-                                <label className="text-[0.65rem] font-semibold uppercase tracking-wide text-saubio-slate/70">
-                                  {t('providerAvailabilityPage.schedule.start', 'Début')}
-                                </label>
-                                <input
-                                  type="time"
-                                  value={minutesToTime(slot.startMinutes)}
-                                  onChange={(event) => handleSlotTimeChange(localId, 'startMinutes', event.target.value)}
-                                  className="w-full rounded-xl border border-saubio-mist px-3 py-2 text-sm text-saubio-forest focus:border-saubio-forest focus:outline-none"
-                                />
-                              </div>
-                              <div className="space-y-1">
-                                <label className="text-[0.65rem] font-semibold uppercase tracking-wide text-saubio-slate/70">
-                                  {t('providerAvailabilityPage.schedule.end', 'Fin')}
-                                </label>
-                                <input
-                                  type="time"
-                                  value={minutesToTime(slot.endMinutes)}
-                                  onChange={(event) => handleSlotTimeChange(localId, 'endMinutes', event.target.value)}
-                                  className="w-full rounded-xl border border-saubio-mist px-3 py-2 text-sm text-saubio-forest focus:border-saubio-forest focus:outline-none"
-                                />
-                              </div>
-                              <div className="space-y-1">
-                                <label className="text-[0.65rem] font-semibold uppercase tracking-wide text-saubio-slate/70">
-                                  {t('providerAvailabilityPage.schedule.status', 'Statut')}
-                                </label>
-                                <button
-                                  type="button"
-                                  onClick={() => handleSlotChange(localId, { isActive: !slot.isActive })}
-                                  className={`w-full rounded-full px-3 py-2 text-sm font-semibold transition ${
-                                    slot.isActive
-                                      ? 'bg-saubio-forest text-white hover:bg-saubio-moss'
-                                      : 'border border-dashed border-saubio-slate/30 text-saubio-slate/70 hover:border-saubio-forest/40'
-                                  }`}
-                                >
-                                  {slot.isActive
-                                    ? t('providerAvailabilityPage.schedule.active', 'Actif')
-                                    : t('providerAvailabilityPage.schedule.paused', 'Suspendu')}
-                                </button>
-                              </div>
-                              <div className="flex items-end justify-end">
-                                <button
-                                  type="button"
-                                  onClick={() => handleRemoveSlot(localId)}
-                                  className="inline-flex items-center gap-1 rounded-full border border-red-200 px-3 py-2 text-xs font-semibold text-red-500 transition hover:border-red-400 hover:text-red-600"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                  {t('common.delete', 'Supprimer')}
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+                    <span>
+                      {t('providerAvailabilityPage.composer.emptyState', 'Cliquez sur le calendrier pour commencer.')}
+                    </span>
                   )}
                 </div>
-              );
-            })}
+
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={handleComposerSubmit}
+                    disabled={!slotComposer}
+                    className="inline-flex flex-1 items-center justify-center rounded-full bg-saubio-forest px-4 py-2 text-sm font-semibold text-white transition hover:bg-saubio-moss disabled:opacity-50"
+                  >
+                    {slotComposer?.sourceSlotId
+                      ? t('providerAvailabilityPage.composer.update', 'Mettre à jour')
+                      : t('providerAvailabilityPage.composer.save', 'Ajouter au planning')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleComposerReset}
+                    className="rounded-full border border-saubio-mist px-4 py-2 text-sm font-semibold text-saubio-slate/80 transition hover:border-saubio-forest hover:text-saubio-forest"
+                  >
+                    {t('common.cancel', 'Annuler')}
+                  </button>
+                  {slotComposer?.sourceSlotId ? (
+                    <button
+                      type="button"
+                      onClick={handleComposerDelete}
+                      className="inline-flex items-center gap-1 rounded-full border border-red-200 px-4 py-2 text-sm font-semibold text-red-500 transition hover:border-red-400 hover:text-red-600"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      {t('common.delete', 'Supprimer')}
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-saubio-mist/80 p-5 text-sm text-saubio-slate/70">
+                <p className="text-sm font-semibold text-saubio-forest">
+                  {t('providerAvailabilityPage.composer.tipsTitle', 'Astuces pour gagner du temps')}
+                </p>
+                <ul className="mt-3 list-disc space-y-2 pl-5 text-xs">
+                  <li>
+                    {t(
+                      'providerAvailabilityPage.composer.tip.grid',
+                      'Cliquez-glissez sur le calendrier pour créer plusieurs créneaux rapidement.'
+                    )}
+                  </li>
+                  <li>
+                    {t(
+                      'providerAvailabilityPage.composer.tip.apply',
+                      'Utilisez les boutons « Jours ouvrés » ou « Tous les jours » pour appliquer un créneau à plusieurs jours.'
+                    )}
+                  </li>
+                  <li>
+                    {t(
+                      'providerAvailabilityPage.composer.tip.exceptions',
+                      'Ajoutez des absences ponctuelles dans la section ci-dessous pour bloquer des dates spécifiques.'
+                    )}
+                  </li>
+                </ul>
+                <div className="mt-4 rounded-2xl border border-dashed border-saubio-mist/80 bg-white/50 p-4 text-xs">
+                  <p className="font-semibold text-saubio-forest">
+                    {t('providerAvailabilityPage.composer.legendTitle', 'Légende')}
+                  </p>
+                  <div className="mt-2 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="h-3 w-6 rounded-full bg-saubio-forest/80" />
+                      <span>{t('providerAvailabilityPage.composer.legend.active', 'Créneau actif')}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="h-3 w-6 rounded-full border border-dashed border-saubio-slate/50 bg-saubio-slate/10" />
+                      <span>{t('providerAvailabilityPage.composer.legend.paused', 'Créneau suspendu')}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">

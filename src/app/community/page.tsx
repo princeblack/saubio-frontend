@@ -7,8 +7,10 @@ import {
 } from '@saubio/ui';
 import { SiteFooter } from '../../components/layout/SiteFooter';
 import { SiteHeader } from '../../components/layout/SiteHeader';
-import communityText from '../../../Community-Richtlinien.md?raw';
-import { marked } from 'marked';
+import { SimpleMarkdown } from '../../components/legal/SimpleMarkdown';
+import { communityGuidelinesMarkdown } from '../../content/legal';
+
+
 
 export const metadata: Metadata = {
   title: 'Saubio – Community-Richtlinien',
@@ -27,10 +29,7 @@ export default function CommunityRichtlinienPage() {
           <SectionDescription className="max-w-3xl">
             Gemeinsam sorgen wir für ein respektvolles und sicheres Erlebnis auf saubio.de.
           </SectionDescription>
-          <article
-            className="mt-8 prose prose-slate max-w-none"
-            dangerouslySetInnerHTML={{ __html: marked.parse(communityText) }}
-          />
+          <SimpleMarkdown content={communityGuidelinesMarkdown} className="mt-8" />
         </SectionContainer>
       </main>
       <SiteFooter />

@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { ProviderDirectoryFilters, ServiceCategory } from '@saubio/models';
+import { SERVICE_CATALOG } from '@saubio/models';
 import {
   providerDirectoryQueryOptions,
   useRequireRole,
@@ -23,12 +24,10 @@ import { ErrorState } from '../../../components/feedback/ErrorState';
 
 const serviceFilterOptions: Array<{ value: ServiceCategory | 'all'; label: string }> = [
   { value: 'all', label: 'Tous' },
-  { value: 'residential', label: 'Résidentiel' },
-  { value: 'office', label: 'Bureau' },
-  { value: 'industrial', label: 'Industriel' },
-  { value: 'windows', label: 'Vitrerie' },
-  { value: 'disinfection', label: 'Désinfection' },
-  { value: 'eco_plus', label: 'Eco +' },
+  ...SERVICE_CATALOG.map((service) => ({
+    value: service.id,
+    label: service.title,
+  })),
 ];
 
 export default function ClientProvidersPage() {
@@ -103,7 +102,9 @@ export default function ClientProvidersPage() {
             >
               {serviceFilterOptions.map((option) => (
                 <option key={option.value} value={option.value}>
-                  {t(`providerDirectory.filters.serviceOptions.${option.value}`, option.label)}
+                  {option.value === 'all'
+                    ? t('providerDirectory.filters.serviceOptions.all', option.label)
+                    : t(`bookingPlanner.services.${option.value}.label`, option.label)}
                 </option>
               ))}
             </select>

@@ -7,8 +7,8 @@ import {
 } from '@saubio/ui';
 import { SiteFooter } from '../../components/layout/SiteFooter';
 import { SiteHeader } from '../../components/layout/SiteHeader';
-import agbText from '../../../AGB.md?raw';
-import { marked } from 'marked';
+import { SimpleMarkdown } from '../../components/legal/SimpleMarkdown';
+import { agbMarkdown } from '../../content/legal';
 
 export const metadata: Metadata = {
   title: 'Saubio – Allgemeine Geschäftsbedingungen',
@@ -26,10 +26,7 @@ export default function AgbPage() {
           <SectionDescription className="max-w-2xl">
             Bitte lesen Sie sorgfältig, wie Saubio Verträge vermittelt und welche Nutzungsregeln gelten.
           </SectionDescription>
-          <article
-            className="mt-8 prose prose-slate max-w-none"
-            dangerouslySetInnerHTML={{ __html: marked.parse(agbText) }}
-          />
+          <SimpleMarkdown content={agbMarkdown} className="mt-8" />
         </SectionContainer>
       </main>
       <SiteFooter />
