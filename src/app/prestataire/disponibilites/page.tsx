@@ -456,8 +456,12 @@ export default function ProviderAvailabilityPage() {
         </SectionDescription>
       </header>
 
-      <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-        <SurfaceCard variant="soft" padding="lg" className="space-y-6 border border-saubio-mist/80">
+      <div className="flex flex-col gap-6 xl:grid xl:grid-cols-[minmax(0,2fr),minmax(0,1fr)]">
+        <SurfaceCard
+          variant="soft"
+          padding="lg"
+          className="order-2 space-y-6 border border-saubio-mist/80 xl:order-1"
+        >
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-base font-semibold text-saubio-forest">
@@ -832,7 +836,7 @@ export default function ProviderAvailabilityPage() {
           </div>
         </SurfaceCard>
 
-        <div className="space-y-6">
+        <div className="order-1 flex flex-col gap-6 xl:order-2">
           <SurfaceCard variant="soft" padding="lg" className="space-y-4 border border-saubio-mist/80">
             <div className="flex items-start gap-3">
               <CalendarClock className="h-6 w-6 text-saubio-forest" />

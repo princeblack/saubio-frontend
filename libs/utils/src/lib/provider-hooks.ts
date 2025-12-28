@@ -10,6 +10,7 @@ import type {
   ProviderOnboardingResponse,
   ProviderIdentityPayload,
   ProviderIdentityDocumentUploadPayload,
+  ProviderProfilePhotoPayload,
   ProviderAddressPayload,
   ProviderPhonePayload,
   ProviderPhoneRequestPayload,
@@ -19,6 +20,8 @@ import type {
   ProviderAvailabilityOverview,
   ProviderServiceCatalogResponse,
   ServiceCategory,
+  ProviderInvitationFilters,
+  ProviderProfile,
 } from '@saubio/models';
 import {
   providerDashboardQueryKey,
@@ -29,6 +32,7 @@ import {
   providerMissionsQueryOptions,
   providerPaymentsQueryKey,
   providerPaymentsQueryOptions,
+  providerEarningsQueryOptions,
   providerResourcesQueryKey,
   providerResourcesQueryOptions,
   providerProfileQueryKey,
@@ -39,13 +43,15 @@ import {
   providerOnboardingStatusQueryOptions,
   providerAvailabilityQueryKey,
   providerAvailabilityQueryOptions,
-  providerInvitationsQueryKey,
+  providerBankInfoQueryOptions,
+  providerBankInfoQueryKey,
   providerInvitationsQueryOptions,
   providerServiceCatalogQueryKey,
   providerServiceCatalogQueryOptions,
 } from './api-queries';
 import { createApiClient } from './api-client';
 import type { ProviderBookingInvitation } from '@saubio/models';
+import type { ProviderBankInfo } from '@saubio/models';
 
 const clientFactory = () =>
   createApiClient({
@@ -56,6 +62,10 @@ export const useProviderDashboard = () => {
   return useQuery(providerDashboardQueryOptions());
 };
 
+export const useProviderEarnings = (params: { status?: ProviderEarningStatus; limit?: number; offset?: number } = {}) => {
+  return useQuery(providerEarningsQueryOptions(params));
+};
+
 export const useProviderMissions = (filters: ProviderMissionFilters = {}) => {
   return useQuery(providerMissionsQueryOptions(filters));
 };
@@ -64,8 +74,8 @@ export const useProviderMission = (id: string) => {
   return useQuery(providerMissionQueryOptions(id));
 };
 
-export const useProviderInvitations = () => {
-  return useQuery(providerInvitationsQueryOptions());
+export const useProviderInvitations = (filters: ProviderInvitationFilters = {}) => {
+  return useQuery(providerInvitationsQueryOptions(filters));
 };
 
 type UpdateMissionVariables = UpdateProviderMissionPayload & { id: string };
@@ -95,6 +105,25 @@ export const useProviderResources = () => {
 
 export const useProviderProfile = () => {
   return useQuery(providerProfileQueryOptions());
+};
+
+export const useProviderBankInfo = () => {
+  return useQuery(providerBankInfoQueryOptions());
+};
+
+export const useSaveProviderBankInfoMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation<ProviderBankInfo, unknown, { accountHolder: string; iban: string; signatureDate?: string }>({
+    mutationFn: async (payload) => {
+      const client = clientFactory();
+      return client.saveProviderBankInfo(payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: providerBankInfoQueryKey });
+      queryClient.invalidateQueries({ queryKey: providerOnboardingStatusQueryKey });
+      queryClient.invalidateQueries({ queryKey: providerProfileQueryKey() });
+    },
+  });
 };
 
 export const useProviderDocuments = () => {
@@ -143,9 +172,34 @@ export const useRespondProviderInvitationMutation = () => {
       return client.respondProviderInvitation(payload.id, payload.action);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: providerInvitationsQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['api', 'provider', 'invitations'] });
       queryClient.invalidateQueries({ queryKey: providerDashboardQueryKey });
       queryClient.invalidateQueries({ queryKey: providerMissionsQueryKey({}) });
+    },
+  });
+};
+
+export const useMarkProviderInvitationViewedMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation<ProviderBookingInvitation, unknown, string>({
+    mutationFn: async (invitationId) => {
+      const client = clientFactory();
+      return client.markProviderInvitationViewed(invitationId);
+    },
+    onSuccess: (invitation) => {
+      queryClient.setQueriesData<ProviderBookingInvitation[] | undefined>(
+        { queryKey: ['api', 'provider', 'invitations'] },
+        (current) =>
+          current?.map((item) =>
+            item.id === invitation.id
+              ? {
+                  ...item,
+                  ...invitation,
+                }
+              : item
+          ) ?? current
+      );
+      queryClient.invalidateQueries({ queryKey: ['api', 'provider', 'invitations'] });
     },
   });
 };
@@ -160,10 +214,16 @@ export const useProviderOnboardingMutation = () => {
 };
 
 export const useProviderPaymentsOnboardingMutation = () => {
-  return useMutation<ProviderOnboardingResponse, unknown, void>({
-    mutationFn: async () => {
+  const queryClient = useQueryClient();
+  return useMutation<ProviderOnboardingResponse, unknown, { accountHolder: string; iban: string; signatureDate?: string }>({
+    mutationFn: async (payload) => {
       const client = clientFactory();
-      return client.startProviderOnboardingSelf();
+      return client.startProviderOnboardingSelf(payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: providerBankInfoQueryKey });
+      queryClient.invalidateQueries({ queryKey: providerOnboardingStatusQueryKey });
+      queryClient.invalidateQueries({ queryKey: providerProfileQueryKey() });
     },
   });
 };
@@ -208,6 +268,19 @@ export const useUploadProviderIdentityDocumentMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: providerOnboardingStatusQueryKey });
       queryClient.invalidateQueries({ queryKey: providerProfileQueryKey() });
+    },
+  });
+};
+
+export const useUploadProviderPhotoMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation<ProviderProfile, unknown, ProviderProfilePhotoPayload>({
+    mutationFn: async (payload) => {
+      const client = clientFactory();
+      return client.uploadProviderProfilePhoto(payload);
+    },
+    onSuccess: (profile) => {
+      queryClient.setQueryData(providerProfileQueryKey(), profile);
     },
   });
 };

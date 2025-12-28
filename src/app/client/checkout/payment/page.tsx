@@ -14,7 +14,7 @@ import {
 } from '@saubio/utils';
 import { ErrorState } from '../../../../components/feedback/ErrorState';
 import { LoadingIndicator, Pill, SurfaceCard } from '@saubio/ui';
-import { clearBookingPlannerState } from '../../../utils/bookingPlannerStorage';
+import { clearBookingPlannerState } from '../../../../utils/bookingPlannerStorage';
 
 function CheckoutPaymentPageContent() {
   const searchParams = useSearchParams();
@@ -78,6 +78,12 @@ function CheckoutPaymentPageContent() {
     return false;
   }, [paymentIntentQuery.data?.required, summary?.booking.shortNotice, summary?.depositCents]);
 
+  const handleCheckoutRedirect = () => {
+    if (checkoutUrl) {
+      window.location.href = checkoutUrl;
+    }
+  };
+
   const renderPaymentForm = () => {
     const isLoadingPayment = paymentIntentQuery.isLoading || bookingQuery.isLoading;
 
@@ -112,14 +118,13 @@ function CheckoutPaymentPageContent() {
               'Cliquez sur le bouton ci-dessous pour finaliser le paiement sécurisé. Vous serez redirigé vers Mollie puis renvoyé automatiquement vers Saubio.'
             )}
           </p>
-          <a
-            href={checkoutUrl}
-            target="_blank"
-            rel="noreferrer"
+          <button
+            type="button"
+            onClick={handleCheckoutRedirect}
             className="inline-flex w-full items-center justify-center rounded-full bg-saubio-forest px-5 py-3 text-sm font-semibold text-white transition hover:bg-saubio-moss"
           >
             {t('checkoutPayment.actions.openCheckout', 'Procéder au paiement sécurisé')}
-          </a>
+          </button>
           <p className="text-xs text-saubio-slate/60">
             {t(
               'checkoutPayment.actions.mollieHint',

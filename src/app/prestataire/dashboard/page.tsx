@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
+import type { ComponentType } from 'react';
 import {
   useProviderDashboard,
   useProviderInvitations,
@@ -9,24 +9,32 @@ import {
   formatDateTime,
   formatEuro,
 } from '@saubio/utils';
-import {
-  SectionTitle,
-  SectionDescription,
-  SimpleGrid,
-  SurfaceCard,
-  Skeleton,
-  Pill,
-} from '@saubio/ui';
-import { MetricCard } from '../../../components/dashboard/MetricCard';
-import { ActivityList, type ActivityItem } from '../../../components/dashboard/ActivityList';
+import { useTranslation } from 'react-i18next';
+import { SectionDescription, SectionTitle, Skeleton } from '@saubio/ui';
 import { ErrorState } from '../../../components/feedback/ErrorState';
 import { useMatchingProgressFeed } from '../../../hooks/useMatchingProgressFeed';
+import { getMatchingStageLabel, resolveMatchingStatusCopy } from '../../../utils/matching-progress';
 import {
-  getMatchingStageLabel,
-  resolveMatchingStatusCopy,
-} from '../../../utils/matching-progress';
+  AlertTriangle,
+  Bell,
+  Briefcase,
+  CalendarDays,
+  CheckCircle2,
+  Clock3,
+  Euro,
+  Leaf,
+  Inbox,
+  Star,
+  TrendingUp,
+} from 'lucide-react';
+
+const cardBase = 'rounded-3xl border border-saubio-forest/5 bg-white/90 p-6 backdrop-blur';
+
+const iconBadge =
+  'inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-saubio-forest/10 text-saubio-forest';
 
 const formatCurrencyFromCents = (value: number) => formatEuro(value / 100);
+type TranslateFn = ReturnType<typeof useTranslation>['t'];
 
 export default function ProviderDashboardPage() {
   const { t } = useTranslation();
@@ -37,7 +45,7 @@ export default function ProviderDashboardPage() {
   });
 
   const dashboardQuery = useProviderDashboard();
-  const invitationsQuery = useProviderInvitations();
+  const invitationsQuery = useProviderInvitations({ status: 'pending' });
   const respondInvitationMutation = useRespondProviderInvitationMutation();
 
   if (!session.user) {
@@ -53,34 +61,32 @@ export default function ProviderDashboardPage() {
           </SectionTitle>
           <SectionDescription>{t('providerDashboard.subtitle')}</SectionDescription>
         </header>
-
-        <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap="md">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {Array.from({ length: 4 }).map((_, index) => (
-            <SurfaceCard key={`metric-skeleton-${index}`} variant="soft" padding="md">
-              <Skeleton className="h-4 w-24 rounded-full" />
-              <Skeleton className="mt-4 h-10 w-32 rounded-2xl" />
-            </SurfaceCard>
+            <div key={`metric-skeleton-${index}`} className={cardBase}>
+              <Skeleton className="h-5 w-24 rounded-full" />
+              <Skeleton className="mt-4 h-8 w-32 rounded-2xl" />
+            </div>
           ))}
-        </SimpleGrid>
-
-        <SimpleGrid columns={{ base: 1, lg: 2 }} gap="md">
-          <SurfaceCard variant="soft" padding="md">
-            <Skeleton className="h-4 w-48 rounded-full" />
+        </div>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div className={cardBase}>
+            <Skeleton className="h-5 w-40 rounded-full" />
             <div className="mt-4 space-y-3">
               {Array.from({ length: 4 }).map((_, index) => (
-                <Skeleton key={`upcoming-skeleton-${index}`} className="h-16 rounded-3xl" />
+                <Skeleton key={`list-skeleton-${index}`} className="h-16 rounded-3xl" />
               ))}
             </div>
-          </SurfaceCard>
-          <SurfaceCard variant="soft" padding="md">
-            <Skeleton className="h-4 w-40 rounded-full" />
+          </div>
+          <div className={cardBase}>
+            <Skeleton className="h-5 w-36 rounded-full" />
             <div className="mt-4 space-y-3">
               {Array.from({ length: 3 }).map((_, index) => (
                 <Skeleton key={`quality-skeleton-${index}`} className="h-12 rounded-2xl" />
               ))}
             </div>
-          </SurfaceCard>
-        </SimpleGrid>
+          </div>
+        </div>
       </div>
     );
   }
@@ -101,376 +107,607 @@ export default function ProviderDashboardPage() {
 
   const data = dashboardQuery.data;
   const invitations = invitationsQuery.data ?? [];
+  const earningsSummary = data.earnings;
+  const derivedCompleted =
+    (earningsSummary?.missions.awaitingValidation ?? 0) +
+    (earningsSummary?.missions.payable ?? 0) +
+    (earningsSummary?.missions.paid ?? 0);
+  const completedMissionsCount = earningsSummary ? derivedCompleted : data.metrics.completed;
+  const statsCards = [
+    {
+      title: t('providerDashboard.metrics.completed'),
+      value: completedMissionsCount.toString(),
+      subtitle: t('providerDashboard.trend30d', 'Sur les 30 derniers jours'),
+      icon: Briefcase,
+      trend: data.trends.completed,
+    },
+    {
+      title: t('providerDashboard.metrics.revenue'),
+      value: formatCurrencyFromCents(earningsSummary?.thisMonthCents ?? data.metrics.revenueCents),
+      subtitle: t('providerDashboard.metrics.revenueSubtitle', 'Revenus ce mois'),
+      icon: Euro,
+      trend: data.trends.revenue,
+    },
+    {
+      title: t('providerDashboard.metrics.rating'),
+      value: `${data.metrics.rating.toFixed(2)} / 5`,
+      subtitle: t('providerDashboard.metrics.ratingHint', 'Moyenne des derniers avis'),
+      icon: Star,
+      trend: data.trends.rating,
+    },
+    {
+      title: t('providerDashboard.metrics.eco'),
+      value: `${data.metrics.ecoRate}%`,
+      subtitle: t('providerDashboard.metrics.ecoSubtitle', 'Missions Öko Plus'),
+      icon: Leaf,
+      trend: data.trends.ecoRate,
+    },
+  ];
+
+  const payoutSegments = [
+    {
+      label: t('providerDashboard.payments.validation', 'En validation'),
+      value: earningsSummary?.awaitingValidationCents ?? 0,
+      color: 'bg-amber-200',
+    },
+    {
+      label: t('providerDashboard.payments.pending', 'À payer'),
+      value: earningsSummary?.payableCents ?? data.payments.pendingCents,
+      color: 'bg-saubio-sun/40',
+    },
+    {
+      label: t('providerDashboard.payments.paid', 'Payé'),
+      value: earningsSummary?.paidCents ?? Math.max(data.payments.totalCents - data.payments.pendingCents, 0),
+      color: 'bg-emerald-200',
+    },
+  ];
+  const totalPipeline = payoutSegments.reduce((sum, seg) => sum + seg.value, 0) || 1;
+
+  const activityFeed = [
+    ...data.alerts.map((alert) => ({
+      id: alert.id,
+      title: alert.title,
+      description: alert.message,
+      createdAt: alert.createdAt,
+      tone: alert.severity === 'critical' ? 'danger' : alert.severity === 'warning' ? 'warning' : 'neutral',
+      icon: alert.severity === 'critical' ? AlertTriangle : Bell,
+    })),
+    ...matchingFeed.map((event) => {
+      const statusMeta = resolveMatchingStatusCopy(event.status, t);
+      return {
+        id: `${event.stage}-${event.createdAt}-${event.bookingId ?? 'global'}`,
+        title: getMatchingStageLabel(event.stage, t),
+        description: statusMeta.label,
+        createdAt: event.createdAt,
+        tone: statusMeta.variant,
+        icon: TrendingUp,
+      };
+    }),
+  ]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 5);
+
+  const feedback = data.feedback.slice(0, 3);
+  const lastPayoutDisplay = earningsSummary?.lastPayoutAt ?? data.payments.lastPayoutAt;
 
   const handleInvitationAction = (invitationId: string, action: 'accept' | 'decline') => {
     respondInvitationMutation.mutate({ id: invitationId, action });
   };
 
-  const metrics = data
-    ? [
-        {
-          label: t('providerDashboard.metrics.completed'),
-          value: String(data.metrics.completed),
-          icon: '✓',
-          tone: 'forest' as const,
-          trend: { value: data.trends.completed, label: t('providerDashboard.trend30d') },
-        },
-        {
-          label: t('providerDashboard.metrics.revenue'),
-          value: formatCurrencyFromCents(data.metrics.revenueCents),
-          icon: '€',
-          tone: 'sun' as const,
-          trend: { value: data.trends.revenue, label: t('providerDashboard.trend30d') },
-        },
-        {
-          label: t('providerDashboard.metrics.rating'),
-          value: `${data.metrics.rating.toFixed(2)} / 5`,
-          icon: '★',
-          tone: 'mist' as const,
-          trend: { value: data.trends.rating, label: t('providerDashboard.trendClients') },
-        },
-        {
-          label: t('providerDashboard.metrics.eco'),
-          value: `${data.metrics.ecoRate}%`,
-          icon: '🌿',
-          tone: 'forest' as const,
-          trend: { value: data.trends.ecoRate, label: t('providerDashboard.trendBio') },
-        },
-      ]
-    : [];
-
-  const upcomingItems: ActivityItem[] = data.upcoming.map((mission) => ({
-    id: mission.id,
-    title: mission.city,
-    description: `${mission.service.toUpperCase()} · ${mission.surfaces} m²`,
-    meta: formatDateTime(mission.startAt),
-    icon: '🗓',
-    tone: mission.ecoPreference === 'bio' ? 'positive' : 'accent',
-  }));
-
-  const alertsItems: ActivityItem[] = data.alerts.map((alert) => ({
-    id: alert.id,
-    title: alert.title,
-    description: alert.message,
-    meta: formatDateTime(alert.createdAt),
-    icon: alert.severity === 'critical' ? '⚠️' : '⚡️',
-    tone: alert.severity === 'critical' ? 'accent' : 'neutral',
-  }));
-
-  const feedbackItems: ActivityItem[] = data.feedback.map((item) => ({
-    id: item.id,
-    title: `${item.client} · ${item.rating.toFixed(1)}★`,
-    description: item.message,
-    meta: formatDateTime(item.createdAt),
-    icon: item.sentiment === 'positive' ? '💚' : item.sentiment === 'negative' ? '⚠️' : '💬',
-    tone: item.sentiment === 'positive' ? 'positive' : 'neutral',
-  }));
-
   return (
     <div className="space-y-8">
       <header className="space-y-3">
-        <SectionTitle as="h1" size="large">
-          {t('providerDashboard.title')}
-        </SectionTitle>
-        <SectionDescription>{t('providerDashboard.subtitle')}</SectionDescription>
-      </header>
-
-      {invitationsQuery.isLoading ? (
-        <SurfaceCard variant="soft" padding="md">
-          <Skeleton className="h-4 w-48 rounded-full" />
-          <div className="mt-4 space-y-3">
-            {Array.from({ length: 2 }).map((_, index) => (
-              <Skeleton key={`invitation-skeleton-${index}`} className="h-20 rounded-3xl" />
-            ))}
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <SectionTitle as="h1" size="large">
+              {t('providerDashboard.title')}
+            </SectionTitle>
+            <SectionDescription>{t('providerDashboard.subtitle')}</SectionDescription>
           </div>
-        </SurfaceCard>
-      ) : invitations.length ? (
-        <SurfaceCard variant="soft" padding="md" className="space-y-4 border border-amber-200 bg-amber-50/30">
-          <div className="flex flex-col gap-1">
-            <span className="text-xs font-semibold uppercase tracking-[0.28em] text-saubio-sun/70">
-              {t('providerDashboard.invitations.title', 'Demandes urgentes')}
-            </span>
-            <p className="text-sm text-saubio-slate/70">
-              {t(
-                'providerDashboard.invitations.subtitle',
-                'Répondez rapidement pour confirmer les missions à court préavis.'
-              )}
+          <div className="rounded-3xl border border-saubio-forest/10 bg-white/80 px-6 py-3 text-sm text-saubio-slate/70">
+            <p className="text-xs uppercase tracking-[0.25em] text-saubio-slate/40">
+              {t('providerDashboard.payments.lastPayout')}
+            </p>
+            <p className="text-sm font-semibold text-saubio-forest">
+              {lastPayoutDisplay ? formatDateTime(lastPayoutDisplay) : t('providerRevenue.empty.overview')}
             </p>
           </div>
-          <div className="space-y-4">
-            {invitations.map((invitation) => (
-              <div
-                key={invitation.id}
-                className="flex flex-col gap-3 rounded-3xl border border-saubio-forest/10 bg-white/70 p-4 shadow-soft-sm"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-semibold text-saubio-forest">
-                      {t(`services.${invitation.service}`, invitation.service)}
-                    </p>
-                    <p className="text-xs text-saubio-slate/60">
-                      {invitation.city} · {invitation.surfacesSquareMeters} m²
-                    </p>
-                  </div>
-                  <div className="text-right text-xs text-saubio-slate/60">
-                    <p className="font-semibold text-saubio-forest">
-                      {formatDateTime(invitation.startAt)}
-                    </p>
-                    <p>
-                      {t('providerDashboard.invitations.duration', '{{hours}} h', {
-                        hours: invitation.durationHours.toFixed(1),
-                      })}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-2 text-xs text-saubio-slate/70">
-                  <Pill tone="forest">
-                    {t('providerDashboard.invitations.required', '{{count}} intervenant(s)', {
-                      count: invitation.requiredProviders,
-                    })}
-                  </Pill>
-                  {invitation.shortNoticeDepositCents ? (
-                    <Pill tone="sun">
-                      {t('providerDashboard.invitations.deposit', 'Blocage {{amount}}', {
-                        amount: formatEuro(invitation.shortNoticeDepositCents / 100),
-                      })}
-                    </Pill>
-                  ) : null}
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  <button
-                    type="button"
-                    onClick={() => handleInvitationAction(invitation.id, 'accept')}
-                    disabled={respondInvitationMutation.isPending}
-                    className="flex-1 rounded-full bg-saubio-forest px-4 py-2 text-sm font-semibold text-white transition hover:bg-saubio-moss disabled:cursor-not-allowed disabled:bg-saubio-forest/40"
-                  >
-                    {respondInvitationMutation.isPending
-                      ? t('providerDashboard.invitations.accepting', 'Confirmation…')
-                      : t('providerDashboard.invitations.accept', 'Accepter')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleInvitationAction(invitation.id, 'decline')}
-                    disabled={respondInvitationMutation.isPending}
-                    className="flex-1 rounded-full border border-saubio-forest/20 px-4 py-2 text-sm font-semibold text-saubio-slate/70 transition hover:border-saubio-forest/40 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {t('providerDashboard.invitations.decline', 'Décliner')}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </SurfaceCard>
-      ) : null}
+        </div>
+      </header>
 
-      <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap="md">
-        {metrics.map((metric) => (
-          <MetricCard key={metric.label} {...metric} />
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {statsCards.map((card) => (
+          <StatCard key={card.title} {...card} />
         ))}
-      </SimpleGrid>
+      </div>
 
-      <SimpleGrid columns={{ base: 1, lg: 2 }} gap="md">
-        <ActivityList
-          title={t('providerDashboard.upcoming')}
-          items={upcomingItems}
-          emptyState={t('providerDashboard.emptyUpcoming')}
-        />
-        <SurfaceCard variant="soft" padding="md">
-          <h3 className="text-sm font-semibold uppercase tracking-[0.28em] text-saubio-slate/50">
-            {t('providerDashboard.qualityTitle')}
-          </h3>
-          <div className="mt-4 grid gap-4 text-sm text-saubio-slate/80">
+      <div className="grid gap-6 xl:grid-cols-3">
+        <div className="space-y-6 xl:col-span-2">
+          <section className={cardBase}>
             <div className="flex items-center justify-between">
-              <span>{t('providerDashboard.quality.rating')}</span>
-              <span className="font-semibold text-saubio-forest">{data.quality.rating.toFixed(2)} / 5</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>{t('providerDashboard.quality.ecoRate')}</span>
-              <span className="font-semibold text-saubio-forest">{data.quality.ecoRate}%</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>{t('providerDashboard.quality.incidents')}</span>
-              <span className="font-semibold text-saubio-forest">{data.quality.incidents}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>{t('providerDashboard.quality.response')}</span>
-              <span className="font-semibold text-saubio-forest">{data.quality.responseMinutes} min</span>
-            </div>
-          </div>
-        </SurfaceCard>
-      </SimpleGrid>
-
-      <SimpleGrid columns={{ base: 1, lg: 2 }} gap="md">
-        <SurfaceCard variant="soft" padding="md">
-          <h3 className="text-sm font-semibold uppercase tracking-[0.28em] text-saubio-slate/50">
-            {t('providerDashboard.scheduleTitle')}
-          </h3>
-          {data.schedule.length === 0 ? (
-            <div className="mt-4 rounded-2xl border border-dashed border-saubio-forest/20 bg-white/60 p-6 text-center text-sm text-saubio-slate/60">
-              {t('providerDashboard.scheduleEmpty')}
-            </div>
-          ) : (
-            <ul className="mt-4 space-y-4 text-sm text-saubio-slate/80">
-              {data.schedule.map((day) => (
-                <li key={day.date} className="space-y-2 rounded-2xl bg-white/80 p-4 shadow-soft-sm">
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-saubio-forest">
-                      {new Date(day.date).toLocaleDateString()}
-                    </span>
-                    <span className="text-xs text-saubio-slate/60">
-                      {day.missions.length} × {t('providerMissions.title')}
-                    </span>
-                  </div>
-                  <ul className="space-y-2 text-xs">
-                    {day.missions.map((mission) => (
-                      <li key={mission.id} className="flex items-center justify-between gap-3">
-                        <span className="font-semibold text-saubio-forest">
-                          {formatDateTime(mission.startAt)}
-                        </span>
-                        <span className="flex items-center gap-2">
-                          <Pill tone="mist">{mission.service}</Pill>
-                          <Pill tone={mission.status === 'completed' ? 'forest' : 'sun'}>
-                            {t(`bookingStatus.${mission.status}`, mission.status)}
-                          </Pill>
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-              ))}
-            </ul>
-          )}
-        </SurfaceCard>
-
-        <SurfaceCard variant="soft" padding="md">
-          <h3 className="text-sm font-semibold uppercase tracking-[0.28em] text-saubio-slate/50">
-            {t('providerDashboard.paymentsTitle')}
-          </h3>
-          <div className="mt-4 space-y-3 text-sm text-saubio-slate/80">
-            <div className="flex items-center justify-between">
-              <span>{t('providerDashboard.payments.total')}</span>
-              <span className="font-semibold text-saubio-forest">
-                {formatCurrencyFromCents(data.payments.totalCents)}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>{t('providerDashboard.payments.pending')}</span>
-              <span className="font-semibold text-saubio-forest">
-                {formatCurrencyFromCents(data.payments.pendingCents)}
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-xs text-saubio-slate/60">
-              <span>{t('providerDashboard.payments.lastPayout')}</span>
-              <span>
-                {data.payments.lastPayoutAt
-                  ? formatDateTime(data.payments.lastPayoutAt)
-                  : t('providerRevenue.status.pending')}
-              </span>
-            </div>
-          </div>
-        </SurfaceCard>
-      </SimpleGrid>
-
-      <SurfaceCard variant="soft" padding="md" className="space-y-3">
-        <h3 className="text-sm font-semibold uppercase tracking-[0.28em] text-saubio-slate/50">
-          {t('providerDashboard.matchingRealtime', 'Matching en temps réel')}
-        </h3>
-        {matchingFeed.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-saubio-forest/20 bg-white/60 p-4 text-center text-xs text-saubio-slate/60">
-            {t('providerDashboard.matchingRealtimeEmpty', 'Aucun mouvement récent sur vos missions.')}
-          </p>
-          ) : (
-            <ul className="space-y-3 text-sm text-saubio-slate/80" aria-live="polite">
-            {matchingFeed.map((event) => {
-              const statusMeta = resolveMatchingStatusCopy(event.status, t);
-              const bookingLabel = event.bookingId
-                ? `#${event.bookingId.slice(0, 6)}`
-                : t('providerDashboard.matchingRealtimeGlobal', 'Pipeline');
-              const classes: Record<'positive' | 'warning' | 'neutral' | 'danger', string> = {
-                positive: 'bg-saubio-forest/10 text-saubio-forest',
-                warning: 'bg-saubio-sun/20 text-saubio-moss',
-                neutral: 'bg-saubio-mist/60 text-saubio-slate/70',
-                danger: 'bg-red-50 text-red-600',
-              };
-              const badgeClass = classes[statusMeta.variant];
-              return (
-                <li key={`${event.stage}-${event.createdAt}-${event.bookingId}`} className="rounded-3xl bg-white/85 p-4 shadow-soft-sm">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <p className="font-semibold text-saubio-forest">
-                        {getMatchingStageLabel(event.stage, t)}
-                      </p>
-                      <p className="text-xs text-saubio-slate/60">
-                        {formatDateTime(event.createdAt)}
-                      </p>
-                    </div>
-                    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${badgeClass}`}>
-                      {statusMeta.label}
-                    </span>
-                  </div>
-                  <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-saubio-slate/70">
-                    <span>{bookingLabel}</span>
-                    {typeof event.count === 'number' ? (
-                      <>
-                        <span>•</span>
-                        <span>
-                          {t('providerDashboard.matchingRealtimeCount', '{{count}} intervenant(s)', {
-                            count: event.count,
-                          })}
-                        </span>
-                      </>
-                    ) : null}
-                    {event.message ? (
-                      <>
-                        <span>•</span>
-                        <span>{event.message}</span>
-                      </>
-                    ) : null}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </SurfaceCard>
-
-      <SimpleGrid columns={{ base: 1, lg: 2 }} gap="md">
-        <ActivityList
-          title={t('providerDashboard.alertsTitle')}
-          items={alertsItems}
-          emptyState={t('providerDashboard.alertsEmpty')}
-        />
-        <ActivityList
-          title={t('providerDashboard.feedbackTitle')}
-          items={feedbackItems}
-          emptyState={t('providerDashboard.feedbackEmpty')}
-        />
-      </SimpleGrid>
-
-      <SurfaceCard variant="soft" padding="md">
-        <h3 className="text-sm font-semibold uppercase tracking-[0.28em] text-saubio-slate/50">
-          {t('providerDashboard.knowledgeCenter')}
-        </h3>
-        {data.resources.length === 0 ? (
-          <div className="mt-4 rounded-2xl border border-dashed border-saubio-forest/20 bg-white/60 p-6 text-center text-sm text-saubio-slate/60">
-            {t('providerDashboard.emptyResources')}
-          </div>
-        ) : (
-          <ul className="mt-4 grid gap-3 text-sm text-saubio-slate/80 lg:grid-cols-3">
-            {data.resources.map((resource) => (
-              <li key={resource.id} className="space-y-2 rounded-2xl bg-white/80 p-4 shadow-soft-sm">
-                <p className="font-semibold text-saubio-forest">{resource.title}</p>
-                <p className="text-xs text-saubio-slate/60">{resource.description}</p>
-                <p className="text-[11px] uppercase tracking-widest text-saubio-slate/50">
-                  {t('providerResourcesPage.updated', {
-                    date: new Date(resource.updatedAt).toLocaleDateString(),
-                  })}
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-saubio-slate/50">
+                  {t('providerDashboard.paymentsTitle')}
                 </p>
-              </li>
-            ))}
-          </ul>
-        )}
-      </SurfaceCard>
+                <p className="mt-2 text-2xl font-semibold text-saubio-forest">
+                  {formatCurrencyFromCents(earningsSummary?.totalEarnedCents ?? data.payments.totalCents)}
+                </p>
+                <p className="text-xs text-saubio-slate/60">
+                  {t('providerDashboard.payments.totalSubtitle', 'Total gagné via Saubio')}
+                </p>
+              </div>
+              <div className={iconBadge}>
+                <Euro className="h-5 w-5" />
+              </div>
+            </div>
+            <div className="mt-6 space-y-4">
+              <div className="flex h-3 w-full overflow-hidden rounded-full bg-saubio-mist/60">
+                {payoutSegments.map((segment) => {
+                  const percentage = Math.round((segment.value / totalPipeline) * 100);
+                  return (
+                    <span
+                      key={segment.label}
+                      className={`h-full transition-all ${segment.color}`}
+                      style={{ width: `${percentage}%` }}
+                      title={`${segment.label} — ${formatCurrencyFromCents(segment.value)}`}
+                    />
+                  );
+                })}
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {payoutSegments.map((segment) => (
+                  <div key={segment.label} className="flex items-center justify-between rounded-2xl bg-saubio-mist/30 px-3 py-2 text-sm">
+                    <span className="flex items-center gap-2 font-semibold text-saubio-slate/70">
+                      <span className={`h-2.5 w-2.5 rounded-full ${segment.color}`} />
+                      {segment.label}
+                    </span>
+                    <span className="text-saubio-forest">{formatCurrencyFromCents(segment.value)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <UpcomingMissionsCard missions={data.upcoming} t={t} />
+
+          <ActivityCard events={activityFeed} />
+        </div>
+
+        <div className="space-y-6">
+          <QualityCard quality={data.quality} />
+
+          <InvitationsCard
+            invitations={invitations}
+            isLoading={invitationsQuery.isLoading}
+            onAction={handleInvitationAction}
+            isMutating={respondInvitationMutation.isPending}
+          />
+
+          <FeedbackCard feedback={feedback} />
+
+          <ResourcesCard resources={data.resources} t={t} />
+        </div>
+      </div>
     </div>
   );
 }
+
+type StatCardProps = {
+  title: string;
+  value: string;
+  subtitle: string;
+  icon: ComponentType<{ className?: string }>;
+  trend?: number;
+};
+
+function StatCard({ title, value, subtitle, icon: Icon, trend }: StatCardProps) {
+  const trendValue = typeof trend === 'number' ? trend : null;
+  const isPositive = (trendValue ?? 0) >= 0;
+  return (
+    <div className={cardBase}>
+      <div className="flex items-center justify-between">
+        <div className={iconBadge}>
+          <Icon className="h-5 w-5" />
+        </div>
+        {trendValue !== null ? (
+          <span
+            className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${
+              isPositive ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'
+            }`}
+          >
+            {isPositive ? '↑' : '↓'}
+            {Math.abs(trendValue).toFixed(1)}%
+          </span>
+        ) : null}
+      </div>
+      <p className="mt-6 text-3xl font-semibold text-saubio-forest">{value}</p>
+      <p className="mt-1 text-sm text-saubio-slate/60">{subtitle}</p>
+    </div>
+  );
+}
+
+function UpcomingMissionsCard({
+  missions,
+  t,
+}: {
+  missions: ProviderDashboardPageData['upcoming'];
+  t: TranslateFn;
+}) {
+  if (!missions.length) {
+    return (
+      <section className={cardBase}>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-saubio-slate/50">
+              {t('providerDashboard.upcoming')}
+            </p>
+            <p className="mt-2 text-xl font-semibold text-saubio-forest">
+              {t('providerDashboard.emptyUpcoming')}
+            </p>
+          </div>
+          <div className={iconBadge}>
+            <CalendarDays className="h-5 w-5" />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className={cardBase}>
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-saubio-slate/50">
+            {t('providerDashboard.upcoming')}
+          </p>
+          <p className="text-sm text-saubio-slate/60">{t('providerDashboard.nextSevenDays', 'Prochains 7 jours')}</p>
+        </div>
+        <div className={iconBadge}>
+          <CalendarDays className="h-5 w-5" />
+        </div>
+      </div>
+      <div className="mt-4 space-y-3">
+        {missions.map((mission) => (
+          <div
+            key={mission.id}
+            className="flex flex-col gap-2 rounded-2xl border border-saubio-forest/10 bg-white/70 p-4 text-sm text-saubio-slate/80"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="font-semibold text-saubio-forest">{mission.city ?? '—'}</p>
+                <p className="text-xs text-saubio-slate/60">
+                  {mission.service.toUpperCase()} ·{' '}
+                  {mission.surfaces ? `${mission.surfaces} m²` : t('providerDashboard.sizeUnknown', 'Surface à préciser')}
+                </p>
+              </div>
+              <div className="text-right text-xs text-saubio-slate/60">
+                <p className="font-semibold text-saubio-forest">{formatDateTime(mission.startAt)}</p>
+                <p>{t(`bookingStatus.${mission.status}`, mission.status)}</p>
+              </div>
+            </div>
+            {mission.ecoPreference === 'bio' ? (
+              <span className="inline-flex w-max items-center gap-1 rounded-full bg-saubio-forest/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-saubio-forest">
+                <Leaf className="h-3 w-3" />
+                Öko Plus
+              </span>
+            ) : null}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ActivityCard({
+  events,
+}: {
+  events: Array<{
+    id: string;
+    title: string;
+    description: string;
+    createdAt: string;
+    tone: 'positive' | 'warning' | 'neutral' | 'danger';
+    icon: ComponentType<{ className?: string }>;
+  }>;
+}) {
+  const badgeClass: Record<'positive' | 'warning' | 'neutral' | 'danger', string> = {
+    positive: 'bg-emerald-50 text-emerald-700',
+    warning: 'bg-amber-50 text-amber-700',
+    neutral: 'bg-saubio-mist/60 text-saubio-slate/70',
+    danger: 'bg-red-50 text-red-600',
+  };
+
+  return (
+    <section className={cardBase}>
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-saubio-slate/50">
+            Activité & notifications
+          </p>
+          <p className="text-sm text-saubio-slate/60">Matching, alertes qualité, paiements</p>
+        </div>
+        <div className={iconBadge}>
+          <Bell className="h-5 w-5" />
+        </div>
+      </div>
+      {events.length === 0 ? (
+        <p className="mt-4 rounded-2xl border border-dashed border-saubio-forest/15 bg-white/60 p-4 text-center text-xs text-saubio-slate/60">
+          Aucune activité récente.
+        </p>
+      ) : (
+        <ul className="mt-4 space-y-3 text-sm text-saubio-slate/80">
+          {events.map((event) => {
+            const Icon = event.icon;
+            return (
+              <li key={event.id} className="flex items-start gap-3 rounded-2xl border border-saubio-forest/10 bg-white/80 p-4">
+                <span className={`${iconBadge} h-10 w-10`}>
+                  <Icon className="h-4 w-4" />
+                </span>
+                <div className="flex-1">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="font-semibold text-saubio-forest">{event.title}</p>
+                    <span className={`rounded-full px-3 py-1 text-[11px] font-semibold ${badgeClass[event.tone]}`}>
+                      {new Date(event.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <p className="text-xs text-saubio-slate/60">{event.description}</p>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+function QualityCard({
+  quality,
+}: {
+  quality: {
+    rating: number;
+    incidents: number;
+    ecoRate: number;
+    responseMinutes: number;
+  };
+}) {
+  const items = [
+    {
+      label: 'Note moyenne',
+      value: `${quality.rating.toFixed(2)} / 5`,
+      icon: Star,
+    },
+    {
+      label: 'Incidents 30j',
+      value: quality.incidents.toString(),
+      icon: AlertTriangle,
+    },
+    {
+      label: 'Réponse moyenne',
+      value: `${quality.responseMinutes} min`,
+      icon: Clock3,
+    },
+    {
+      label: 'Taux Öko',
+      value: `${quality.ecoRate}%`,
+      icon: Leaf,
+    },
+  ];
+  return (
+    <section className={cardBase}>
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-saubio-slate/50">
+          Qualité & fiabilité
+        </p>
+        <div className={iconBadge}>
+          <CheckCircle2 className="h-5 w-5" />
+        </div>
+      </div>
+      <div className="mt-4 grid gap-3">
+        {items.map((item) => {
+          const Icon = item.icon;
+          return (
+            <div key={item.label} className="flex items-center justify-between rounded-2xl border border-saubio-forest/10 bg-saubio-mist/40 px-3 py-2 text-sm">
+              <div className="flex items-center gap-3 text-saubio-slate/70">
+                <span className="rounded-full bg-white/70 p-2 text-saubio-forest">
+                  <Icon className="h-4 w-4" />
+                </span>
+                <span>{item.label}</span>
+              </div>
+              <span className="font-semibold text-saubio-forest">{item.value}</span>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function InvitationsCard({
+  invitations,
+  isLoading,
+  onAction,
+  isMutating,
+}: {
+  invitations: Array<{
+    id: string;
+    service: string;
+    city?: string | null;
+    startAt: string;
+    durationHours: number;
+    requiredProviders: number;
+    shortNoticeDepositCents?: number | null;
+    surfacesSquareMeters?: number | null;
+  }>;
+  isLoading: boolean;
+  onAction: (id: string, action: 'accept' | 'decline') => void;
+  isMutating: boolean;
+}) {
+  const { t } = useTranslation();
+  if (isLoading) {
+    return (
+      <section className={cardBase}>
+        <Skeleton className="h-5 w-40 rounded-full" />
+        <div className="mt-4 space-y-3">
+          {Array.from({ length: 2 }).map((_, index) => (
+            <Skeleton key={`invite-${index}`} className="h-24 rounded-3xl" />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  if (!invitations.length) {
+    return null;
+  }
+
+  return (
+    <section className={cardBase}>
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-saubio-slate/50">
+          {t('providerDashboard.invitations.title', 'Offres Smart Match')}
+        </p>
+        <div className={iconBadge}>
+          <Inbox className="h-5 w-5" />
+        </div>
+      </div>
+      <p className="mt-1 text-xs text-saubio-slate/60">
+        {t('providerDashboard.invitations.subtitle', 'Répondez rapidement pour confirmer.')}
+      </p>
+      <div className="mt-4 space-y-4">
+        {invitations.map((invitation) => (
+          <div
+            key={invitation.id}
+            className="rounded-3xl border border-saubio-forest/10 bg-white/80 p-4 text-sm text-saubio-slate/80"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="font-semibold text-saubio-forest">
+                  {t(`services.${invitation.service}`, invitation.service)}
+                </p>
+                <p className="text-xs text-saubio-slate/60">
+                  {invitation.city ?? '—'} · {invitation.surfacesSquareMeters ?? '—'} m²
+                </p>
+              </div>
+              <div className="text-right text-xs text-saubio-slate/60">
+                <p className="font-semibold text-saubio-forest">{formatDateTime(invitation.startAt)}</p>
+                <p>{t('providerDashboard.invitations.duration', '{{hours}} h', { hours: invitation.durationHours.toFixed(1) })}</p>
+              </div>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-saubio-slate/70">
+              <span className="rounded-full bg-saubio-mist/60 px-3 py-1">
+                {t('providerDashboard.invitations.required', '{{count}} intervenant(s)', {
+                  count: invitation.requiredProviders,
+                })}
+              </span>
+              {invitation.shortNoticeDepositCents ? (
+                <span className="rounded-full bg-saubio-sun/20 px-3 py-1 text-saubio-forest">
+                  {t('providerDashboard.invitations.deposit', 'Blocage {{amount}}', {
+                    amount: formatEuro(invitation.shortNoticeDepositCents / 100),
+                  })}
+                </span>
+              ) : null}
+            </div>
+            <div className="mt-3 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => onAction(invitation.id, 'accept')}
+                disabled={isMutating}
+                className="flex-1 rounded-full bg-saubio-forest px-4 py-2 text-xs font-semibold text-white transition hover:bg-saubio-moss disabled:opacity-60"
+              >
+                {isMutating ? t('providerDashboard.invitations.accepting', 'Confirmation…') : t('providerDashboard.invitations.accept', 'Accepter')}
+              </button>
+              <button
+                type="button"
+                onClick={() => onAction(invitation.id, 'decline')}
+                disabled={isMutating}
+                className="flex-1 rounded-full border border-saubio-forest/20 px-4 py-2 text-xs font-semibold text-saubio-forest transition hover:border-saubio-forest/40 disabled:opacity-60"
+              >
+                {t('providerDashboard.invitations.decline', 'Refuser')}
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function FeedbackCard({
+  feedback,
+}: {
+  feedback: ProviderDashboardPageData['feedback'];
+}) {
+  return (
+    <section className={cardBase}>
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-saubio-slate/50">
+          Derniers avis clients
+        </p>
+        <div className={iconBadge}>
+          <Star className="h-5 w-5" />
+        </div>
+      </div>
+      {feedback.length === 0 ? (
+        <p className="mt-4 rounded-2xl border border-dashed border-saubio-forest/15 bg-white/60 p-4 text-center text-xs text-saubio-slate/60">
+          Aucun avis récent.
+        </p>
+      ) : (
+        <ul className="mt-4 space-y-3 text-sm text-saubio-slate/80">
+          {feedback.map((item) => (
+            <li key={item.id} className="rounded-2xl border border-saubio-forest/10 bg-white/80 p-4">
+              <div className="flex items-center justify-between">
+                <p className="font-semibold text-saubio-forest">{item.client}</p>
+                <span className="text-xs font-semibold text-saubio-forest">{item.rating.toFixed(1)} ★</span>
+              </div>
+              <p className="text-xs text-saubio-slate/60">{formatDateTime(item.createdAt)}</p>
+              <p className="mt-2 text-sm">{item.message}</p>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+function ResourcesCard({
+  resources,
+  t,
+}: {
+  resources: ProviderDashboardPageData['resources'];
+  t: TranslateFn;
+}) {
+  return (
+    <section className={cardBase}>
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-saubio-slate/50">
+          {t('providerDashboard.knowledgeCenter', 'Centre de ressources')}
+        </p>
+        <div className={iconBadge}>
+          <TrendingUp className="h-5 w-5" />
+        </div>
+      </div>
+      {resources.length === 0 ? (
+        <p className="mt-4 rounded-2xl border border-dashed border-saubio-forest/15 bg-white/60 p-4 text-center text-xs text-saubio-slate/60">
+          {t('providerDashboard.emptyResources', 'Rien à afficher pour le moment.')}
+        </p>
+      ) : (
+        <ul className="mt-4 space-y-3 text-sm text-saubio-slate/80">
+          {resources.slice(0, 3).map((resource) => (
+            <li key={resource.id} className="rounded-2xl bg-white/70 p-4">
+              <p className="font-semibold text-saubio-forest">{resource.title}</p>
+              <p className="text-xs text-saubio-slate/60">{resource.description}</p>
+              <p className="mt-1 text-[11px] uppercase tracking-widest text-saubio-slate/40">
+                {t('providerResourcesPage.updated', {
+                  date: new Date(resource.updatedAt).toLocaleDateString(),
+                })}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+type ProviderDashboardPageData = NonNullable<ReturnType<typeof useProviderDashboard>['data']>;

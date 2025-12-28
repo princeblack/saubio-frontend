@@ -7,7 +7,13 @@ import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import type { ProviderServiceType, ServiceCategory } from '@saubio/models';
 import { SERVICE_CATALOG } from '@saubio/models';
-import { priceEstimateQueryOptions, postalCodeLookupQueryOptions, formatEuro, formatDateTime } from '@saubio/utils';
+import {
+  priceEstimateQueryOptions,
+  postalCodeLookupQueryOptions,
+  formatEuro,
+  formatDateTime,
+  useSession,
+} from '@saubio/utils';
 import { SectionTitle, SurfaceCard } from '@saubio/ui';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -296,6 +302,15 @@ const CLEANING_WISHES: (Partial<
   ],
 };
 
+type PlannerFieldError =
+  | 'contactFirstName'
+  | 'contactLastName'
+  | 'contactPhone'
+  | 'contactStreet'
+  | 'contactStreetNumber'
+  | 'postalCode'
+  | 'city';
+
 const UPHOLSTERY_ITEMS = [
   { id: 'sofa_two', label: '2-Sitzer' },
   { id: 'sofa_three', label: '3-Sitzer' },
@@ -388,6 +403,8 @@ const computeEndDate = (startValue: string, hours: number) => {
 
 function BookingPlanningPageContent() {
   const { t } = useTranslation();
+  const session = useSession();
+  const isAuthenticated = Boolean(session.user);
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialPostal = searchParams?.get('postalCode') ?? '';
@@ -437,6 +454,7 @@ function BookingPlanningPageContent() {
   const [hasHydratedPersistence, setHasHydratedPersistence] = useState(false);
   const [serviceDetailsOpen, setServiceDetailsOpen] = useState(true);
   const [addressDetailsOpen, setAddressDetailsOpen] = useState(true);
+  const [showFieldErrors, setShowFieldErrors] = useState(false);
 
   const serviceOptions = useMemo<TranslatedServiceOption[]>(
     () =>
@@ -634,6 +652,40 @@ function BookingPlanningPageContent() {
         postalMatch?.state ??
         t('bookingPlanner.location.preview', 'Zone estimée autour de ce code postal.')
     : t('bookingPlanner.location.prompt', 'Indiquez votre code postal pour voir les disponibilités.');
+  const requiredFieldErrors = useMemo<Partial<Record<PlannerFieldError, string>>>(() => {
+    const errors: Partial<Record<PlannerFieldError, string>> = {};
+    if (!contactFirstName.trim()) {
+      errors.contactFirstName = t('bookingPlanner.validation.firstName', 'Prénom requis.');
+    }
+    if (!contactLastName.trim()) {
+      errors.contactLastName = t('bookingPlanner.validation.lastName', 'Nom requis.');
+    }
+    if (contactPhone.trim().length < 6) {
+      errors.contactPhone = t('bookingPlanner.validation.phone', 'Numéro de téléphone requis.');
+    }
+    if (!contactStreet.trim()) {
+      errors.contactStreet = t('bookingPlanner.validation.street', 'Rue obligatoire.');
+    }
+    if (!contactStreetNumber.trim()) {
+      errors.contactStreetNumber = t('bookingPlanner.validation.streetNumber', 'Numéro obligatoire.');
+    }
+    if (!locationPostal.trim()) {
+      errors.postalCode = t('bookingPlanner.validation.postalCode', 'Code postal requis.');
+    }
+    if (!locationCity.trim()) {
+      errors.city = t('bookingPlanner.validation.city', 'Ville requise.');
+    }
+    return errors;
+  }, [
+    contactFirstName,
+    contactLastName,
+    contactPhone,
+    contactStreet,
+    contactStreetNumber,
+    locationPostal,
+    locationCity,
+    t,
+  ]);
   const clampHoursValue = (value: number) =>
     Math.min(SERVICE_DURATION.MAX, Math.max(SERVICE_DURATION.MIN, value));
 
@@ -952,7 +1004,7 @@ function BookingPlanningPageContent() {
 
   const buildSearchParams = () => {
     const params = new URLSearchParams({
-      postalCode: sanitizedPostal,
+      postalCode: locationPostal.trim(),
       service,
       frequency,
       hours: String(hours),
@@ -973,6 +1025,27 @@ function BookingPlanningPageContent() {
     if (depositHoldCents) {
       params.set('estimatedDepositCents', String(Math.round(depositHoldCents)));
     }
+    const street = contactStreet.trim();
+    const streetNumber = contactStreetNumber.trim();
+    if (street) {
+      const line1 = streetNumber ? `${street} ${streetNumber}` : street;
+      params.set('streetLine1', line1);
+    }
+    if (contactFloor.trim()) {
+      params.set('streetLine2', contactFloor.trim());
+      params.set('accessNotes', contactFloor.trim());
+    }
+    const normalizedCity = locationCity.trim();
+    if (normalizedCity) {
+      params.set('city', normalizedCity);
+    }
+    params.set('countryCode', postalMatch?.countryCode ?? 'DE');
+    params.set('contactFirstName', contactFirstName.trim());
+    params.set('contactLastName', contactLastName.trim());
+    params.set('contactPhone', contactPhone.trim());
+    if (contactCompany.trim()) {
+      params.set('contactCompany', contactCompany.trim());
+    }
     return params;
   };
 
@@ -980,6 +1053,11 @@ function BookingPlanningPageContent() {
     if (continueDisabled) {
       return;
     }
+    if (Object.keys(requiredFieldErrors).length > 0) {
+      setShowFieldErrors(true);
+      return;
+    }
+    setShowFieldErrors(false);
     const params = buildSearchParams();
     const targetQuery = params.toString();
     if (isShortNotice) {
@@ -996,7 +1074,16 @@ function BookingPlanningPageContent() {
     if (!next) {
       return;
     }
-    router.push(`/bookings/account?${next}`);
+    const params = new URLSearchParams(next);
+    if (isAuthenticated) {
+      params.set('skipAuth', '1');
+    }
+    const target = `/bookings/account?${params.toString()}`;
+    console.log('[BookingPlanning] shortNoticeContinue', {
+      isAuthenticated,
+      nextRoute: target,
+    });
+    router.push(target);
   };
 
   const cancelShortNoticeFlow = () => {
@@ -1021,7 +1108,7 @@ function BookingPlanningPageContent() {
     );
   }
 
-  const pageContent = (
+const pageContent = (
     <div className="mx-auto max-w-6xl space-y-8 px-0 py-4">
       <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="min-h-[800px]">
@@ -1494,9 +1581,17 @@ function BookingPlanningPageContent() {
                             type="tel"
                             value={contactPhone}
                             onChange={(event) => setContactPhone(event.target.value)}
-                            className="w-full rounded-2xl border border-saubio-forest/15 bg-white px-4 py-3 outline-none focus:border-saubio-forest"
+                            className={`w-full rounded-2xl bg-white px-4 py-3 outline-none ${
+                              showFieldErrors && requiredFieldErrors.contactPhone
+                                ? 'border border-red-500 text-red-700 focus:border-red-500'
+                                : 'border border-saubio-forest/15 focus:border-saubio-forest'
+                            }`}
                             placeholder="+49 30 1234567"
+                            aria-invalid={Boolean(showFieldErrors && requiredFieldErrors.contactPhone)}
                           />
+                          {showFieldErrors && requiredFieldErrors.contactPhone ? (
+                            <p className="text-xs text-red-600">{requiredFieldErrors.contactPhone}</p>
+                          ) : null}
                         </label>
                         <label className="space-y-2">
                           <span className="text-xs font-semibold uppercase tracking-wide text-saubio-slate/60">
@@ -1518,8 +1613,16 @@ function BookingPlanningPageContent() {
                           <input
                             value={contactFirstName}
                             onChange={(event) => setContactFirstName(event.target.value)}
-                            className="w-full rounded-2xl border border-saubio-forest/15 bg-white px-4 py-3 outline-none focus:border-saubio-forest"
+                            className={`w-full rounded-2xl bg-white px-4 py-3 outline-none ${
+                              showFieldErrors && requiredFieldErrors.contactFirstName
+                                ? 'border border-red-500 text-red-700 focus:border-red-500'
+                                : 'border border-saubio-forest/15 focus:border-saubio-forest'
+                            }`}
+                            aria-invalid={Boolean(showFieldErrors && requiredFieldErrors.contactFirstName)}
                           />
+                          {showFieldErrors && requiredFieldErrors.contactFirstName ? (
+                            <p className="text-xs text-red-600">{requiredFieldErrors.contactFirstName}</p>
+                          ) : null}
                         </label>
                         <label className="space-y-2">
                           <span className="text-xs font-semibold uppercase tracking-wide text-saubio-slate/60">
@@ -1528,8 +1631,16 @@ function BookingPlanningPageContent() {
                           <input
                             value={contactLastName}
                             onChange={(event) => setContactLastName(event.target.value)}
-                            className="w-full rounded-2xl border border-saubio-forest/15 bg-white px-4 py-3 outline-none focus:border-saubio-forest"
+                            className={`w-full rounded-2xl bg-white px-4 py-3 outline-none ${
+                              showFieldErrors && requiredFieldErrors.contactLastName
+                                ? 'border border-red-500 text-red-700 focus:border-red-500'
+                                : 'border border-saubio-forest/15 focus:border-saubio-forest'
+                            }`}
+                            aria-invalid={Boolean(showFieldErrors && requiredFieldErrors.contactLastName)}
                           />
+                          {showFieldErrors && requiredFieldErrors.contactLastName ? (
+                            <p className="text-xs text-red-600">{requiredFieldErrors.contactLastName}</p>
+                          ) : null}
                         </label>
                       </div>
                       <div className="grid gap-4 sm:grid-cols-[2fr_1fr]">
@@ -1540,9 +1651,17 @@ function BookingPlanningPageContent() {
                           <input
                             value={contactStreet}
                             onChange={(event) => setContactStreet(event.target.value)}
-                            className="w-full rounded-2xl border border-saubio-forest/15 bg-white px-4 py-3 outline-none focus:border-saubio-forest"
+                            className={`w-full rounded-2xl bg-white px-4 py-3 outline-none ${
+                              showFieldErrors && requiredFieldErrors.contactStreet
+                                ? 'border border-red-500 text-red-700 focus:border-red-500'
+                                : 'border border-saubio-forest/15 focus:border-saubio-forest'
+                            }`}
                             placeholder="Karl-Marx-Allee"
+                            aria-invalid={Boolean(showFieldErrors && requiredFieldErrors.contactStreet)}
                           />
+                          {showFieldErrors && requiredFieldErrors.contactStreet ? (
+                            <p className="text-xs text-red-600">{requiredFieldErrors.contactStreet}</p>
+                          ) : null}
                         </label>
                         <label className="space-y-2">
                           <span className="text-xs font-semibold uppercase tracking-wide text-saubio-slate/60">
@@ -1551,9 +1670,17 @@ function BookingPlanningPageContent() {
                           <input
                             value={contactStreetNumber}
                             onChange={(event) => setContactStreetNumber(event.target.value)}
-                            className="w-full rounded-2xl border border-saubio-forest/15 bg-white px-4 py-3 outline-none focus:border-saubio-forest"
+                            className={`w-full rounded-2xl bg-white px-4 py-3 outline-none ${
+                              showFieldErrors && requiredFieldErrors.contactStreetNumber
+                                ? 'border border-red-500 text-red-700 focus:border-red-500'
+                                : 'border border-saubio-forest/15 focus:border-saubio-forest'
+                            }`}
                             placeholder="92"
+                            aria-invalid={Boolean(showFieldErrors && requiredFieldErrors.contactStreetNumber)}
                           />
+                          {showFieldErrors && requiredFieldErrors.contactStreetNumber ? (
+                            <p className="text-xs text-red-600">{requiredFieldErrors.contactStreetNumber}</p>
+                          ) : null}
                         </label>
                       </div>
                       <div className="grid gap-4 sm:grid-cols-2">
@@ -1564,8 +1691,15 @@ function BookingPlanningPageContent() {
                           <input
                             value={locationPostal}
                             disabled
-                            className="w-full rounded-2xl border border-saubio-forest/15 bg-saubio-mist/50 px-4 py-3 text-saubio-slate/60 outline-none"
+                            className={`w-full rounded-2xl bg-saubio-mist/50 px-4 py-3 text-saubio-slate/60 outline-none ${
+                              showFieldErrors && requiredFieldErrors.postalCode
+                                ? 'border border-red-500 text-red-700'
+                                : 'border border-saubio-forest/15'
+                            }`}
                           />
+                          {showFieldErrors && requiredFieldErrors.postalCode ? (
+                            <p className="text-xs text-red-600">{requiredFieldErrors.postalCode}</p>
+                          ) : null}
                         </label>
                         <label className="space-y-2">
                           <span className="text-xs font-semibold uppercase tracking-wide text-saubio-slate/60">
@@ -1574,9 +1708,16 @@ function BookingPlanningPageContent() {
                           <input
                             value={locationCity}
                             disabled
-                            className="w-full rounded-2xl border border-saubio-forest/15 bg-saubio-mist/50 px-4 py-3 text-saubio-slate/60 outline-none"
+                            className={`w-full rounded-2xl bg-saubio-mist/50 px-4 py-3 text-saubio-slate/60 outline-none ${
+                              showFieldErrors && requiredFieldErrors.city
+                                ? 'border border-red-500 text-red-700'
+                                : 'border border-saubio-forest/15'
+                            }`}
                             placeholder={t('bookingPlanner.fields.cityPlaceholder', 'Ville détectée')}
                           />
+                          {showFieldErrors && requiredFieldErrors.city ? (
+                            <p className="text-xs text-red-600">{requiredFieldErrors.city}</p>
+                          ) : null}
                         </label>
                       </div>
                       <label className="space-y-2">

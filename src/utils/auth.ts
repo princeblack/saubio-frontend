@@ -5,8 +5,8 @@ type JwtPayload = {
 };
 
 const ROLE_HOME: Record<string, string> = {
-  admin: '/admin/dashboard',
-  employee: '/admin/dashboard',
+  admin: '/admin',
+  employee: '/employee/dashboard',
   company: '/client/dashboard',
   provider: '/prestataire/dashboard',
   client: '/client/dashboard',
@@ -48,6 +48,7 @@ export function resolveRoleHome(roles: string[] | undefined) {
 
 export function matchProtectedPath(pathname: string) {
   if (pathname.startsWith('/admin')) return 'admin';
+  if (pathname.startsWith('/employee')) return 'employee';
   if (pathname.startsWith('/prestataire')) return 'provider';
   if (pathname.startsWith('/client')) return 'client';
   return null;
@@ -64,7 +65,8 @@ export function guardAccess(request: NextRequest) {
   }
 
   const allowedMap: Record<string, string[]> = {
-    admin: ['admin', 'employee'],
+    admin: ['admin'],
+    employee: ['employee'],
     provider: ['provider', 'employee', 'admin'],
     client: ['client', 'company', 'employee', 'admin'],
   };

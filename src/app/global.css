@@ -19,6 +19,16 @@ a {
   @apply transition-colors duration-150;
 }
 
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
 .section-container {
   @apply mx-auto w-full max-w-7xl px-6 py-16 sm:px-10;
 }

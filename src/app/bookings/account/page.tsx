@@ -1,11 +1,12 @@
 'use client';
 
-import { ChangeEvent, FormEvent, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, FormEvent, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import type { CleaningFrequency, CreateBookingPayload, EcoPreference, ServiceCategory } from '@saubio/models';
 import {
   ApiError,
+  createApiClient,
   formatDateTime,
   formatEuro,
   useClaimBookingMutation,
@@ -31,6 +32,11 @@ type CheckoutSummary = {
   postalCode?: string;
   city?: string;
   countryCode?: string;
+  addressAccessNotes?: string;
+  contactFirstName?: string;
+  contactLastName?: string;
+  contactPhone?: string;
+  contactCompany?: string;
   startAt?: string;
   endAt?: string;
   durationHours?: number;
@@ -77,6 +83,11 @@ const parseSummary = (params: ReturnType<typeof useSearchParams>): CheckoutSumma
     postalCode: params.get('postalCode') ?? undefined,
     city: params.get('city') ?? undefined,
     countryCode: params.get('countryCode') ?? undefined,
+    addressAccessNotes: params.get('accessNotes') ?? undefined,
+    contactFirstName: params.get('contactFirstName') ?? undefined,
+    contactLastName: params.get('contactLastName') ?? undefined,
+    contactPhone: params.get('contactPhone') ?? undefined,
+    contactCompany: params.get('contactCompany') ?? undefined,
     startAt: params.get('startAt') ?? undefined,
     endAt: params.get('endAt') ?? undefined,
     durationHours: parseNumber('hours'),
@@ -99,6 +110,7 @@ function BookingAccountPageContent() {
   const summary = useMemo(() => parseSummary(searchParams), [searchParams]);
   const bookingId = summary.bookingId;
   const guestToken = searchParams.get('guestToken') ?? undefined;
+  const skipAuth = searchParams.get('skipAuth') === '1';
   const router = useRouter();
   const { t, i18n } = useTranslation();
   const session = useSession();
@@ -112,6 +124,10 @@ function BookingAccountPageContent() {
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [formError, setFormError] = useState<string | null>(null);
   const [claimCompleted, setClaimCompleted] = useState(!guestToken);
+  const autoCreateAttemptedRef = useRef(false);
+  const [fastTrackPhase, setFastTrackPhase] = useState<'idle' | 'creating' | 'prefetching' | 'redirecting' | 'error'>(
+    'idle'
+  );
 
   const paymentUrl = useMemo(() => {
     const params = new URLSearchParams();
@@ -190,15 +206,28 @@ function BookingAccountPageContent() {
     const eco = summary.ecoPreference === 'bio' ? 'bio' : ('standard' as EcoPreference);
     const requiredProviders = summary.requiredProviders ?? (summary.shortNotice ? 1 : 2);
     const addressLine = summary.streetLine1?.trim().length ? summary.streetLine1 : 'Adresse à confirmer';
+    const address = {
+      streetLine1: addressLine,
+      streetLine2: summary.streetLine2 ?? undefined,
+      postalCode: summary.postalCode ?? '00000',
+      city: summary.city ?? 'Berlin',
+      countryCode: summary.countryCode ?? 'DE',
+      accessNotes: summary.addressAccessNotes ?? undefined,
+    };
+    const contact =
+      summary.contactFirstName || summary.contactLastName || summary.contactPhone
+        ? {
+            firstName: summary.contactFirstName ?? undefined,
+            lastName: summary.contactLastName ?? undefined,
+            phone: summary.contactPhone ?? undefined,
+            company: summary.contactCompany ?? undefined,
+            address,
+          }
+        : undefined;
 
     return {
-      address: {
-        streetLine1: addressLine,
-        streetLine2: summary.streetLine2 ?? undefined,
-        postalCode: summary.postalCode ?? '00000',
-        city: summary.city ?? 'Berlin',
-        countryCode: summary.countryCode ?? 'DE',
-      },
+      address,
+      contact,
       service,
       surfacesSquareMeters: summary.surfacesSquareMeters ?? 80,
       startAt: start.toISOString(),
@@ -214,26 +243,94 @@ function BookingAccountPageContent() {
     };
   }, [bookingId, summary]);
 
-  const createBookingFromPlanner = useCallback(() => {
+  const prefetchCheckoutIntent = useCallback(
+    async (id: string) => {
+      setFastTrackPhase('prefetching');
+      const client = createApiClient({ includeCredentials: true });
+      await client.prepareCheckoutPayment(id);
+    },
+    []
+  );
+
+  const createBookingFromPlanner = useCallback(async () => {
     if (bookingId) {
       router.push(paymentUrl);
       return;
     }
     if (!payloadFromPlanner) {
       setFormError(t('checkoutAccount.errors.restart'));
+      setFastTrackPhase('error');
       return;
     }
-    createBookingMutation.mutate(payloadFromPlanner, {
-      onSuccess: (data) => {
-        clearBookingPlannerState();
-        router.push(`/client/checkout/payment?bookingId=${data.id}`);
-      },
-      onError: (error) => {
-        const message = (error as { message?: string })?.message ?? t('system.error.generic');
-        setFormError(message);
-      },
-    });
-  }, [bookingId, payloadFromPlanner, router, paymentUrl, createBookingMutation, t]);
+    try {
+      setFastTrackPhase('creating');
+      const data = await createBookingMutation.mutateAsync(payloadFromPlanner);
+      clearBookingPlannerState();
+      await prefetchCheckoutIntent(data.id);
+      setFastTrackPhase('redirecting');
+      router.push(`/client/checkout/payment?bookingId=${data.id}`);
+    } catch (error) {
+      setFastTrackPhase('error');
+      const message = (error as { message?: string })?.message ?? t('system.error.generic');
+      setFormError(message);
+    }
+  }, [bookingId, payloadFromPlanner, router, paymentUrl, createBookingMutation, prefetchCheckoutIntent, t]);
+
+  useEffect(() => {
+    if (!skipAuth) {
+      return;
+    }
+    if (autoCreateAttemptedRef.current) {
+      return;
+    }
+    if (!session.user) {
+      return;
+    }
+    if (bookingId) {
+      return;
+    }
+    if (!payloadFromPlanner) {
+      return;
+    }
+    autoCreateAttemptedRef.current = true;
+    console.log('[BookingAccount] autoCreateFromPlanner', { skipAuth, hasPayload: Boolean(payloadFromPlanner) });
+    void createBookingFromPlanner();
+  }, [skipAuth, session.user, bookingId, payloadFromPlanner, createBookingFromPlanner]);
+
+  const fastTrackActive = skipAuth && !bookingId && Boolean(session.user);
+  if (fastTrackActive && formError) {
+    return (
+      <SurfaceCard>
+        <ErrorState
+          title={t('checkoutAccount.errors.missingBooking')}
+          description={formError}
+          onRetry={() => router.push('/bookings/new')}
+        />
+      </SurfaceCard>
+    );
+  }
+
+  if (fastTrackActive && (fastTrackPhase === 'creating' || fastTrackPhase === 'prefetching' || fastTrackPhase === 'idle')) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center space-y-4">
+        <LoadingIndicator tone="dark" />
+        <p className="text-sm text-saubio-slate/80">
+          {t('checkoutAccount.fastTrack.preparing', 'Préparation de votre paiement sécurisé…')}
+        </p>
+      </div>
+    );
+  }
+
+  if (fastTrackActive && fastTrackPhase === 'redirecting') {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center space-y-3">
+        <LoadingIndicator tone="dark" />
+        <p className="text-sm text-saubio-slate/80">
+          {t('checkoutAccount.fastTrack.redirecting', 'Redirection vers la page de paiement en cours…')}
+        </p>
+      </div>
+    );
+  }
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -254,7 +351,7 @@ function BookingAccountPageContent() {
           preferredLocale,
         },
         {
-          onSuccess: () => createBookingFromPlanner(),
+          onSuccess: () => void createBookingFromPlanner(),
           onError: (error) => {
             const message = (error as { message?: string })?.message ?? t('system.error.generic');
             setFormError(message);
@@ -267,7 +364,7 @@ function BookingAccountPageContent() {
     loginMutation.mutate(
       { email: loginForm.email, password: loginForm.password },
       {
-        onSuccess: () => createBookingFromPlanner(),
+        onSuccess: () => void createBookingFromPlanner(),
         onError: (error) => {
           const message = (error as { message?: string })?.message ?? t('system.error.generic');
           setFormError(message);

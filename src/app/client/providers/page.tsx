@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ChangeEvent } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { ProviderDirectoryFilters, ServiceCategory } from '@saubio/models';
@@ -38,6 +38,23 @@ export default function ClientProvidersPage() {
   const [maxRate, setMaxRate] = useState('');
   const [serviceFilter, setServiceFilter] = useState<ServiceCategory | 'all'>('all');
   const [sort, setSort] = useState<'rating' | 'rate'>('rating');
+  const [rateErrors, setRateErrors] = useState<{ min?: string; max?: string }>({});
+  const digitsOnlyRegex = /^\d+$/;
+
+  const handleRateChange =
+    (key: 'min' | 'max', setter: (value: string) => void) =>
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const rawValue = event.target.value;
+      if (rawValue === '' || digitsOnlyRegex.test(rawValue)) {
+        setter(rawValue);
+        setRateErrors((prev) => ({ ...prev, [key]: undefined }));
+      } else {
+        setRateErrors((prev) => ({
+          ...prev,
+          [key]: t('forms.errors.numericOnly', 'Veuillez saisir uniquement des chiffres.'),
+        }));
+      }
+    };
 
   const filters = useMemo<ProviderDirectoryFilters>(() => {
     const next: ProviderDirectoryFilters = { sort };
@@ -111,21 +128,29 @@ export default function ClientProvidersPage() {
           </FormField>
           <FormField label={t('providerDirectory.filters.minRate', 'Tarif min. (€ / h)')}>
             <input
-              type="number"
-              min={0}
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={minRate}
-              onChange={(event) => setMinRate(event.target.value)}
+              onChange={handleRateChange('min', setMinRate)}
               className="w-full rounded-2xl border border-saubio-forest/15 px-4 py-3 text-base leading-tight text-saubio-forest focus:border-saubio-forest focus:outline-none"
             />
+            {rateErrors.min ? (
+              <p className="mt-1 text-xs text-red-600">{rateErrors.min}</p>
+            ) : null}
           </FormField>
           <FormField label={t('providerDirectory.filters.maxRate', 'Tarif max. (€ / h)')}>
             <input
-              type="number"
-              min={0}
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={maxRate}
-              onChange={(event) => setMaxRate(event.target.value)}
+              onChange={handleRateChange('max', setMaxRate)}
               className="w-full rounded-2xl border border-saubio-forest/15 px-4 py-3 text-base leading-tight text-saubio-forest focus:border-saubio-forest focus:outline-none"
             />
+            {rateErrors.max ? (
+              <p className="mt-1 text-xs text-red-600">{rateErrors.max}</p>
+            ) : null}
           </FormField>
           <FormField label={t('providerDirectory.filters.sort', 'Trier par')}>
             <select

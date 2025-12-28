@@ -14,8 +14,11 @@ export const filterBookings = (
   const trimmedCity = city.trim().toLowerCase();
 
   return bookings.filter((booking) => {
+    const normalizedStatus = booking.status.toLowerCase();
     const statusMatch =
-      status === 'all' || booking.status.toLowerCase() === status.toLowerCase();
+      status === 'all'
+        ? normalizedStatus !== 'draft'
+        : normalizedStatus === status.toLowerCase();
     const cityMatch = trimmedCity
       ? booking.address.city.toLowerCase().includes(trimmedCity)
       : true;

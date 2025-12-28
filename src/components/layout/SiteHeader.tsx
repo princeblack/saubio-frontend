@@ -21,8 +21,8 @@ const navItems = [
 ];
 
 const roleLinkMap: Record<string, { href: string; labelKey: string }> = {
-  admin: { href: '/admin/dashboard', labelKey: 'nav.role.admin' },
-  employee: { href: '/admin/dashboard', labelKey: 'nav.role.employee' },
+  admin: { href: '/admin', labelKey: 'nav.role.employee' },
+  employee: { href: '/employee/dashboard', labelKey: 'nav.role.employee' },
   company: { href: '/client/dashboard', labelKey: 'nav.role.company' },
   provider: { href: '/prestataire/dashboard', labelKey: 'nav.role.provider' },
   client: { href: '/client/dashboard', labelKey: 'nav.role.client' },

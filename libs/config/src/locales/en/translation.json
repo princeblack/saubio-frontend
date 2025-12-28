@@ -14,8 +14,8 @@
       "client": "Client space",
       "provider": "Provider space",
       "company": "Company space",
-      "admin": "Admin console",
-      "employee": "Operations console"
+      "admin": "Team console",
+      "employee": "Team console"
     }
   },
   "cities": {
@@ -152,6 +152,46 @@
       "totalLabel": "Estimated total",
       "totalValue": "{{amount}}",
       "finalize": "Confirm request"
+    },
+    "postalLabel": "Where do you need service?",
+    "postalPlaceholder": "Postal code",
+    "postalHelp": "Enter your postal code to check availability and pricing near you.",
+    "postalCta": "Plan booking",
+    "postalChecking": "Checking…",
+    "postalDisclaimer": "Your information stays confidential.",
+    "postalErrorRequired": "Please enter a postal code.",
+    "postalErrorFormat": "This postal code doesn’t look valid.",
+    "postalCoverageError": "This postal code is unknown or not covered yet.",
+    "postalCoverageRequestError": "We can’t verify coverage right now. Please try again."
+  },
+  "followUp": {
+    "badge": "Coming soon",
+    "title": "We are expanding to your area",
+    "subtitle": "Leave your contact details and be notified the moment Saubio goes live in your neighborhood.",
+    "bullets": [
+      {
+        "title": "Verified professionals",
+        "description": "Insured, background-checked cleaners trained on Saubio protocols."
+      },
+      {
+        "title": "Eco option included",
+        "description": "Certified products available in every new region."
+      },
+      {
+        "title": "Local Ops team",
+        "description": "Berlin-based operations to coordinate each mission."
+      }
+    ],
+    "form": {
+      "title": "Keep me posted",
+      "email": "Email address",
+      "postalCode": "Postal code",
+      "consent": "I want to receive emails, offers and updates when Saubio becomes available in my area.",
+      "submit": "Notify me",
+      "successTitle": "Thanks for your interest!",
+      "successDescription": "We will contact you as soon as we launch in your postal code.",
+      "backHome": "Back to homepage",
+      "error": "We couldn’t save your request. Please try again."
     }
   },
   "trust": {
@@ -339,11 +379,13 @@
     "country": "Country code",
     "service": "Service type",
     "surface": "Surface (m²)",
+    "surfacePlaceholder": "e.g. 120",
     "startAt": "Start date/time",
     "endAt": "End date/time",
     "frequency": "Frequency",
     "mode": "Assignment mode",
     "ecoPreference": "Eco preference",
+    "requiredProvidersPlaceholder": "e.g. 2",
     "providerIds": "Preferred provider IDs (comma separated)",
     "notes": "Notes (optional)",
     "submit": "Create booking",
@@ -377,6 +419,10 @@
       "eco": "Eco option",
       "tax": "VAT (19%)",
       "total": "Estimated total"
+    },
+    "providerSelection": {
+      "requirementPending": "Specify how many providers you need.",
+      "manualPending": "Enter a number to track manual selection."
     }
   },
   "bookingPlanner": {
@@ -868,6 +914,15 @@
         "leather": "Leather & faux leather care",
         "decor_cushions": "Decorative cushions"
       }
+    },
+    "validation": {
+      "firstName": "First name required.",
+      "lastName": "Last name required.",
+      "phone": "Phone number required.",
+      "street": "Enter the street name.",
+      "streetNumber": "Enter the street number.",
+      "postalCode": "Postal code required.",
+      "city": "City required."
     }
   },
   "bookingList": {
@@ -1393,16 +1448,28 @@
     "en": "English",
     "fr": "French"
   },
+  "forms": {
+    "errors": {
+      "numericOnly": "Please enter digits only."
+    },
+    "accessibility": {
+      "numbersOnly": "Digits only input."
+    }
+  },
   "sidebar": {
     "client": {
       "mandates": "SEPA mandates"
     },
     "provider": {
       "dashboard": "Dashboard",
+      "notifications": "Notifications & offers",
       "missions": "Missions",
       "profileSection": "Profile & identity",
+      "profileAccount": "Profile",
       "profilePublic": "Public profile",
-      "profileAddress": "Address & service area",
+      "identityVerification": "Identity verification",
+      "profileAddress": "Service area",
+      "payouts": "Payouts & bank details",
       "earningsPricing": "Rates & pricing",
       "servicesSection": "Services offered",
       "earningsSection": "Payouts & documents",
@@ -1413,6 +1480,16 @@
       "supportChecklist": "Onboarding checklist",
       "availabilitySection": "Availability & planning",
       "statsSection": "Stats & reviews"
+    },
+    "employee": {
+      "dashboard": "Team dashboard",
+      "users": "Users & accounts",
+      "providers": "Providers & onboarding",
+      "bookings": "Bookings & missions",
+      "teams": "Provider teams",
+      "support": "Support & disputes",
+      "operations": "Ops & matching",
+      "tickets": "Priority tickets"
     }
   },
   "clientDashboard": {
@@ -1495,12 +1572,14 @@
     },
     "scheduleTitle": "Upcoming schedule",
     "alertsTitle": "Quality alerts",
-    "paymentsTitle": "Payouts",
+    "paymentsTitle": "Earnings & payouts",
     "feedbackTitle": "Client feedback",
     "qualityTitle": "Operational quality",
     "payments": {
-      "total": "Payments received",
-      "pending": "Pending",
+      "total": "Total earned (excluding upcoming missions)",
+      "validation": "Awaiting validation",
+      "pending": "Payable (PMA pending)",
+      "paid": "Already paid",
       "lastPayout": "Last payout"
     },
     "quality": {
@@ -1514,6 +1593,65 @@
     "feedbackEmpty": "No recent feedback.",
     "errorTitle": "Unable to load dashboard",
     "errorDescription": "Refresh the page or try again shortly."
+  },
+  "providerOffers": {
+    "title": "Notifications & offers",
+    "subtitle": "Manage Smart Match invitations and keep an eye on critical alerts.",
+    "tabs": {
+      "offers": "Smart Match offers",
+      "notifications": "Other notifications"
+    },
+    "status": {
+      "pending": "New",
+      "viewed": "Viewed",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "expired": "Expired"
+    },
+    "card": {
+      "duration": "{{hours}} h · {{providers}} provider(s)",
+      "eco": "Preference: {{eco}}",
+      "surface": "{{count}} m²",
+      "deposit": "Estimated deposit {{amount}}"
+    },
+    "eco": {
+      "bio": "Bio products",
+      "standard": "Standard"
+    },
+    "actions": {
+      "view": "View details",
+      "accept": "Accept",
+      "decline": "Decline",
+      "close": "Close"
+    },
+    "details": {
+      "address": "Job address",
+      "timing": "Requested slot",
+      "contact": "Primary contact",
+      "unknownContact": "Contact not provided",
+      "summary": "Summary",
+      "eco": "Eco preference: {{eco}}",
+      "surface": "Estimated surface: {{value}} m²",
+      "instructions": "Client instructions"
+    },
+    "toasts": {
+      "accepted": "Mission accepted. We'll confirm it with the client.",
+      "declined": "Invitation declined.",
+      "error": "Unable to update this offer."
+    },
+    "empty": "No offers waiting right now.",
+    "errorTitle": "Unable to load offers",
+    "errorDescription": "Refresh the page and try again.",
+    "notifications": {
+      "title": "Notifications",
+      "markAll": "Mark all as read",
+      "marking": "Marking…",
+      "markAllSuccess": "All notifications have been marked as read.",
+      "empty": "No recent notifications.",
+      "errorTitle": "Unable to load notifications",
+      "errorDescription": "Refresh the page or try again later.",
+      "generic": "New notification."
+    }
   },
   "adminDashboard": {
     "title": "Admin dashboard",
@@ -1715,24 +1853,50 @@
     }
   },
   "providerRevenue": {
-    "title": "Revenue",
-    "subtitle": "Monitor payouts and upcoming payments.",
-    "summaryTitle": "Payment summary",
-    "tableTitle": "Payment history",
-    "chartTitle": "Revenue trend",
+    "title": "Earnings",
+    "subtitle": "Always know what you’ve completed, what is owed, and what has been paid.",
+    "overviewTitle": "Overview",
+    "historyTitle": "Payout history",
+    "chartTitle": "Confirmed earnings trend",
+    "tableTitle": "Mission payout history",
+    "summary": {
+      "total": "Total earned (excluding upcoming missions)",
+      "awaitingValidation": "Awaiting validation",
+      "payable": "Payable (PMA pending)",
+      "paid": "Already paid"
+    },
     "columns": {
       "date": "Date",
-      "booking": "Mission",
-      "amount": "Amount",
+      "client": "Client",
+      "service": "Mission",
+      "gross": "Gross",
+      "commission": "Commission",
+      "net": "Net",
       "status": "Status"
     },
-    "status": {
-      "captured": "Captured",
-      "authorized": "Authorized",
-      "pending": "Pending",
-      "processing": "Processing",
+    "statuses": {
+      "upcoming": "Upcoming",
+      "awaiting_validation": "Awaiting validation",
+      "payable": "Payable",
       "paid": "Paid"
-    }
+    },
+    "statusDescriptions": {
+      "upcoming": "Mission scheduled. Amount is estimated until completion.",
+      "awaiting_validation": "Mission finished, waiting for validation.",
+      "payable": "Amount confirmed. Payout scheduled.",
+      "paid": "Funds transferred to your account."
+    },
+    "expectedPayout": "Estimated payout {{date}}",
+    "empty": {
+      "overview": "You’ll see your earnings here after your first completed mission.",
+      "table": "No paid missions yet."
+    },
+    "documentsTitle": "Statements & invoices",
+    "documentsSubtitle": "Download your payout documents once they become available.",
+    "documentsErrorTitle": "Unable to load your statements",
+    "documentsErrorDescription": "Please try again in a moment.",
+    "documentsDownload": "Download",
+    "documentsEmpty": "Your statements will be available after your first payout."
   },
   "providerResourcesPage": {
     "title": "Resources",
@@ -1776,6 +1940,7 @@
       "identityDescription": "Upload your ID so our team can validate your account.",
       "street": "Street",
       "city": "City",
+      "zonesSubtitle": "Define the areas where you can operate.",
       "zonesTitle": "Service areas",
       "zonesDescription": "Mark the neighbourhoods or cities where you can operate.",
       "zonesEmpty": "No service area yet. Start adding cities or districts you cover.",
@@ -1798,11 +1963,11 @@
     },
     "payout": {
       "requiredTitle": "Activate your payouts",
-      "requiredDescription": "Add your bank details to receive missions. The secure flow is managed by Mollie.",
+      "requiredDescription": "Add your bank details to receive payouts. Everything stays inside the app, no external login.",
       "reviewTitle": "Verification in progress",
-      "reviewDescription": "Mollie is reviewing your payout details. Reopen the portal if adjustments are needed.",
+      "reviewDescription": "Your bank details are being reviewed. This usually takes a few minutes.",
       "rejectedTitle": "Payout not validated",
-      "rejectedDescription": "Some information has to be corrected. Reopen the Mollie portal to finish the activation.",
+      "rejectedDescription": "Some information must be corrected. Please try again with a valid IBAN.",
       "readyTitle": "Payouts activated",
       "readyDescription": "Your payout data is verified. Transfers are triggered automatically after each mission.",
       "method": "Method",
@@ -1818,13 +1983,56 @@
       },
       "statusHint": {
         "pending": "Add your bank details to start the verification.",
-        "in_review": "Mollie is checking your information. This may take a few minutes.",
-        "rejected": "Details were rejected. Reopen the portal to provide the requested updates.",
+        "in_review": "We are checking your information. This may take a few minutes.",
+        "rejected": "Details were rejected. Please update your bank details and try again.",
         "verified": "Your payouts are ready."
       },
-      "cta": "Complete my payout details",
-      "opening": "Opening the portal…",
-      "error": "Unable to create an onboarding link right now."
+      "cta": "Save my bank details",
+      "opening": "Activating…",
+      "error": "Unable to save your bank details right now.",
+      "accountHolder": "Account holder",
+      "iban": "IBAN",
+      "ibanError": "Invalid IBAN. Please check the format.",
+      "success": "Bank details saved. Payouts will be sent automatically.",
+      "pendingReview": "Bank details saved, validation in progress."
+    }
+  },
+  "providerAccountPage": {
+    "title": "Your profile",
+    "subtitle": "Manage your personal information, contact details and profile photo.",
+    "avatar": {
+      "title": "Profile photo",
+      "description": "Upload a clear photo that represents you on Saubio.",
+      "upload": "Upload a photo",
+      "uploading": "Uploading…",
+      "hint": "PNG or JPG, max 5 MB."
+    },
+    "account": {
+      "title": "Personal information",
+      "description": "These details appear on invoices and communications.",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "phone": "Phone number"
+    },
+    "address": {
+      "title": "Home address",
+      "description": "Your domicile helps us suggest missions near you.",
+      "streetLine1": "Street and number",
+      "streetLine2": "Additional info",
+      "postalCode": "Postal code",
+      "city": "City",
+      "region": "Region / state"
+    },
+    "actions": {
+      "save": "Save changes",
+      "saving": "Saving…"
+    },
+    "messages": {
+      "accountSaved": "Profile updated successfully.",
+      "addressSaved": "Address updated successfully.",
+      "photoSaved": "Photo updated.",
+      "error": "Unable to save your changes right now."
     }
   },
   "providerServicesPage": {

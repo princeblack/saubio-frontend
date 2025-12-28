@@ -3,10 +3,7 @@
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { appConfig, type LocaleCode } from '@saubio/config';
-import i18n from '../i18n/client';
 import { initializeI18n } from '../i18n/client';
-
-initializeI18n();
 
 const STORAGE_KEY = 'saubio-lang';
 
@@ -22,23 +19,27 @@ type Props = {
 };
 
 export function LanguageProvider({ children }: Props) {
+  const [i18n] = useState(() => initializeI18n(appConfig.defaultLocale));
   const [language, setLanguage] = useState<LocaleCode>(
     (i18n.language as LocaleCode) || appConfig.defaultLocale
   );
 
   useEffect(() => {
-    const saved = typeof window !== 'undefined' ? window.localStorage.getItem(STORAGE_KEY) : null;
-    if (saved && saved !== language) {
-      const normalized = appConfig.locales.includes(saved as LocaleCode)
-        ? (saved as LocaleCode)
-        : appConfig.defaultLocale;
+    if (typeof window === 'undefined') {
+      return;
+    }
+    const saved = window.localStorage.getItem(STORAGE_KEY);
+    if (!saved) {
+      return;
+    }
+    const normalized = appConfig.locales.includes(saved as LocaleCode)
+      ? (saved as LocaleCode)
+      : appConfig.defaultLocale;
+    if (normalized !== i18n.language) {
       i18n.changeLanguage(normalized);
       setLanguage(normalized);
-    } else if (!saved && language !== appConfig.defaultLocale) {
-      i18n.changeLanguage(appConfig.defaultLocale);
-      setLanguage(appConfig.defaultLocale);
     }
-  }, []);
+  }, [i18n]);
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
@@ -61,7 +62,7 @@ export function LanguageProvider({ children }: Props) {
         }
       },
     }),
-    [language]
+    [i18n, language]
   );
 
   return (

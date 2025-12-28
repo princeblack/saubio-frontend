@@ -8,7 +8,6 @@ import type { ProviderOnboardingTask } from '@saubio/models';
 import {
   useRequireRole,
   useProviderOnboardingStatus,
-  useProviderPaymentsOnboardingMutation,
 } from '@saubio/utils';
 import { SectionTitle, SurfaceCard, LoadingIndicator } from '@saubio/ui';
 import { CheckCircle2, Clock } from 'lucide-react';
@@ -27,22 +26,22 @@ type TaskLinkConfig = {
  */
 const TASK_ROUTE_MAP: Partial<Record<ProviderOnboardingTask['id'], TaskLinkConfig>> = {
   profile: {
-    href: '/prestataire/profile/identity',
+    href: '/prestataire/profile',
     labelKey: 'providerOnboardingChecklist.profile.cta',
     fallbackLabel: 'Mettre à jour',
-    menuKey: 'sidebar.provider.profileSection',
+    menuKey: 'sidebar.provider.profileAccount',
   },
   account: {
-    href: '/prestataire/profile/identity',
+    href: '/prestataire/profile',
     labelKey: 'providerOnboardingChecklist.profile.cta',
     fallbackLabel: 'Mettre à jour',
-    menuKey: 'sidebar.provider.profileSection',
+    menuKey: 'sidebar.provider.profileAccount',
   },
   identity: {
-    href: '/prestataire/profile/identity',
+    href: '/prestataire/identite',
     labelKey: 'providerOnboardingChecklist.identityForm.cta',
     fallbackLabel: 'Compléter',
-    menuKey: 'sidebar.provider.profileSection',
+    menuKey: 'sidebar.provider.identityVerification',
   },
   address: {
     href: '/prestataire/profile/address',
@@ -83,7 +82,6 @@ export default function ProviderOnboardingChecklistPage() {
   const signupFeeSuccess = searchParams?.get('signupFee') === 'success';
   const session = useRequireRole({ allowedRoles: ['provider', 'employee', 'admin'] });
   const statusQuery = useProviderOnboardingStatus(Boolean(session.user));
-  const paymentsMutation = useProviderPaymentsOnboardingMutation();
   const refetchRef = useRef(statusQuery.refetch);
   const pollStartedRef = useRef(false);
   const [signupFeePollingTimeout, setSignupFeePollingTimeout] = useState(false);
@@ -161,11 +159,7 @@ export default function ProviderOnboardingChecklistPage() {
   );
 
   const handlePayoutOnboarding = () => {
-    paymentsMutation.mutate(undefined, {
-      onSuccess: (response) => {
-        window.open(response.url, '_blank', 'noopener,noreferrer');
-      },
-    });
+    router.push('/prestataire/paiements');
   };
 
   const renderTaskControls = (task: ProviderOnboardingTask) => {
@@ -201,18 +195,16 @@ export default function ProviderOnboardingChecklistPage() {
             type="button"
             onClick={handlePayoutOnboarding}
             className="rounded-full bg-saubio-forest px-4 py-2 text-xs font-semibold text-white transition hover:bg-saubio-moss disabled:opacity-60"
-            disabled={paymentsMutation.isPending}
+            disabled={false}
           >
-            {paymentsMutation.isPending
-              ? t('providerOnboardingChecklist.payments.pending', 'Ouverture du portail…')
-              : t('providerOnboardingChecklist.payments.cta', 'Activer les paiements')}
+            {t('providerOnboardingChecklist.payments.cta', 'Activer les paiements')}
           </button>
         );
       case 'id_check':
         return (
           <button
             type="button"
-            onClick={() => router.push('/prestataire/onboarding/identity')}
+            onClick={() => router.push('/prestataire/identite')}
             className="rounded-full border border-saubio-forest/20 px-4 py-2 text-xs font-semibold text-saubio-forest transition hover:border-saubio-forest"
           >
             {t('providerOnboardingChecklist.identity.cta', 'Téléverser une pièce')}
@@ -312,15 +304,6 @@ export default function ProviderOnboardingChecklistPage() {
           </div>
         ))}
       </SurfaceCard>
-
-      {paymentsMutation.isError ? (
-        <p className="text-xs text-red-500">
-          {t(
-            'providerOnboardingChecklist.payments.error',
-            'Impossible d’ouvrir le portail de versement pour le moment. Réessayez plus tard.'
-          )}
-        </p>
-      ) : null}
 
       {allCompleted ? (
         <SurfaceCard variant="soft" padding="lg" className="text-center">

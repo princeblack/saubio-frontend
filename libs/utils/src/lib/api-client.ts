@@ -28,13 +28,18 @@ import type {
   UpdateProfilePayload,
   UpdatePasswordPayload,
   ProviderDashboardResponse,
+  ProviderEarningsResponse,
   ProviderMissionFilters,
   ProviderResourceItem,
   ProviderProfile,
   ProviderDirectoryFilters,
   ProviderDirectoryItem,
   ProviderDirectoryDetails,
+  PostalCoverageResponse,
+  PostalFollowUpPayload,
+  PostalFollowUpResponse,
   ProviderBookingInvitation,
+  ProviderInvitationFilters,
   ProviderSearchParams,
   ProviderSuggestion,
   ProviderOnboardingResponse,
@@ -47,12 +52,34 @@ import type {
   AdminUser,
   AdminSupportItem,
   AdminTicket,
+  AdminSupportOverviewResponse,
+  AdminSupportTicketListResponse,
+  AdminSupportTicketDetail,
+  AdminSupportTicketsQuery,
+  AdminSupportDisputeListResponse,
+  AdminSupportDisputeDetail,
+  AdminSupportDisputesQuery,
+  AdminSupportRangeQuery,
+  AdminSupportSlaResponse,
+  AdminSupportTicketUpdatePayload,
+  AdminSupportTicketMessagePayload,
+  AdminSupportDisputeUpdatePayload,
   AdminOperationsMetrics,
   AdminDashboardResponse,
+  AdminUsersOverviewResponse,
+  AdminPaginatedResponse,
+  AdminClientListItem,
+  AdminClientDetails,
+  AdminProviderListItem,
+  AdminProviderDetails,
+  AdminEmployeeListItem,
+  AdminRolesResponse,
   UpdateAdminUserPayload,
   CreateProviderOnboardingPayload,
   ProviderOnboardingRequest,
   ProviderPaymentsOnboardingPayload,
+  ProviderPayoutSetupPayload,
+  ProviderBankInfo,
   UpdateProviderOnboardingStatusPayload,
   UpdateProviderMissionPayload,
   AddressSuggestion,
@@ -66,6 +93,7 @@ import type {
   ProviderIdentitySessionResponse,
   ProviderIdentityDocumentSummary,
   ProviderIdentityDocumentUploadPayload,
+  ProviderProfilePhotoPayload,
   ProviderAvailabilityOverview,
   UpdateProviderAvailabilityPayload,
   CreateProviderTimeOffPayload,
@@ -82,8 +110,62 @@ import type {
   PriceEstimateParams,
   ProviderServiceCatalogResponse,
   ServiceCategory,
+  EcoPreference,
+  PromoCodeType,
   PostalCodeLookupResponse,
+  AdminBookingListItem,
+  AdminBookingDetails,
+  AdminBookingOverviewResponse,
+  AdminFinanceOverviewResponse,
+  AdminFinancePaymentItem,
+  AdminFinancePayoutItem,
+  AdminFinanceCommissionsResponse,
+  AdminFinanceExportsResponse,
+  AdminFinanceSettingsResponse,
+  AdminFinanceInvoicesResponse,
+  AdminMarketingLandingPagesResponse,
+  AdminMarketingOverviewResponse,
+  AdminMarketingSettingsResponse,
+  AdminPromoCodeListItem,
+  AdminPromoCodeDetail,
+  AdminPromoCodeStatsResponse,
+  AdminPromoCodeUsageRecord,
+  PaymentStatus,
+  PaymentMethod,
+  ProviderPayoutStatus,
+  AdminServiceCatalogResponse,
+  AdminServiceOptionsResponse,
+  AdminServicePricingMatrixResponse,
+  AdminServicePricingRulesResponse,
+  AdminPostalZonesResponse,
+  AdminZoneCoverageResponse,
+  AdminProviderServiceAreasResponse,
+  AdminZoneMatchingRulesResponse,
+  AdminMatchingTestResponse,
+  AdminServiceHabilitationsResponse,
+  AdminServiceLogsResponse,
+  AdminServicePreviewParams,
+  AdminServicePreviewResponse,
+  AdminSmartMatchingOverviewResponse,
+  AdminSmartMatchingHistoryItem,
+  AdminSmartMatchingDetail,
+  AdminSmartMatchingConfig,
+  AdminSmartMatchingScenarioResponse,
+  AdminSmartMatchingPolicyResponse,
+  AdminSmartMatchingGuardrailResponse,
+  AdminSmartMatchingSimulationResponse,
+  AdminQualityOverviewResponse,
+  AdminQualityReviewListItem,
+  AdminQualityReviewDetail,
+  AdminQualityProviderListItem,
+  AdminQualityIncidentItem,
+  AdminQualityAlertsResponse,
+  AdminQualitySatisfactionResponse,
+  AdminQualityProgramResponse,
+  AdminQualityProviderDetail,
+  ReviewStatus,
 } from '@saubio/models';
+export type { AdminSupportRangeQuery, AdminSupportTicketsQuery, AdminSupportDisputesQuery } from '@saubio/models';
 import { setSession } from './session-store';
 import { forceLogout } from './force-logout';
 
@@ -97,6 +179,159 @@ export interface ApiClientOptions {
   baseUrl?: string;
   fetchFn?: FetchFn;
   includeCredentials?: boolean;
+}
+
+export interface AdminPostalZonesQuery {
+  search?: string;
+  city?: string;
+  postalCode?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface AdminProviderServiceAreasQuery {
+  search?: string;
+  postalCode?: string;
+  service?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface AdminMatchingTestPayload {
+  service: ServiceCategory;
+  postalCode: string;
+  city?: string;
+  startAt: string;
+  endAt: string;
+  ecoPreference?: EcoPreference;
+  requiredProviders?: number;
+}
+
+export interface AdminSmartMatchingRangeQuery {
+  from?: string;
+  to?: string;
+}
+
+export interface AdminSmartMatchingHistoryQuery extends AdminSmartMatchingRangeQuery {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  service?: string;
+  postalCode?: string;
+  result?: 'assigned' | 'unassigned';
+  invitationStatus?: 'pending' | 'accepted' | 'declined' | 'expired';
+}
+
+export interface AdminQualityRangeParams {
+  from?: string;
+  to?: string;
+}
+
+export interface AdminQualityReviewsQuery extends AdminQualityRangeParams {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  providerId?: string;
+  clientId?: string;
+  service?: string;
+  city?: string;
+  minScore?: number;
+  maxScore?: number;
+  status?: ReviewStatus;
+}
+
+export interface AdminQualityProvidersQuery extends AdminQualityRangeParams {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  city?: string;
+  service?: string;
+  minReviews?: number;
+  focus?: 'at_risk' | 'top';
+}
+
+export interface AdminQualityIncidentsQuery extends AdminQualityRangeParams {
+  page?: number;
+  pageSize?: number;
+  status?: AdminQualityIncidentItem['status'];
+  severity?: 'low' | 'medium' | 'high';
+  providerId?: string;
+  clientId?: string;
+  bookingId?: string;
+  search?: string;
+}
+
+export interface AdminQualityReviewUpdatePayload {
+  status?: ReviewStatus;
+  moderationNotes?: string;
+}
+
+export interface AdminQualityIncidentUpdatePayload {
+  status?: AdminQualityIncidentItem['status'];
+  resolution?: string;
+  adminNotes?: string;
+}
+
+export interface AdminQualitySatisfactionQuery extends AdminQualityRangeParams {
+  service?: string;
+  city?: string;
+}
+
+export interface AdminQualityProgramQuery extends AdminQualityRangeParams {
+  city?: string;
+  service?: string;
+  minReviews?: number;
+  minRating?: number;
+  maxRating?: number;
+}
+
+export interface AdminSmartMatchingConfigPayload {
+  distanceMaxKm?: number;
+  weights?: Record<string, number>;
+  teamBonus?: { two?: number; threePlus?: number };
+}
+
+export interface AdminSmartMatchingSimulationPayload {
+  service: ServiceCategory;
+  postalCode: string;
+  city?: string;
+  startAt: string;
+  durationMinutes?: number;
+  ecoPreference?: EcoPreference;
+  requiredProviders?: number;
+}
+
+export interface AdminMarketingRangeParams {
+  from?: string;
+  to?: string;
+}
+
+export interface AdminPromoCodesQuery {
+  search?: string;
+  status?: 'active' | 'inactive' | 'scheduled' | 'expired';
+  page?: number;
+  pageSize?: number;
+}
+
+export interface AdminPromoCodeUsageQuery extends AdminMarketingRangeParams {
+  page?: number;
+  pageSize?: number;
+}
+
+export interface AdminPromoCodeMutationPayload {
+  code: string;
+  description?: string;
+  type: PromoCodeType;
+  fixedAmountCents?: number | null;
+  percentage?: number | null;
+  startsAt?: string | null;
+  endsAt?: string | null;
+  maxTotalUsages?: number | null;
+  maxUsagesPerUser?: number | null;
+  minBookingTotalCents?: number | null;
+  applicableServices?: string[];
+  applicablePostalCodes?: string[];
+  isActive?: boolean;
 }
 
 export class ApiError<TBody = unknown> extends Error {
@@ -115,6 +350,42 @@ const joinUrl = (base: string, path: string) => {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
   return `${normalizedBase}${normalizedPath}`;
 };
+
+export interface AdminFinanceRangeParams {
+  from?: string;
+  to?: string;
+}
+
+export interface AdminFinancePaymentsQuery extends AdminFinanceRangeParams {
+  status?: PaymentStatus;
+  method?: PaymentMethod;
+  search?: string;
+  service?: string;
+  city?: string;
+  bookingId?: string;
+  clientEmail?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface AdminFinancePayoutsQuery extends AdminFinanceRangeParams {
+  status?: ProviderPayoutStatus;
+  providerId?: string;
+  search?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface AdminFinanceCommissionsQuery extends AdminFinanceRangeParams {
+  service?: string;
+  city?: string;
+}
+
+export interface AdminFinanceInvoicesQuery extends AdminFinanceRangeParams {
+  clientId?: string;
+  providerId?: string;
+  search?: string;
+}
 
 type TokenListener = (tokens?: AuthTokens) => void;
 
@@ -163,6 +434,51 @@ export class ApiClient {
       this.accessToken = sharedTokens.accessToken;
       this.refreshToken = sharedTokens.refreshToken;
     }
+  }
+
+  private buildQueryString(params: Record<string, unknown>): string {
+    const query = new URLSearchParams();
+    for (const [key, value] of Object.entries(params)) {
+      if (value === undefined || value === null || value === '') continue;
+      query.set(key, String(value));
+    }
+    const qs = query.toString();
+    return qs ? `?${qs}` : '';
+  }
+
+  private toNumberString(value?: number | null, allowZero = true) {
+    if (value === undefined || value === null) {
+      return undefined;
+    }
+    const numeric = allowZero ? Math.round(value) : Math.max(1, Math.round(value));
+    return String(numeric);
+  }
+
+  private buildPromoCodeMutationBody(payload: AdminPromoCodeMutationPayload) {
+    const body: Record<string, unknown> = {
+      code: payload.code.trim(),
+      description: payload.description ?? undefined,
+      type: payload.type,
+      startsAt: payload.startsAt ?? undefined,
+      endsAt: payload.endsAt ?? undefined,
+      applicableServices: payload.applicableServices ?? undefined,
+      applicablePostalCodes: payload.applicablePostalCodes ?? undefined,
+      isActive: payload.isActive ?? undefined,
+    };
+
+    if (payload.type === 'fixed') {
+      body.fixedAmountCents = this.toNumberString(payload.fixedAmountCents ?? undefined);
+      body.percentage = undefined;
+    } else if (payload.type === 'percent') {
+      body.percentage = this.toNumberString(payload.percentage ?? undefined);
+      body.fixedAmountCents = undefined;
+    }
+
+    body.maxTotalUsages = this.toNumberString(payload.maxTotalUsages ?? undefined);
+    body.maxUsagesPerUser = this.toNumberString(payload.maxUsagesPerUser ?? undefined);
+    body.minBookingTotalCents = this.toNumberString(payload.minBookingTotalCents ?? undefined);
+
+    return body;
   }
 
   setTokens(tokens?: AuthTokens) {
@@ -254,6 +570,362 @@ export class ApiClient {
     }
     const qs = query.toString();
     return this.get<BookingRequest[]>(qs ? `/bookings?${qs}` : '/bookings');
+  }
+
+  listAdminBookings(params: ListBookingsParams = {}): Promise<AdminPaginatedResponse<AdminBookingListItem>> {
+    const query = new URLSearchParams();
+    if (params.status) {
+      query.set('status', params.status);
+    }
+    if (params.statuses?.length) {
+      params.statuses.forEach((status) => {
+        if (status) {
+          query.append('statuses', status);
+        }
+      });
+    }
+    if (params.mode) {
+      query.set('mode', params.mode);
+    }
+    if (params.service) {
+      query.set('service', params.service);
+    }
+    if (params.search) {
+      query.set('search', params.search);
+    }
+    if (params.city) {
+      query.set('city', params.city);
+    }
+    if (params.postalCode) {
+      query.set('postalCode', params.postalCode);
+    }
+    if (params.startFrom) {
+      query.set('startFrom', params.startFrom);
+    }
+    if (params.startTo) {
+      query.set('startTo', params.startTo);
+    }
+    if (typeof params.fallbackRequested === 'boolean') {
+      query.set('fallbackRequested', String(params.fallbackRequested));
+    }
+    if (typeof params.fallbackEscalated === 'boolean') {
+      query.set('fallbackEscalated', String(params.fallbackEscalated));
+    }
+    if (typeof params.minRetryCount === 'number') {
+      query.set('minRetryCount', String(params.minRetryCount));
+    }
+    if (typeof params.shortNotice === 'boolean') {
+      query.set('shortNotice', String(params.shortNotice));
+    }
+    if (typeof params.hasProvider === 'boolean') {
+      query.set('hasProvider', String(params.hasProvider));
+    }
+    if (params.clientId) {
+      query.set('clientId', params.clientId);
+    }
+    if (params.providerId) {
+      query.set('providerId', params.providerId);
+    }
+    if (typeof params.page === 'number') {
+      query.set('page', String(params.page));
+    }
+    if (typeof params.pageSize === 'number') {
+      query.set('pageSize', String(params.pageSize));
+    }
+    const qs = query.toString();
+    return this.get<AdminPaginatedResponse<AdminBookingListItem>>(qs ? `/employee/bookings?${qs}` : '/employee/bookings');
+  }
+
+  getAdminBooking(id: string): Promise<AdminBookingDetails> {
+    return this.get<AdminBookingDetails>(`/employee/bookings/${id}`);
+  }
+
+  getAdminBookingsOverview(rangeDays?: number): Promise<AdminBookingOverviewResponse> {
+    const qs = typeof rangeDays === 'number' && Number.isFinite(rangeDays) ? `?rangeDays=${rangeDays}` : '';
+    return this.get<AdminBookingOverviewResponse>(`/employee/bookings/overview${qs}`);
+  }
+
+  private buildFinanceQuery(params: AdminFinanceRangeParams & Record<string, unknown>) {
+    const query = new URLSearchParams();
+    if (params.from) query.set('from', params.from);
+    if (params.to) query.set('to', params.to);
+    Object.entries(params).forEach(([key, value]) => {
+      if (value === undefined || value === null) return;
+      if (key === 'from' || key === 'to') return;
+      query.set(key, String(value));
+    });
+    const qs = query.toString();
+    return qs ? `?${qs}` : '';
+  }
+
+  getAdminFinanceOverview(params: AdminFinanceRangeParams = {}): Promise<AdminFinanceOverviewResponse> {
+    const qs = this.buildFinanceQuery(params);
+    return this.get<AdminFinanceOverviewResponse>(`/employee/finance/overview${qs}`);
+  }
+
+  listAdminFinancePayments(params: AdminFinancePaymentsQuery = {}): Promise<AdminPaginatedResponse<AdminFinancePaymentItem>> {
+    const qs = this.buildFinanceQuery(params);
+    return this.get<AdminPaginatedResponse<AdminFinancePaymentItem>>(`/employee/finance/payments${qs}`);
+  }
+
+  listAdminFinancePayouts(params: AdminFinancePayoutsQuery = {}): Promise<AdminPaginatedResponse<AdminFinancePayoutItem>> {
+    const qs = this.buildFinanceQuery(params);
+    return this.get<AdminPaginatedResponse<AdminFinancePayoutItem>>(`/employee/finance/payouts${qs}`);
+  }
+
+  getAdminFinanceCommissions(params: AdminFinanceCommissionsQuery = {}): Promise<AdminFinanceCommissionsResponse> {
+    const qs = this.buildFinanceQuery(params);
+    return this.get<AdminFinanceCommissionsResponse>(`/employee/finance/commissions${qs}`);
+  }
+
+  getAdminFinanceInvoices(params: AdminFinanceInvoicesQuery = {}): Promise<AdminFinanceInvoicesResponse> {
+    const qs = this.buildFinanceQuery(params);
+    return this.get<AdminFinanceInvoicesResponse>(`/employee/finance/invoices${qs}`);
+  }
+
+  getAdminFinanceExports(params: AdminFinanceRangeParams = {}): Promise<AdminFinanceExportsResponse> {
+    const qs = this.buildFinanceQuery(params);
+    return this.get<AdminFinanceExportsResponse>(`/employee/finance/exports${qs}`);
+  }
+
+  getAdminFinanceSettings(): Promise<AdminFinanceSettingsResponse> {
+    return this.get<AdminFinanceSettingsResponse>('/employee/finance/settings');
+  }
+
+  getAdminPostalZones(params: AdminPostalZonesQuery = {}): Promise<AdminPostalZonesResponse> {
+    const qs = this.buildQueryString(params);
+    return this.get<AdminPostalZonesResponse>(`/employee/zones/reference${qs}`);
+  }
+
+  getAdminZoneCoverage(): Promise<AdminZoneCoverageResponse> {
+    return this.get<AdminZoneCoverageResponse>('/employee/zones/coverage');
+  }
+
+  getAdminProviderServiceAreas(
+    params: AdminProviderServiceAreasQuery = {}
+  ): Promise<AdminProviderServiceAreasResponse> {
+    const qs = this.buildQueryString(params);
+    return this.get<AdminProviderServiceAreasResponse>(`/employee/zones/service-areas${qs}`);
+  }
+
+  getAdminZoneMatchingRules(): Promise<AdminZoneMatchingRulesResponse> {
+    return this.get<AdminZoneMatchingRulesResponse>('/employee/zones/rules');
+  }
+
+  testAdminMatching(payload: AdminMatchingTestPayload): Promise<AdminMatchingTestResponse> {
+    return this.post<AdminMatchingTestResponse>('/employee/zones/matching/test', payload);
+  }
+
+  getAdminSmartMatchingOverview(params: AdminSmartMatchingRangeQuery = {}): Promise<AdminSmartMatchingOverviewResponse> {
+    const qs = this.buildFinanceQuery(params);
+    return this.get<AdminSmartMatchingOverviewResponse>(`/employee/smart-matching/overview${qs}`);
+  }
+
+  getAdminSmartMatchingScenarios(params: AdminSmartMatchingRangeQuery = {}): Promise<AdminSmartMatchingScenarioResponse> {
+    const qs = this.buildFinanceQuery(params);
+    return this.get<AdminSmartMatchingScenarioResponse>(`/employee/smart-matching/scenarios${qs}`);
+  }
+
+  getAdminSmartMatchingPolicies(params: AdminSmartMatchingRangeQuery = {}): Promise<AdminSmartMatchingPolicyResponse> {
+    const qs = this.buildFinanceQuery(params);
+    return this.get<AdminSmartMatchingPolicyResponse>(`/employee/smart-matching/policies${qs}`);
+  }
+
+  getAdminSmartMatchingGuardrails(
+    params: AdminSmartMatchingRangeQuery = {}
+  ): Promise<AdminSmartMatchingGuardrailResponse> {
+    const qs = this.buildFinanceQuery(params);
+    return this.get<AdminSmartMatchingGuardrailResponse>(`/employee/smart-matching/guardrails${qs}`);
+  }
+
+  listAdminSmartMatchingHistory(
+    params: AdminSmartMatchingHistoryQuery = {}
+  ): Promise<AdminPaginatedResponse<AdminSmartMatchingHistoryItem>> {
+    const qs = this.buildFinanceQuery(params);
+    return this.get<AdminPaginatedResponse<AdminSmartMatchingHistoryItem>>(`/employee/smart-matching/history${qs}`);
+  }
+
+  getAdminSmartMatchingDetail(bookingId: string): Promise<AdminSmartMatchingDetail> {
+    return this.get<AdminSmartMatchingDetail>(`/employee/smart-matching/history/${bookingId}`);
+  }
+
+  getAdminSmartMatchingConfig(): Promise<AdminSmartMatchingConfig> {
+    return this.get<AdminSmartMatchingConfig>('/employee/smart-matching/config');
+  }
+
+  updateAdminSmartMatchingConfig(payload: AdminSmartMatchingConfigPayload): Promise<AdminSmartMatchingConfig> {
+    return this.patch<AdminSmartMatchingConfig>('/employee/smart-matching/config', payload);
+  }
+
+  simulateAdminSmartMatching(payload: AdminSmartMatchingSimulationPayload): Promise<AdminSmartMatchingSimulationResponse> {
+    return this.post<AdminSmartMatchingSimulationResponse>('/employee/smart-matching/simulate', payload);
+  }
+
+  getAdminMarketingOverview(params: AdminMarketingRangeParams = {}): Promise<AdminMarketingOverviewResponse> {
+    return this.get<AdminMarketingOverviewResponse>(`/employee/marketing/overview${this.buildQueryString(params)}`);
+  }
+
+  getAdminMarketingLandingPages(): Promise<AdminMarketingLandingPagesResponse> {
+    return this.get<AdminMarketingLandingPagesResponse>('/employee/marketing/landing');
+  }
+
+  getAdminMarketingSettings(): Promise<AdminMarketingSettingsResponse> {
+    return this.get<AdminMarketingSettingsResponse>('/employee/marketing/settings');
+  }
+
+  getAdminQualityOverview(params: AdminQualityRangeParams = {}): Promise<AdminQualityOverviewResponse> {
+    return this.get<AdminQualityOverviewResponse>(`/employee/quality/overview${this.buildQueryString(params)}`);
+  }
+
+  getAdminQualitySatisfaction(
+    params: AdminQualitySatisfactionQuery = {}
+  ): Promise<AdminQualitySatisfactionResponse> {
+    return this.get<AdminQualitySatisfactionResponse>(
+      `/employee/quality/satisfaction${this.buildQueryString(params)}`
+    );
+  }
+
+  getAdminQualityProgram(params: AdminQualityProgramQuery = {}): Promise<AdminQualityProgramResponse> {
+    return this.get<AdminQualityProgramResponse>(
+      `/employee/quality/program${this.buildQueryString(params)}`
+    );
+  }
+
+  getAdminQualityProgramDetail(providerId: string): Promise<AdminQualityProviderDetail> {
+    return this.get<AdminQualityProviderDetail>(
+      `/employee/quality/program/${encodeURIComponent(providerId)}`
+    );
+  }
+
+  listAdminQualityReviews(
+    params: AdminQualityReviewsQuery = {}
+  ): Promise<AdminPaginatedResponse<AdminQualityReviewListItem>> {
+    return this.get<AdminPaginatedResponse<AdminQualityReviewListItem>>(
+      `/employee/quality/reviews${this.buildQueryString(params)}`
+    );
+  }
+
+  updateAdminQualityReview(
+    id: string,
+    payload: AdminQualityReviewUpdatePayload
+  ): Promise<AdminQualityReviewDetail> {
+    return this.patch<AdminQualityReviewDetail>(`/employee/quality/reviews/${encodeURIComponent(id)}`, payload);
+  }
+
+  listAdminQualityProviders(
+    params: AdminQualityProvidersQuery = {}
+  ): Promise<AdminPaginatedResponse<AdminQualityProviderListItem>> {
+    return this.get<AdminPaginatedResponse<AdminQualityProviderListItem>>(
+      `/employee/quality/providers${this.buildQueryString(params)}`
+    );
+  }
+
+  listAdminQualityIncidents(
+    params: AdminQualityIncidentsQuery = {}
+  ): Promise<AdminPaginatedResponse<AdminQualityIncidentItem>> {
+    return this.get<AdminPaginatedResponse<AdminQualityIncidentItem>>(
+      `/employee/quality/incidents${this.buildQueryString(params)}`
+    );
+  }
+
+  updateAdminQualityIncident(
+    id: string,
+    payload: AdminQualityIncidentUpdatePayload
+  ): Promise<AdminQualityIncidentItem> {
+    return this.patch<AdminQualityIncidentItem>(
+      `/employee/quality/incidents/${encodeURIComponent(id)}`,
+      payload
+    );
+  }
+
+  getAdminQualityAlerts(): Promise<AdminQualityAlertsResponse> {
+    return this.get<AdminQualityAlertsResponse>('/employee/quality/alerts');
+  }
+
+  listAdminPromoCodes(
+    params: AdminPromoCodesQuery = {}
+  ): Promise<AdminPaginatedResponse<AdminPromoCodeListItem>> {
+    return this.get<AdminPaginatedResponse<AdminPromoCodeListItem>>(
+      `/employee/marketing/promo-codes${this.buildQueryString(params)}`
+    );
+  }
+
+  createAdminPromoCode(payload: AdminPromoCodeMutationPayload): Promise<AdminPromoCodeDetail> {
+    return this.post<AdminPromoCodeDetail>(
+      '/employee/marketing/promo-codes',
+      this.buildPromoCodeMutationBody(payload)
+    );
+  }
+
+  getAdminPromoCode(id: string): Promise<AdminPromoCodeDetail> {
+    return this.get<AdminPromoCodeDetail>(`/employee/marketing/promo-codes/${encodeURIComponent(id)}`);
+  }
+
+  updateAdminPromoCode(id: string, payload: AdminPromoCodeMutationPayload): Promise<AdminPromoCodeDetail> {
+    return this.patch<AdminPromoCodeDetail>(
+      `/employee/marketing/promo-codes/${encodeURIComponent(id)}`,
+      this.buildPromoCodeMutationBody(payload)
+    );
+  }
+
+  updateAdminPromoCodeStatus(id: string, isActive: boolean): Promise<AdminPromoCodeDetail> {
+    return this.patch<AdminPromoCodeDetail>(
+      `/employee/marketing/promo-codes/${encodeURIComponent(id)}/status`,
+      { isActive }
+    );
+  }
+
+  getAdminPromoCodeStats(
+    id: string,
+    params: AdminMarketingRangeParams = {}
+  ): Promise<AdminPromoCodeStatsResponse> {
+    return this.get<AdminPromoCodeStatsResponse>(
+      `/employee/marketing/promo-codes/${encodeURIComponent(id)}/stats${this.buildQueryString(params)}`
+    );
+  }
+
+  listAdminPromoCodeUsages(
+    id: string,
+    params: AdminPromoCodeUsageQuery = {}
+  ): Promise<AdminPaginatedResponse<AdminPromoCodeUsageRecord>> {
+    return this.get<AdminPaginatedResponse<AdminPromoCodeUsageRecord>>(
+      `/employee/marketing/promo-codes/${encodeURIComponent(id)}/usages${this.buildQueryString(params)}`
+    );
+  }
+
+  getAdminServiceCatalog(): Promise<AdminServiceCatalogResponse> {
+    return this.get<AdminServiceCatalogResponse>('/employee/services/catalog');
+  }
+
+  getAdminServiceOptions(): Promise<AdminServiceOptionsResponse> {
+    return this.get<AdminServiceOptionsResponse>('/employee/services/options');
+  }
+
+  getAdminServicePricingMatrix(): Promise<AdminServicePricingMatrixResponse> {
+    return this.get<AdminServicePricingMatrixResponse>('/employee/services/pricing');
+  }
+
+  getAdminServicePricingRules(): Promise<AdminServicePricingRulesResponse> {
+    return this.get<AdminServicePricingRulesResponse>('/employee/services/pricing/rules');
+  }
+
+  getAdminServiceHabilitations(): Promise<AdminServiceHabilitationsResponse> {
+    return this.get<AdminServiceHabilitationsResponse>('/employee/services/habilitations');
+  }
+
+  getAdminServiceLogs(): Promise<AdminServiceLogsResponse> {
+    return this.get<AdminServiceLogsResponse>('/employee/services/logs');
+  }
+
+  previewAdminService(params: AdminServicePreviewParams): Promise<AdminServicePreviewResponse> {
+    const query = new URLSearchParams();
+    query.set('service', params.service);
+    query.set('postalCode', params.postalCode);
+    query.set('hours', String(params.hours));
+    if (params.ecoPreference) {
+      query.set('ecoPreference', params.ecoPreference);
+    }
+    return this.get<AdminServicePreviewResponse>(`/employee/services/preview?${query.toString()}`);
   }
 
   getBooking(id: string): Promise<BookingRequest> {
@@ -355,12 +1027,25 @@ export class ApiClient {
     return this.get<ProviderDirectoryDetails>(`/directory/providers/${providerId}/details`);
   }
 
-  listProviderInvitations(): Promise<ProviderBookingInvitation[]> {
-    return this.get<ProviderBookingInvitation[]>('/provider/invitations');
+  listProviderInvitations(params: ProviderInvitationFilters = {}): Promise<ProviderBookingInvitation[]> {
+    const query = new URLSearchParams();
+    if (params.status) {
+      query.set('status', params.status);
+    }
+    if (typeof params.limit === 'number') {
+      query.set('limit', String(Math.max(1, params.limit)));
+    }
+    const queryString = query.toString();
+    const path = queryString ? `/provider/invitations?${queryString}` : '/provider/invitations';
+    return this.get<ProviderBookingInvitation[]>(path);
   }
 
   respondProviderInvitation(id: string, action: 'accept' | 'decline'): Promise<ProviderBookingInvitation> {
     return this.post<ProviderBookingInvitation>(`/provider/invitations/${id}/${action}`, {});
+  }
+
+  markProviderInvitationViewed(id: string): Promise<ProviderBookingInvitation> {
+    return this.post<ProviderBookingInvitation>(`/provider/invitations/${id}/view`, {});
   }
 
   getPriceEstimate(params: PriceEstimateParams): Promise<PriceEstimate> {
@@ -389,12 +1074,20 @@ export class ApiClient {
     return this.get<ProviderDocumentSummary[]>('/payments/provider/documents');
   }
 
-  startProviderOnboardingSelf(): Promise<ProviderOnboardingResponse> {
-    return this.post<ProviderOnboardingResponse>('/payments/providers/onboarding/self', {});
+  startProviderOnboardingSelf(payload: ProviderPayoutSetupPayload): Promise<ProviderOnboardingResponse> {
+    return this.post<ProviderOnboardingResponse>('/payments/providers/onboarding/self', payload);
   }
 
-  startProviderOnboarding(payload: ProviderPaymentsOnboardingPayload): Promise<ProviderOnboardingResponse> {
+  startProviderOnboarding(payload: ProviderPaymentsOnboardingPayload & ProviderPayoutSetupPayload): Promise<ProviderOnboardingResponse> {
     return this.post<ProviderOnboardingResponse>('/payments/providers/onboarding', payload);
+  }
+
+  getProviderBankInfo(): Promise<ProviderBankInfo> {
+    return this.get<ProviderBankInfo>('/payments/providers/payment-method/bank');
+  }
+
+  saveProviderBankInfo(payload: ProviderPayoutSetupPayload): Promise<ProviderBankInfo> {
+    return this.post<ProviderBankInfo>('/payments/providers/payment-method/bank', payload);
   }
 
   cancelBooking(id: string, options?: { reason?: string }): Promise<BookingRequest> {
@@ -480,6 +1173,16 @@ export class ApiClient {
     return this.get<ProviderDashboardResponse>('/provider/dashboard');
   }
 
+  getProviderEarnings(params: { status?: string; limit?: number; offset?: number } = {}): Promise<ProviderEarningsResponse> {
+    const query = new URLSearchParams();
+    if (params.status) query.set('status', params.status);
+    if (typeof params.limit === 'number') query.set('limit', String(params.limit));
+    if (typeof params.offset === 'number') query.set('offset', String(params.offset));
+    const qs = query.toString();
+    const path = qs ? `/provider/earnings?${qs}` : '/provider/earnings';
+    return this.get<ProviderEarningsResponse>(path);
+  }
+
   listProviderMissions(params: ProviderMissionFilters = {}): Promise<BookingRequest[]> {
     const query = new URLSearchParams();
     if (params.status && params.status !== 'all') query.set('status', params.status);
@@ -513,6 +1216,15 @@ export class ApiClient {
   lookupPostalCode(postalCode: string): Promise<PostalCodeLookupResponse> {
     const sanitized = postalCode.trim();
     return this.get<PostalCodeLookupResponse>(`/geo/postal-codes/${encodeURIComponent(sanitized)}`);
+  }
+
+  checkPostalCoverage(postalCode: string): Promise<PostalCoverageResponse> {
+    const search = new URLSearchParams({ postalCode: postalCode.trim() });
+    return this.get<PostalCoverageResponse>(`/directory/coverage?${search.toString()}`);
+  }
+
+  submitPostalFollowUp(payload: PostalFollowUpPayload): Promise<PostalFollowUpResponse> {
+    return this.post<PostalFollowUpResponse>('/follow-up', payload);
   }
 
   listProviderPayments(): Promise<PaymentRecord[]> {
@@ -589,6 +1301,10 @@ export class ApiClient {
     return this.post<ProviderIdentityDocumentSummary>('/provider/onboarding/identity/document', payload);
   }
 
+  uploadProviderProfilePhoto(payload: ProviderProfilePhotoPayload): Promise<ProviderProfile> {
+    return this.post<ProviderProfile>('/provider/profile/photo', payload);
+  }
+
   completeProviderWelcomeSession(providerId: string): Promise<ProviderOnboardingStatus> {
     return this.post<ProviderOnboardingStatus>('/provider/onboarding/welcome', { providerId });
   }
@@ -617,15 +1333,15 @@ export class ApiClient {
       query.set('ownerId', params.ownerId);
     }
     const qs = query.toString();
-    return this.get<ProviderTeam[]>(qs ? `/admin/providers/teams?${qs}` : '/admin/providers/teams');
+    return this.get<ProviderTeam[]>(qs ? `/employee/providers/teams?${qs}` : '/employee/providers/teams');
   }
 
   getProviderTeam(id: string): Promise<ProviderTeam> {
-    return this.get<ProviderTeam>(`/admin/providers/teams/${id}`);
+    return this.get<ProviderTeam>(`/employee/providers/teams/${id}`);
   }
 
   getProviderTeamSchedule(id: string): Promise<ProviderTeamSchedule> {
-    return this.get<ProviderTeamSchedule>(`/admin/providers/teams/${id}/schedule`);
+    return this.get<ProviderTeamSchedule>(`/employee/providers/teams/${id}/schedule`);
   }
 
   getProviderTeamPlan(
@@ -640,19 +1356,19 @@ export class ApiClient {
       query.set('end', params.end);
     }
     const suffix = query.toString() ? `?${query.toString()}` : '';
-    return this.get<ProviderTeamPlan>(`/admin/providers/teams/${id}/plan${suffix}`);
+    return this.get<ProviderTeamPlan>(`/employee/providers/teams/${id}/plan${suffix}`);
   }
 
   createProviderTeam(payload: CreateProviderTeamPayload): Promise<ProviderTeam> {
-    return this.post<ProviderTeam>('/admin/providers/teams', payload);
+    return this.post<ProviderTeam>('/employee/providers/teams', payload);
   }
 
   updateProviderTeam(id: string, payload: UpdateProviderTeamPayload): Promise<ProviderTeam> {
-    return this.patch<ProviderTeam>(`/admin/providers/teams/${id}`, payload);
+    return this.patch<ProviderTeam>(`/employee/providers/teams/${id}`, payload);
   }
 
   deleteProviderTeam(id: string): Promise<{ success: boolean }> {
-    return this.delete<{ success: boolean }>(`/admin/providers/teams/${id}`);
+    return this.delete<{ success: boolean }>(`/employee/providers/teams/${id}`);
   }
 
   listBookingLocks(bookingId: string): Promise<BookingLockSummary[]> {
@@ -676,15 +1392,61 @@ export class ApiClient {
 
   listAdminProviderIdentityReviews(status?: 'not_started' | 'submitted' | 'verified' | 'rejected'): Promise<AdminProviderIdentityReview[]> {
     const query = status ? `?status=${status.toUpperCase()}` : '';
-    return this.get<AdminProviderIdentityReview[]>(`/admin/providers/identity${query}`);
+    return this.get<AdminProviderIdentityReview[]>(`/employee/providers/identity${query}`);
+  }
+
+  getAdminUsersOverview(): Promise<AdminUsersOverviewResponse> {
+    return this.get<AdminUsersOverviewResponse>('/employee/users/overview');
+  }
+
+  listAdminClients(params: { page?: number; pageSize?: number; status?: string; search?: string } = {}): Promise<AdminPaginatedResponse<AdminClientListItem>> {
+    const query = new URLSearchParams();
+    if (params.page) query.set('page', String(params.page));
+    if (params.pageSize) query.set('pageSize', String(params.pageSize));
+    if (params.status && params.status !== 'all') query.set('status', params.status);
+    if (params.search) query.set('search', params.search);
+    const qs = query.toString();
+    return this.get<AdminPaginatedResponse<AdminClientListItem>>(qs ? `/employee/users/clients?${qs}` : '/employee/users/clients');
+  }
+
+  getAdminClient(id: string): Promise<AdminClientDetails> {
+    return this.get<AdminClientDetails>(`/employee/users/clients/${id}`);
+  }
+
+  listAdminProviders(params: { page?: number; pageSize?: number; status?: string; search?: string } = {}): Promise<AdminPaginatedResponse<AdminProviderListItem>> {
+    const query = new URLSearchParams();
+    if (params.page) query.set('page', String(params.page));
+    if (params.pageSize) query.set('pageSize', String(params.pageSize));
+    if (params.status && params.status !== 'all') query.set('status', params.status);
+    if (params.search) query.set('search', params.search);
+    const qs = query.toString();
+    return this.get<AdminPaginatedResponse<AdminProviderListItem>>(qs ? `/employee/users/providers?${qs}` : '/employee/users/providers');
+  }
+
+  getAdminProvider(id: string): Promise<AdminProviderDetails> {
+    return this.get<AdminProviderDetails>(`/employee/users/providers/${id}`);
+  }
+
+  listAdminEmployees(params: { page?: number; pageSize?: number; status?: string; search?: string } = {}): Promise<AdminPaginatedResponse<AdminEmployeeListItem>> {
+    const query = new URLSearchParams();
+    if (params.page) query.set('page', String(params.page));
+    if (params.pageSize) query.set('pageSize', String(params.pageSize));
+    if (params.status && params.status !== 'all') query.set('status', params.status);
+    if (params.search) query.set('search', params.search);
+    const qs = query.toString();
+    return this.get<AdminPaginatedResponse<AdminEmployeeListItem>>(qs ? `/employee/users/employees?${qs}` : '/employee/users/employees');
+  }
+
+  getAdminRoles(): Promise<AdminRolesResponse> {
+    return this.get<AdminRolesResponse>('/employee/users/roles');
   }
 
   getAdminProviderIdentityReview(providerId: string): Promise<AdminProviderIdentityReview> {
-    return this.get<AdminProviderIdentityReview>(`/admin/providers/${providerId}/identity`);
+    return this.get<AdminProviderIdentityReview>(`/employee/providers/${providerId}/identity`);
   }
 
   completeAdminWelcomeSession(providerId: string): Promise<AdminProviderIdentityReview> {
-    return this.patch<AdminProviderIdentityReview>(`/admin/providers/${providerId}/welcome-session`);
+    return this.patch<AdminProviderIdentityReview>(`/employee/providers/${providerId}/welcome-session`);
   }
 
   listAdminUsers(params: { role?: string; status?: string; search?: string } = {}): Promise<AdminUser[]> {
@@ -693,45 +1455,92 @@ export class ApiClient {
     if (params.status) query.set('status', params.status);
     if (params.search) query.set('search', params.search);
     const qs = query.toString();
-    return this.get<AdminUser[]>(qs ? `/admin/users?${qs}` : '/admin/users');
+    return this.get<AdminUser[]>(qs ? `/employee/users?${qs}` : '/employee/users');
   }
 
   updateAdminUser(id: string, payload: UpdateAdminUserPayload): Promise<AdminUser> {
-    return this.patch<AdminUser>(`/admin/users/${id}`, payload);
+    return this.patch<AdminUser>(`/employee/users/${id}`, payload);
   }
 
   listAdminSupport(): Promise<AdminSupportItem[]> {
-    return this.get<AdminSupportItem[]>('/admin/support');
+    return this.get<AdminSupportItem[]>('/employee/support');
   }
 
   listAdminTickets(): Promise<AdminTicket[]> {
-    return this.get<AdminTicket[]>('/admin/tickets');
+    return this.get<AdminTicket[]>('/employee/tickets');
+  }
+
+  getAdminSupportOverview(params: AdminSupportRangeQuery = {}): Promise<AdminSupportOverviewResponse> {
+    const query = this.buildRangeQuery(params);
+    const qs = query.toString();
+    return this.get<AdminSupportOverviewResponse>(qs ? `/employee/support-center/overview?${qs}` : '/employee/support-center/overview');
+  }
+
+  listAdminSupportTickets(params: AdminSupportTicketsQuery = {}): Promise<AdminSupportTicketListResponse> {
+    const query = this.buildSupportQuery(params);
+    const qs = query.toString();
+    return this.get<AdminSupportTicketListResponse>(qs ? `/employee/support-center/tickets?${qs}` : '/employee/support-center/tickets');
+  }
+
+  getAdminSupportTicket(id: string): Promise<AdminSupportTicketDetail> {
+    return this.get<AdminSupportTicketDetail>(`/employee/support-center/tickets/${id}`);
+  }
+
+  updateAdminSupportTicket(id: string, payload: AdminSupportTicketUpdatePayload): Promise<AdminSupportTicketListItem> {
+    return this.patch<AdminSupportTicketListItem>(`/employee/support-center/tickets/${id}`, payload);
+  }
+
+  addAdminSupportTicketMessage(id: string, payload: AdminSupportTicketMessagePayload): Promise<AdminSupportMessage> {
+    return this.post<AdminSupportMessage>(`/employee/support-center/tickets/${id}/messages`, payload);
+  }
+
+  listAdminSupportDisputes(params: AdminSupportDisputesQuery = {}): Promise<AdminSupportDisputeListResponse> {
+    const query = this.buildSupportQuery(params);
+    const qs = query.toString();
+    return this.get<AdminSupportDisputeListResponse>(qs ? `/employee/support-center/disputes?${qs}` : '/employee/support-center/disputes');
+  }
+
+  getAdminSupportDispute(id: string): Promise<AdminSupportDisputeDetail> {
+    return this.get<AdminSupportDisputeDetail>(`/employee/support-center/disputes/${id}`);
+  }
+
+  updateAdminSupportDispute(
+    id: string,
+    payload: AdminSupportDisputeUpdatePayload
+  ): Promise<AdminSupportDisputeDetail> {
+    return this.patch<AdminSupportDisputeDetail>(`/employee/support-center/disputes/${id}`, payload);
+  }
+
+  getAdminSupportSla(params: AdminSupportRangeQuery = {}): Promise<AdminSupportSlaResponse> {
+    const query = this.buildRangeQuery(params);
+    const qs = query.toString();
+    return this.get<AdminSupportSlaResponse>(qs ? `/employee/support-center/sla?${qs}` : '/employee/support-center/sla');
   }
 
   getAdminOperations(): Promise<AdminOperationsMetrics> {
-    return this.get<AdminOperationsMetrics>('/admin/operations');
+    return this.get<AdminOperationsMetrics>('/employee/operations');
   }
 
   getAdminDashboard(): Promise<AdminDashboardResponse> {
-    return this.get<AdminDashboardResponse>('/admin/dashboard');
+    return this.get<AdminDashboardResponse>('/employee/dashboard');
   }
 
   listAdminProviderRequests(): Promise<ProviderOnboardingRequest[]> {
-    return this.get<ProviderOnboardingRequest[]>('/admin/providers/requests');
+    return this.get<ProviderOnboardingRequest[]>('/employee/providers/requests');
   }
 
   updateAdminProviderRequest(
     id: string,
     payload: UpdateProviderOnboardingStatusPayload
   ): Promise<ProviderOnboardingRequest> {
-    return this.patch<ProviderOnboardingRequest>(`/admin/providers/requests/${id}`, payload);
+    return this.patch<ProviderOnboardingRequest>(`/employee/providers/requests/${id}`, payload);
   }
 
   reviewProviderIdentityDocument(
     providerId: string,
     payload: ProviderIdentityReviewPayload
   ): Promise<ProviderIdentityDocumentSummary> {
-    return this.patch<ProviderIdentityDocumentSummary>(`/admin/providers/${providerId}/identity`, payload);
+    return this.patch<ProviderIdentityDocumentSummary>(`/employee/providers/${providerId}/identity`, payload);
   }
 
   private async get<T>(path: string, options?: RequestOptions): Promise<T> {
@@ -843,6 +1652,31 @@ export class ApiClient {
     }
 
     return body as T;
+  }
+
+  private buildRangeQuery(params: AdminSupportRangeQuery) {
+    const query = new URLSearchParams();
+    if (params.from) query.set('from', params.from);
+    if (params.to) query.set('to', params.to);
+    return query;
+  }
+
+  private buildSupportQuery(
+    params: (AdminSupportTicketsQuery | AdminSupportDisputesQuery) & { page?: number; pageSize?: number }
+  ) {
+    const query = this.buildRangeQuery(params);
+    if (params.page) query.set('page', String(params.page));
+    if (params.pageSize) query.set('pageSize', String(params.pageSize));
+    Object.entries(params).forEach(([key, value]) => {
+      if (['from', 'to', 'page', 'pageSize'].includes(key)) {
+        return;
+      }
+      if (value === undefined || value === null || value === '') {
+        return;
+      }
+      query.set(key, String(value));
+    });
+    return query;
   }
 
   private async tryRecoverFromUnauthorized() {

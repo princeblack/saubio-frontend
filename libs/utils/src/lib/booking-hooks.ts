@@ -34,7 +34,9 @@ export const useCreateBookingMutation = () => {
 
       if (previous) {
         const optimisticStatus =
-          payload.mode === 'smart_match'
+          payload.shortNotice
+            ? 'draft'
+            : payload.mode === 'smart_match'
             ? 'pending_provider'
             : (payload.providerIds ?? []).length > 0
             ? 'pending_client'

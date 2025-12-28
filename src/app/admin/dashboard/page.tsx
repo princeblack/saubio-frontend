@@ -1,499 +1,423 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import {
-  useRequireRole,
-  useAdminDashboard,
-  formatDateTime,
-  useAssignFallbackTeamMutation,
-} from '@saubio/utils';
-import { SectionDescription, SectionTitle, Skeleton, SurfaceCard } from '@saubio/ui';
+import { useMemo } from 'react';
+import dynamic from 'next/dynamic';
+import { SurfaceCard, Skeleton } from '@saubio/ui';
+import { useAdminDashboard } from '@saubio/utils';
 import { ErrorState } from '../../../components/feedback/ErrorState';
-import { useMatchingProgressFeed } from '../../../hooks/useMatchingProgressFeed';
-import { useRealtimeOpsFeed } from '../../../hooks/useRealtimeOpsFeed';
-import {
-  getMatchingStageLabel,
-  resolveMatchingStatusCopy,
-} from '../../../utils/matching-progress';
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  Tooltip,
-  PieChart,
-  Pie,
-  Cell,
-} from 'recharts';
+import { Users, CalendarCheck2, Euro, AlertTriangle, Percent, Activity } from 'lucide-react';
 
-const PIE_COLORS = ['#1c332a', '#f5a524', '#235c43', '#d9c97c'];
+const ResponsiveContainer = dynamic(
+  () => import('recharts').then((mod) => ({ default: mod.ResponsiveContainer })),
+  { ssr: false }
+);
+const LineChart = dynamic(() => import('recharts').then((mod) => ({ default: mod.LineChart })), { ssr: false });
+const Line = dynamic(() => import('recharts').then((mod) => ({ default: mod.Line })), { ssr: false });
+const BarChart = dynamic(() => import('recharts').then((mod) => ({ default: mod.BarChart })), { ssr: false });
+const Bar = dynamic(() => import('recharts').then((mod) => ({ default: mod.Bar })), { ssr: false });
+const XAxis = dynamic(() => import('recharts').then((mod) => ({ default: mod.XAxis })), { ssr: false });
+const YAxis = dynamic(() => import('recharts').then((mod) => ({ default: mod.YAxis })), { ssr: false });
+const Tooltip = dynamic(() => import('recharts').then((mod) => ({ default: mod.Tooltip })), { ssr: false });
+const CartesianGrid = dynamic(
+  () => import('recharts').then((mod) => ({ default: mod.CartesianGrid })),
+  { ssr: false }
+);
+
+const formatDateLabel = (value: string) => {
+  const date = new Date(value);
+  return date.toLocaleDateString('fr-FR', {
+    month: 'short',
+    day: 'numeric',
+  });
+};
 
 export default function AdminDashboardPage() {
-  const { t } = useTranslation();
-  const session = useRequireRole({ allowedRoles: ['admin', 'employee'] });
   const dashboardQuery = useAdminDashboard();
   const { data, isLoading, isError } = dashboardQuery;
-  const [activeOpsTab, setActiveOpsTab] = useState<'matching' | 'missions'>('matching');
-  const { events: matchingFeed } = useMatchingProgressFeed({
-    enabled: Boolean(session.user),
-    limit: 8,
-  });
-  const { events: missionFeed } = useRealtimeOpsFeed({
-    enabled: Boolean(session.user),
-    types: ['mission_status'],
-    limit: 8,
-  });
-  const assignFallbackMutation = useAssignFallbackTeamMutation();
+  const overview = data?.overview;
 
-  if (!session.user) {
-    return null;
-  }
-
+  const numberFormatter = useMemo(() => new Intl.NumberFormat('fr-FR'), []);
   const currencyFormatter = useMemo(
     () =>
-      new Intl.NumberFormat(undefined, {
+      new Intl.NumberFormat('fr-FR', {
         style: 'currency',
         currency: 'EUR',
         maximumFractionDigits: 0,
       }),
     []
   );
+  const preciseCurrencyFormatter = useMemo(
+    () =>
+      new Intl.NumberFormat('fr-FR', {
+        style: 'currency',
+        currency: 'EUR',
+        maximumFractionDigits: 2,
+      }),
+    []
+  );
 
-  const numberFormatter = useMemo(() => new Intl.NumberFormat(), []);
-
-  const metricCards = useMemo(() => {
-    if (!data) return [];
+  const userCards = useMemo(() => {
+    if (!overview) return [];
     return [
       {
-        id: 'active-providers',
-        label: t('adminDashboard.metrics.activeProviders'),
-        value: numberFormatter.format(data.metrics.activeProviders),
-        helper: t('adminDashboard.metricTrend.increase', 'En hausse vs semaine dernière'),
+        icon: Users,
+        label: 'Utilisateurs',
+        value: numberFormatter.format(overview.users.total),
+        helper: 'Tous rôles confondus',
       },
       {
-        id: 'pending-bookings',
-        label: t('adminDashboard.metrics.pendingBookings'),
-        value: numberFormatter.format(data.metrics.pendingBookings),
-        helper: t('adminDashboard.metricTrend.pipeline', 'Pipeline confirmé'),
+        icon: Users,
+        label: 'Prestataires',
+        value: numberFormatter.format(overview.users.providers.total),
+        helper: `${numberFormatter.format(overview.users.providers.active)} actifs`,
       },
       {
-        id: 'satisfaction',
-        label: t('adminDashboard.metrics.nps'),
-        value: `${data.metrics.satisfaction}%`,
-        helper: t('adminDashboard.metricTrend.csat', 'Satisfaction clients'),
+        icon: Users,
+        label: 'Clients',
+        value: numberFormatter.format(overview.users.clients),
+        helper: 'Particuliers + entreprises',
       },
       {
-        id: 'revenue',
-        label: t('adminDashboard.metrics.revenue'),
-        value: currencyFormatter.format(data.metrics.revenue),
-        helper: t('adminDashboard.metricTrend.revenue', 'Revenus nets'),
+        icon: Users,
+        label: 'Employés',
+        value: numberFormatter.format(overview.users.employees),
+        helper: 'Ops & support',
+      },
+      {
+        icon: Users,
+        label: 'Admins',
+        value: numberFormatter.format(overview.users.admins),
+        helper: 'Accès complet',
       },
     ];
-  }, [data, t, numberFormatter, currencyFormatter]);
+  }, [overview, numberFormatter]);
 
-  const performanceChartData = useMemo(() => {
-    if (!data) return [];
+  const bookingCards = useMemo(() => {
+    if (!overview) return [];
     return [
       {
-        label: t('adminDashboard.performance.matching', 'Matching'),
-        value: data.performance.matching,
+        icon: CalendarCheck2,
+        label: 'Réservations totales',
+        value: numberFormatter.format(overview.bookings.total),
+        helper: 'Depuis l’origine',
       },
       {
-        label: t('adminDashboard.performance.onTime', 'À l’heure'),
-        value: data.performance.onTime,
+        icon: CalendarCheck2,
+        label: 'Aujourd’hui',
+        value: numberFormatter.format(overview.bookings.today),
+        helper: 'Nouvelles réservations',
       },
       {
-        label: t('adminDashboard.performance.supportSla', 'SLA Support'),
-        value: data.performance.supportSlaHours,
+        icon: CalendarCheck2,
+        label: 'Cette semaine',
+        value: numberFormatter.format(overview.bookings.thisWeek),
+        helper: 'Créées depuis lundi',
+      },
+      {
+        icon: CalendarCheck2,
+        label: 'Ce mois',
+        value: numberFormatter.format(overview.bookings.thisMonth),
+        helper: 'Depuis le 1er',
       },
     ];
-  }, [data, t]);
+  }, [overview, numberFormatter]);
 
-  const providerPieData = useMemo(() => {
-    if (!data) return [];
-    return (data.topProviders ?? []).map((provider) => ({
-      name: provider.name || t('adminDashboard.providersUnknown', 'Prestataire'),
-      value: provider.missions || 0,
-      rating: provider.rating,
-    }));
-  }, [data, t]);
+  const financeCards = useMemo(() => {
+    if (!overview) return [];
+    return [
+      {
+        icon: Euro,
+        label: 'CA aujourd’hui',
+        value: currencyFormatter.format(overview.finances.revenue.today),
+      },
+      {
+        icon: Euro,
+        label: 'CA cette semaine',
+        value: currencyFormatter.format(overview.finances.revenue.week),
+      },
+      {
+        icon: Euro,
+        label: 'CA ce mois',
+        value: currencyFormatter.format(overview.finances.revenue.month),
+      },
+    ];
+  }, [overview, currencyFormatter]);
 
-  const alerts = data?.alerts ?? [];
-  const escalations = data?.escalations ?? [];
+  const bookingStatusData = overview
+    ? [
+        { label: 'Brouillon', value: overview.bookings.statuses.draft },
+        { label: 'En attente', value: overview.bookings.statuses.pending },
+        { label: 'Confirmé', value: overview.bookings.statuses.confirmed },
+        { label: 'Terminé', value: overview.bookings.statuses.completed },
+        { label: 'Annulé', value: overview.bookings.statuses.cancelled },
+      ]
+    : [];
+
+  const cancellationRate = overview?.bookings.cancellationRate ?? 0;
+  const conversionRate = overview?.bookings.conversionRate ?? 0;
+  const shortNoticePercentage = overview?.bookings.shortNotice.percentage ?? 0;
+  const averageBasket = overview ? preciseCurrencyFormatter.format(overview.finances.averageBasket || 0) : '—';
+  const occupancyRate = overview?.operations.occupancyRate ?? 0;
+
+  const bookingsChart = overview?.charts.bookingsPerDay ?? [];
+  const revenueChart = overview?.charts.revenuePerWeek ?? [];
+
+  const paymentsSummary = overview?.finances.payments;
+
+  const busyProviders = overview?.operations.busyProviders ?? 0;
+  const activeProviders = overview?.users.providers.active ?? 0;
 
   return (
     <div className="space-y-8">
       <header className="space-y-3">
-        <SectionTitle as="h1" size="large">
-          {t('adminDashboard.title', 'Tableau de bord administrateur')}
-        </SectionTitle>
-        <SectionDescription>
-          {t(
-            'adminDashboard.subtitle',
-            'Surveillez les KPIs clés, les missions en attente et les alertes critiques de la plateforme.'
-          )}
-        </SectionDescription>
+        <h1 className="text-3xl font-semibold text-saubio-forest">Dashboard administrateur</h1>
+        <p className="text-sm text-saubio-slate/70">
+          Visualisez en temps réel l’activité Saubio : utilisateurs, réservations, finances et conformité.
+        </p>
       </header>
 
       {isError ? (
         <ErrorState
-          title={t('adminDashboard.errorTitle', t('system.error.generic'))}
-          description={t('adminDashboard.section.placeholderDescription')}
-          onRetry={() => {
-            void dashboardQuery.refetch();
-          }}
+          title="Impossible de charger le dashboard"
+          description="Un problème technique empêche la récupération des indicateurs."
+          onRetry={() => dashboardQuery.refetch()}
         />
       ) : null}
 
       {isLoading ? (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <Skeleton key={`metric-skeleton-${index}`} className="h-28 rounded-3xl" />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <Skeleton key={`dashboard-skeleton-${index}`} className="h-28 rounded-3xl" />
           ))}
         </div>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {metricCards.map((metric) => (
-            <SurfaceCard
-              key={metric.id}
-              variant="soft"
-              padding="lg"
-              className="flex flex-col gap-2 border border-white/70 bg-gradient-to-br from-white/95 to-saubio-mist/40 shadow-soft-lg"
-            >
-              <span className="text-xs uppercase tracking-[0.3em] text-saubio-slate/50">{metric.label}</span>
-              <span className="text-2xl font-semibold text-saubio-forest">{metric.value}</span>
-              <span className="text-[11px] font-semibold uppercase tracking-widest text-saubio-slate/60">
-                {metric.helper}
-              </span>
-            </SurfaceCard>
-          ))}
-        </div>
-      )}
-
-      <div className="grid gap-6 xl:grid-cols-3">
-        <SurfaceCard variant="soft" padding="lg" className="xl:col-span-2">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-saubio-slate/50">
-                {t('adminDashboard.performance.title')}
-              </p>
-              <p className="text-2xl font-semibold text-saubio-forest">
-                {t('adminDashboard.performance.window', 'Semaine glissante')}
-              </p>
-            </div>
-            <div className="rounded-full border border-saubio-forest/15 px-4 py-1 text-xs font-semibold text-saubio-forest/70">
-              {t('adminDashboard.period.week', '7 jours')}
-            </div>
-          </div>
-          <div className="mt-6 h-64">
-            {isLoading ? (
-              <Skeleton className="h-full w-full rounded-3xl" />
-            ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={performanceChartData} barCategoryGap="25%">
-                  <XAxis dataKey="label" tick={{ fill: '#69796d', fontSize: 12 }} axisLine={false} tickLine={false} />
-                  <Tooltip
-                    cursor={{ fill: 'rgba(30, 55, 44, 0.08)' }}
-                    contentStyle={{
-                      borderRadius: 16,
-                      border: 'none',
-                      boxShadow: '0 25px 60px rgba(17, 29, 22, 0.12)',
-                    }}
-                  />
-                  <Bar dataKey="value" radius={[12, 12, 4, 4]} fill="#1c332a" />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </div>
-        </SurfaceCard>
-
-        <SurfaceCard variant="soft" padding="lg" className="space-y-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-saubio-slate/50">
-                {t('adminDashboard.topProviders', 'Top prestataires')}
-              </p>
-              <p className="text-2xl font-semibold text-saubio-forest">
-                {t('adminDashboard.providersMissionCount', {
-                  count: providerPieData.reduce((acc, item) => acc + item.value, 0),
-                })}
-              </p>
-            </div>
-            <span className="text-[11px] font-semibold text-saubio-slate/60">
-              {t('adminDashboard.period.week', '7 jours')}
-            </span>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="h-40 flex-1">
-              {providerPieData.length === 0 ? (
-                <div className="flex h-full items-center justify-center text-xs text-saubio-slate/50">
-                  {t('adminDashboard.providersEmpty')}
+      ) : overview ? (
+        <>
+          <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+            {userCards.map((card) => (
+              <SurfaceCard key={card.label} className="flex flex-col gap-2 rounded-3xl border border-saubio-forest/10 p-4 shadow-soft-lg">
+                <div className="flex items-center gap-2 text-saubio-slate/60">
+                  <card.icon className="h-4 w-4" />
+                  <span className="text-xs uppercase tracking-[0.3em]">{card.label}</span>
                 </div>
-              ) : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={providerPieData}
-                      dataKey="value"
-                      innerRadius="60%"
-                      outerRadius="90%"
-                      paddingAngle={4}
-                    >
-                      {providerPieData.map((_, index) => (
-                        <Cell key={`provider-pie-${_.name}-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-              )}
-            </div>
-            <ul className="flex-1 space-y-2 text-sm text-saubio-slate/80">
-              {providerPieData.slice(0, 4).map((item, index) => (
-                <li key={item.name} className="flex items-center justify-between text-xs">
-                  <span className="flex items-center gap-2">
-                    <span
-                      className="h-2 w-2 rounded-full"
-                      style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
-                    />
-                    {item.name}
-                  </span>
-                  <span className="font-semibold text-saubio-forest">{item.value}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </SurfaceCard>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-3">
-        <SurfaceCard variant="soft" padding="lg" className="space-y-4 lg:col-span-2">
-          <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-[0.3em] text-saubio-slate/50">
-              {t('adminDashboard.alertSection', 'Alertes & actions prioritaires')}
-            </p>
-            <span className="text-[11px] font-semibold text-saubio-slate/60">
-              {t('adminDashboard.alertsCount', {
-                count: alerts.length,
-                defaultValue: `${alerts.length} alertes`,
-              })}
-            </span>
-          </div>
-          {alerts.length === 0 ? (
-            <p className="rounded-2xl border border-dashed border-saubio-forest/20 bg-white/70 p-6 text-center text-sm text-saubio-slate/60">
-              {t('adminDashboard.alertsEmpty')}
-            </p>
-          ) : (
-            <ul className="space-y-3">
-              {alerts.map((alert) => (
-                <li
-                  key={alert.id}
-                  className="flex items-center justify-between gap-4 rounded-3xl border border-saubio-forest/10 bg-white/95 p-4 shadow-soft-sm"
-                >
-                  <div className="flex flex-1 flex-col gap-1">
-                    <span className="text-xs font-semibold uppercase tracking-[0.3em] text-saubio-slate/50">
-                      {t(`adminDashboard.alerts.${alert.id}`, alert.label)}
-                    </span>
-                    <p className="text-sm text-saubio-slate/80">{alert.description}</p>
-                  </div>
-                  <span className="text-2xl">{alert.icon ?? '⚠️'}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </SurfaceCard>
-
-        <SurfaceCard variant="soft" padding="lg" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-[0.3em] text-saubio-slate/50">
-              {t('adminDashboard.escalations', 'Tickets à fort impact')}
-            </p>
-            <span className="text-[11px] font-semibold text-saubio-slate/60">
-              {t('adminDashboard.ticketsCount', {
-                count: escalations.length,
-                defaultValue: `${escalations.length} tickets`,
-              })}
-            </span>
-          </div>
-          {escalations.length === 0 ? (
-            <p className="rounded-2xl border border-dashed border-saubio-forest/20 bg-white/70 p-6 text-center text-sm text-saubio-slate/60">
-              {t('adminDashboard.ticketsEmpty')}
-            </p>
-          ) : (
-            <ul className="space-y-3 text-sm text-saubio-slate/80" aria-live="polite">
-              {escalations.map((ticket) => (
-                <li key={ticket.id} className="rounded-3xl bg-white p-4 shadow-soft-sm">
-                  <div className="flex items-center justify-between">
-                    <p className="font-semibold text-saubio-forest">{ticket.subject}</p>
-                    <span className="text-[11px] uppercase tracking-[0.3em] text-saubio-slate/50">
-                      {t(`adminDashboard.priorityLabels.${ticket.priority}`, {
-                        defaultValue: ticket.priority,
-                      })}
-                    </span>
-                  </div>
-                  <p className="text-xs text-saubio-slate/60">
-                    {ticket.helper
-                      ? `${ticket.helper} • ${t(`adminDashboard.statusLabels.${ticket.status}`, ticket.status)}`
-                      : t(`adminDashboard.statusLabels.${ticket.status}`, ticket.status)}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </SurfaceCard>
-      </div>
-
-      <SurfaceCard variant="soft" padding="lg" className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-saubio-slate/50">
-              {t('adminDashboard.opsCentersTitle', 'Centres Ops')}
-            </p>
-            <p className="text-[11px] font-semibold text-saubio-slate/60">
-              {t('adminDashboard.opsCentersSubtitle', 'Matching & missions en direct')}
-            </p>
-          </div>
-          <div className="flex gap-2 rounded-3xl border border-saubio-forest/10 bg-white/80 p-1 text-xs font-semibold">
-            {(['matching', 'missions'] as const).map((tab) => (
-              <button
-                key={tab}
-                type="button"
-                onClick={() => setActiveOpsTab(tab)}
-                className={`rounded-2xl px-3 py-1 transition ${
-                  activeOpsTab === tab ? 'bg-saubio-forest text-white' : 'text-saubio-slate/70'
-                }`}
-              >
-                {tab === 'matching'
-                  ? t('adminDashboard.opsTabMatching', 'Matching auto')
-                  : t('adminDashboard.opsTabMissions', 'Suivi missions')}
-              </button>
+                <span className="text-2xl font-semibold text-saubio-forest">{card.value}</span>
+                <span className="text-[11px] font-semibold uppercase tracking-widest text-saubio-slate/60">{card.helper}</span>
+              </SurfaceCard>
             ))}
+          </section>
+
+          <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {bookingCards.map((card) => (
+              <SurfaceCard key={card.label} className="rounded-3xl border border-saubio-forest/10 p-4 shadow-soft-lg">
+                <div className="flex items-center gap-2 text-saubio-slate/60">
+                  <card.icon className="h-4 w-4" />
+                  <span className="text-xs uppercase tracking-[0.3em]">{card.label}</span>
+                </div>
+                <span className="text-2xl font-semibold text-saubio-forest">{card.value}</span>
+                <span className="text-[11px] font-semibold uppercase tracking-widest text-saubio-slate/60">{card.helper}</span>
+              </SurfaceCard>
+            ))}
+          </section>
+
+          <section className="grid gap-4 md:grid-cols-3">
+            {financeCards.map((card) => (
+              <SurfaceCard key={card.label} className="rounded-3xl border border-saubio-forest/10 p-4 shadow-soft-lg">
+                <div className="flex items-center gap-2 text-saubio-slate/60">
+                  <card.icon className="h-4 w-4" />
+                  <span className="text-xs uppercase tracking-[0.3em]">{card.label}</span>
+                </div>
+                <span className="text-2xl font-semibold text-saubio-forest">{card.value}</span>
+              </SurfaceCard>
+            ))}
+          </section>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            <SurfaceCard className="rounded-3xl border border-saubio-forest/10 p-5 shadow-soft-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.3em] text-saubio-slate/60">Bookings quotidiens</p>
+                  <p className="text-lg font-semibold text-saubio-forest">14 derniers jours</p>
+                </div>
+              </div>
+              <div className="mt-4 h-64">
+                {bookingsChart.length === 0 ? (
+                  <div className="flex h-full items-center justify-center text-sm text-saubio-slate/50">
+                    Aucune donnée disponible
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={bookingsChart}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e1e6dd" />
+                      <XAxis
+                        dataKey="date"
+                        tickFormatter={formatDateLabel}
+                        tick={{ fill: '#69796d', fontSize: 12 }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <YAxis tick={{ fill: '#69796d', fontSize: 12 }} axisLine={false} tickLine={false} />
+                      <Tooltip
+                        labelFormatter={(value) => formatDateLabel(value as string)}
+                        formatter={(val: number) => [numberFormatter.format(val), 'Réservations']}
+                        contentStyle={{ borderRadius: 16, border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
+                      />
+                      <Line type="monotone" dataKey="value" stroke="#1c332a" strokeWidth={3} dot={false} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+            </SurfaceCard>
+
+            <SurfaceCard className="rounded-3xl border border-saubio-forest/10 p-5 shadow-soft-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.3em] text-saubio-slate/60">Revenus par semaine</p>
+                  <p className="text-lg font-semibold text-saubio-forest">8 dernières semaines</p>
+                </div>
+              </div>
+              <div className="mt-4 h-64">
+                {revenueChart.length === 0 ? (
+                  <div className="flex h-full items-center justify-center text-sm text-saubio-slate/50">
+                    Aucune donnée disponible
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={revenueChart}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e1e6dd" />
+                      <XAxis
+                        dataKey="date"
+                        tickFormatter={formatDateLabel}
+                        tick={{ fill: '#69796d', fontSize: 12 }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <YAxis tick={{ fill: '#69796d', fontSize: 12 }} axisLine={false} tickLine={false} />
+                      <Tooltip
+                        labelFormatter={(value) => formatDateLabel(value as string)}
+                        formatter={(val: number) => [currencyFormatter.format(val), 'Chiffre d’affaires']}
+                        contentStyle={{ borderRadius: 16, border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
+                      />
+                      <Bar dataKey="value" fill="#4f9c7f" radius={[12, 12, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+            </SurfaceCard>
           </div>
-        </div>
-        {activeOpsTab === 'matching' ? (
-          matchingFeed.length === 0 ? (
-            <p className="rounded-3xl border border-dashed border-saubio-forest/20 bg-white/70 p-6 text-center text-sm text-saubio-slate/60">
-              {t('adminDashboard.matchingRealtimeEmpty', 'Aucune remontée en direct pour le moment.')}
-            </p>
-          ) : (
-            <ul className="space-y-3 text-sm text-saubio-slate/80">
-              {matchingFeed.map((event) => {
-                const statusMeta = resolveMatchingStatusCopy(event.status, t);
-                const classes: Record<'positive' | 'warning' | 'neutral' | 'danger', string> = {
-                  positive: 'bg-saubio-forest/10 text-saubio-forest',
-                  warning: 'bg-saubio-sun/20 text-saubio-moss',
-                  neutral: 'bg-saubio-mist/60 text-saubio-slate/70',
-                  danger: 'bg-red-50 text-red-600',
-                };
-                const badgeClass = classes[statusMeta.variant];
-                const canAssignFallback =
-                  event.stage === 'team' && Boolean(event.teamCandidateId && event.bookingId);
-                const isAssigning =
-                  canAssignFallback &&
-                  assignFallbackMutation.isPending &&
-                  assignFallbackMutation.variables === event.bookingId;
-                return (
-                  <li key={`${event.stage}-${event.createdAt}-${event.bookingId}`} className="rounded-3xl bg-white/90 p-4 shadow-soft-sm">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <p className="font-semibold text-saubio-forest">
-                          {getMatchingStageLabel(event.stage, t)}
-                        </p>
-                        <p className="text-xs text-saubio-slate/60">
-                          {event.bookingId ? `#${event.bookingId.slice(0, 8)}` : t('adminDashboard.matchingRealtimeGlobal', 'Multi-booking')}
-                        </p>
-                      </div>
-                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${badgeClass}`}>
-                        {statusMeta.label}
-                      </span>
+
+          <div className="grid gap-4 lg:grid-cols-3">
+            <SurfaceCard className="rounded-3xl border border-saubio-forest/10 p-5 shadow-soft-lg">
+              <p className="text-xs uppercase tracking-[0.3em] text-saubio-slate/60">Statuts des réservations</p>
+              <div className="mt-4 space-y-3">
+                {bookingStatusData.map((status) => (
+                  <div key={status.label}>
+                    <div className="flex items-center justify-between text-sm text-saubio-slate/70">
+                      <span>{status.label}</span>
+                      <span className="font-semibold text-saubio-forest">{numberFormatter.format(status.value)}</span>
                     </div>
-                    <div className="mt-2 flex flex-wrap items-center justify-between text-xs text-saubio-slate/60">
-                      <span>{formatDateTime(event.createdAt)}</span>
-                      {typeof event.count === 'number' ? (
-                        <span>
-                          {t('adminDashboard.matchingRealtimeCountLabel', '{{count}} prestataire(s)', {
-                            count: event.count,
-                          })}
-                        </span>
-                      ) : null}
+                    <div className="mt-1 h-2 rounded-full bg-saubio-slate/10">
+                      <div
+                        className="h-2 rounded-full bg-saubio-forest"
+                        style={{
+                          width:
+                            overview.bookings.total > 0
+                              ? `${Math.min(100, (status.value / overview.bookings.total) * 100)}%`
+                              : '0%',
+                        }}
+                      />
                     </div>
-                    {event.message ? (
-                      <p className="mt-1 text-xs text-saubio-slate/70">{event.message}</p>
-                    ) : null}
-                    {canAssignFallback ? (
-                      <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs">
-                        <span className="text-saubio-slate/60">
-                          {t('adminDashboard.matchingRealtimeTeamCandidate', 'Équipe suggérée : #{{id}}', {
-                            id: event.teamCandidateId?.slice(0, 8) ?? '',
-                          })}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => event.bookingId && assignFallbackMutation.mutate(event.bookingId)}
-                          disabled={isAssigning}
-                          className="rounded-full border border-saubio-forest/30 px-3 py-1 font-semibold uppercase tracking-wide text-saubio-forest transition hover:border-saubio-forest disabled:cursor-not-allowed disabled:border-saubio-slate/20 disabled:text-saubio-slate/50"
-                        >
-                          {isAssigning
-                            ? t('adminDashboard.matchingRealtimeAssigning', 'Assignation…')
-                            : t('adminDashboard.matchingRealtimeAssign', 'Assigner l’équipe')}
-                        </button>
-                      </div>
-                    ) : null}
-                  </li>
-                );
-              })}
-            </ul>
-          )
-        ) : missionFeed.length === 0 ? (
-          <p className="rounded-3xl border border-dashed border-saubio-forest/20 bg-white/70 p-6 text-center text-sm text-saubio-slate/60">
-            {t('adminDashboard.missionFeedEmpty', 'Aucune mission en cours de suivi.')}
-          </p>
-        ) : (
-          <ul className="space-y-3 text-sm text-saubio-slate/80" aria-live="polite">
-            {missionFeed.map((event) => {
-              const missionStatus =
-                typeof event.payload?.status === 'string' ? (event.payload.status as string) : 'pending';
-              const statusMeta = resolveMatchingStatusCopy(missionStatus, t);
-              const classes: Record<'positive' | 'warning' | 'neutral' | 'danger', string> = {
-                positive: 'bg-saubio-forest/10 text-saubio-forest',
-                warning: 'bg-saubio-sun/20 text-saubio-moss',
-                neutral: 'bg-saubio-mist/60 text-saubio-slate/70',
-                danger: 'bg-red-50 text-red-600',
-              };
-              const badgeClass = classes[statusMeta.variant];
-              const bookingRef =
-                typeof event.payload?.bookingId === 'string'
-                  ? `#${(event.payload.bookingId as string).slice(0, 8)}`
-                  : t('adminDashboard.missionNoBooking', 'Booking inconnu');
-              return (
-                <li key={event.id} className="rounded-3xl bg-white/90 p-4 shadow-soft-sm">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <p className="font-semibold text-saubio-forest">
-                        {typeof event.payload?.service === 'string'
-                          ? (event.payload.service as string)
-                          : t('adminDashboard.missionUnknownService', 'Mission')}
-                      </p>
-                      <p className="text-xs text-saubio-slate/60">{bookingRef}</p>
-                    </div>
-                    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${badgeClass}`}>
-                      {statusMeta.label}
-                    </span>
                   </div>
-                  <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-saubio-slate/60">
-                    <span>{formatDateTime(event.createdAt)}</span>
-                    {event.payload?.city ? <span>• {event.payload.city as string}</span> : null}
-                    {event.payload?.team ? <span>• {event.payload.team as string}</span> : null}
+                ))}
+              </div>
+            </SurfaceCard>
+
+            <SurfaceCard className="rounded-3xl border border-saubio-forest/10 p-5 shadow-soft-lg">
+              <p className="text-xs uppercase tracking-[0.3em] text-saubio-slate/60">Paiements par statut</p>
+              <div className="mt-4 space-y-3 text-sm text-saubio-slate/80">
+                <div className="flex items-center justify-between">
+                  <span>Réussis</span>
+                  <span className="font-semibold text-saubio-forest">{paymentsSummary?.succeeded ?? 0}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>En attente</span>
+                  <span className="font-semibold text-saubio-forest">{paymentsSummary?.pending ?? 0}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Remboursés</span>
+                  <span className="font-semibold text-saubio-forest">{paymentsSummary?.refunded ?? 0}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Échoués</span>
+                  <span className="font-semibold text-saubio-forest">{paymentsSummary?.failed ?? 0}</span>
+                </div>
+              </div>
+            </SurfaceCard>
+
+            <SurfaceCard className="rounded-3xl border border-saubio-forest/10 p-5 shadow-soft-lg">
+              <div className="flex items-center gap-2 text-saubio-slate/60">
+                <AlertTriangle className="h-4 w-4" />
+                <span className="text-xs uppercase tracking-[0.3em]">Short notice & occupation</span>
+              </div>
+              <div className="mt-4 space-y-4">
+                <div>
+                  <p className="text-sm font-semibold text-saubio-forest">
+                    {numberFormatter.format(overview.bookings.shortNotice.total)} missions short notice
+                  </p>
+                  <p className="text-xs text-saubio-slate/60">
+                    {shortNoticePercentage}% des réservations sous 24h
+                  </p>
+                  <div className="mt-2 h-2 rounded-full bg-saubio-slate/10">
+                    <div className="h-2 rounded-full bg-amber-400" style={{ width: `${shortNoticePercentage}%` }} />
                   </div>
-                  {event.payload?.note ? (
-                    <p className="mt-1 text-xs text-saubio-slate/70">{event.payload.note as string}</p>
-                  ) : null}
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </SurfaceCard>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-saubio-forest">Occupation prestataires</p>
+                  <p className="text-xs text-saubio-slate/60">
+                    {busyProviders} prestataires mobilisés sur {activeProviders} actifs
+                  </p>
+                  <div className="mt-2 h-2 rounded-full bg-saubio-slate/10">
+                    <div className="h-2 rounded-full bg-emerald-500" style={{ width: `${occupancyRate}%` }} />
+                  </div>
+                </div>
+              </div>
+            </SurfaceCard>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <SurfaceCard className="rounded-3xl border border-saubio-forest/10 p-4 shadow-soft-lg">
+              <div className="flex items-center gap-2 text-saubio-slate/60">
+                <Percent className="h-4 w-4" />
+                <span className="text-xs uppercase tracking-[0.3em]">Taux annulation</span>
+              </div>
+              <p className="mt-2 text-2xl font-semibold text-saubio-forest">{cancellationRate}%</p>
+            </SurfaceCard>
+            <SurfaceCard className="rounded-3xl border border-saubio-forest/10 p-4 shadow-soft-lg">
+              <div className="flex items-center gap-2 text-saubio-slate/60">
+                <Percent className="h-4 w-4" />
+                <span className="text-xs uppercase tracking-[0.3em]">Taux conversion</span>
+              </div>
+              <p className="mt-2 text-2xl font-semibold text-saubio-forest">{conversionRate}%</p>
+            </SurfaceCard>
+            <SurfaceCard className="rounded-3xl border border-saubio-forest/10 p-4 shadow-soft-lg">
+              <div className="flex items-center gap-2 text-saubio-slate/60">
+                <Euro className="h-4 w-4" />
+                <span className="text-xs uppercase tracking-[0.3em]">Panier moyen</span>
+              </div>
+              <p className="mt-2 text-2xl font-semibold text-saubio-forest">{averageBasket}</p>
+            </SurfaceCard>
+            <SurfaceCard className="rounded-3xl border border-saubio-forest/10 p-4 shadow-soft-lg">
+              <div className="flex items-center gap-2 text-saubio-slate/60">
+                <Activity className="h-4 w-4" />
+                <span className="text-xs uppercase tracking-[0.3em]">Short notice</span>
+              </div>
+              <p className="mt-2 text-2xl font-semibold text-saubio-forest">{shortNoticePercentage}%</p>
+            </SurfaceCard>
+          </div>
+        </>
+      ) : (
+        <SurfaceCard className="rounded-3xl border border-saubio-forest/10 p-6 text-sm text-saubio-slate/70 shadow-soft-lg">
+          Les données du dashboard ne sont pas encore disponibles. Veuillez réessayer plus tard.
+        </SurfaceCard>
+      )}
     </div>
   );
 }

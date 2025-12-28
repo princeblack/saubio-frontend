@@ -81,13 +81,13 @@ type PlannerFormState = {
   city: string;
   countryCode: string;
   service: (typeof serviceOptions)[number];
-  surfacesSquareMeters: number;
+  surfacesSquareMeters: string;
   startAt: string;
   endAt: string;
   frequency: (typeof frequencyOptions)[number];
   mode: (typeof modeOptions)[number];
   ecoPreference: (typeof ecoOptions)[number];
-  requiredProviders: number;
+  requiredProviders: string;
   preferredTeamId: string;
   notes: string;
 };
@@ -102,13 +102,13 @@ const createDefaultFormState = (): PlannerFormState => {
     city: '',
     countryCode: 'DE',
     service: serviceOptions[0],
-    surfacesSquareMeters: 120,
+    surfacesSquareMeters: '',
     startAt,
     endAt,
     frequency: frequencyOptions[0],
     mode: modeOptions[1],
     ecoPreference: ecoOptions[0],
-    requiredProviders: 1,
+    requiredProviders: '',
     preferredTeamId: '',
     notes: '',
   };
@@ -519,8 +519,6 @@ function CreateBookingPageContent() {
     .map((id) => providerDetails[id])
     .filter((provider): provider is ProviderSuggestion => Boolean(provider));
   const focusedProvider = focusedProviderId ? providerDetails[focusedProviderId] : undefined;
-  const manualSelectionPending =
-    form.mode === 'manual' && form.requiredProviders > selectedProviderIds.length;
 
   useEffect(() => {
     return () => {
@@ -531,32 +529,58 @@ function CreateBookingPageContent() {
   }, []);
 
   useEffect(() => {
-    if (
-      errors.providerSelection &&
-      (form.mode !== 'manual' || form.requiredProviders <= selectedProviderIds.length)
-    ) {
+    if (errors.providerSelection && (form.mode !== 'manual' || safeRequiredProviders <= selectedProviderIds.length)) {
       setErrors((prev) => {
         const next = { ...prev };
         delete next.providerSelection;
         return next;
       });
     }
-  }, [errors.providerSelection, form.mode, form.requiredProviders, selectedProviderIds.length]);
+  }, [errors.providerSelection, form.mode, safeRequiredProviders, selectedProviderIds.length]);
 
   const bookings = bookingsQuery.data ?? [];
 
-  const numericFields = new Set<keyof typeof form>(['surfacesSquareMeters', 'requiredProviders']);
+  const parseIntegerField = (value: string) => {
+    if (!value?.trim()) {
+      return NaN;
+    }
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : NaN;
+  };
+
+  const surfacesValue = parseIntegerField(form.surfacesSquareMeters);
+  const safeSurfaceValue = Number.isFinite(surfacesValue) ? surfacesValue : 0;
+  const requiredProvidersValue = parseIntegerField(form.requiredProviders);
+  const safeRequiredProviders = Number.isFinite(requiredProvidersValue) ? requiredProvidersValue : 0;
+  const manualSelectionPending =
+    form.mode === 'manual' && safeRequiredProviders > selectedProviderIds.length;
+
+  const numericFieldKeys: (keyof PlannerFormState)[] = ['surfacesSquareMeters', 'requiredProviders'];
+  const digitsOnlyRegex = /^\d+$/;
 
   const handleChange = (key: keyof typeof form) =>
     (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
       const rawValue = event.target.value;
-      const parsedValue = Number(rawValue);
-      const value = numericFields.has(key)
-        ? Number.isNaN(parsedValue)
-          ? 0
-          : parsedValue
-        : rawValue;
-      setForm((state) => ({ ...state, [key]: value }));
+      if (numericFieldKeys.includes(key)) {
+        if (rawValue === '' || digitsOnlyRegex.test(rawValue)) {
+          setForm((state) => ({ ...state, [key]: rawValue }));
+          setErrors((prev) => {
+            if (!prev[key]) {
+              return prev;
+            }
+            const next = { ...prev };
+            delete next[key];
+            return next;
+          });
+        } else {
+          setErrors((prev) => ({
+            ...prev,
+            [key]: t('forms.errors.numericOnly', 'Veuillez saisir uniquement des chiffres.'),
+          }));
+        }
+        return;
+      }
+      setForm((state) => ({ ...state, [key]: rawValue }));
       setErrors((prev) => {
         if (!prev[key] && key !== 'startAt' && key !== 'endAt') {
           return prev;
@@ -636,7 +660,7 @@ function CreateBookingPageContent() {
   }, [startDate, endDate, conflict]);
 
   const estimate = useMemo(() => {
-    const surface = Number(form.surfacesSquareMeters) || 0;
+    const surface = safeSurfaceValue;
     const rate = rateByService[form.service] ?? 2.5;
     const base = surface * rate * (frequencyMultiplier[form.frequency] ?? 1);
     const ecoSurcharge = form.ecoPreference === 'bio' ? base * 0.12 : 0;
@@ -655,14 +679,7 @@ function CreateBookingPageContent() {
       tax,
       total,
     };
-  }, [
-    form.service,
-    form.surfacesSquareMeters,
-    form.frequency,
-    form.ecoPreference,
-    selectedAddOns,
-    addOnOptions,
-  ]);
+  }, [form.service, safeSurfaceValue, form.frequency, form.ecoPreference, selectedAddOns, addOnOptions]);
 
   const loyaltyCreditsEstimate = useMemo(() => Math.max(0, estimate.total * 0.02), [estimate.total]);
 
@@ -705,7 +722,7 @@ function CreateBookingPageContent() {
     if (!form.city.trim()) {
       nextErrors.city = t('bookingForm.validation.city');
     }
-    if (!Number.isFinite(form.surfacesSquareMeters) || form.surfacesSquareMeters <= 0) {
+    if (!Number.isFinite(surfacesValue) || surfacesValue <= 0) {
       nextErrors.surfacesSquareMeters = t('bookingForm.validation.surface');
     }
     if (!startDate || !endDate) {
@@ -718,16 +735,16 @@ function CreateBookingPageContent() {
       nextErrors.schedule = t('bookingForm.validation.conflict');
     }
     if (
-      !Number.isInteger(form.requiredProviders) ||
-      form.requiredProviders < 1 ||
-      form.requiredProviders > 20
+      !Number.isInteger(requiredProvidersValue) ||
+      requiredProvidersValue < 1 ||
+      requiredProvidersValue > 20
     ) {
       nextErrors.requiredProviders = t(
         'bookingForm.validation.requiredProviders',
         'Sélectionnez entre 1 et 20 intervenants.'
       );
     }
-    if (form.mode === 'manual' && form.requiredProviders > selectedProviderIds.length) {
+    if (form.mode === 'manual' && safeRequiredProviders > selectedProviderIds.length) {
       nextErrors.providerSelection = t(
         'bookingForm.validation.providerSelection',
         'Ajoutez suffisamment de prestataires pour couvrir cette mission.'
@@ -839,13 +856,13 @@ function CreateBookingPageContent() {
         countryCode: form.countryCode,
       },
       service: form.service,
-      surfacesSquareMeters: Number(form.surfacesSquareMeters) || 0,
+      surfacesSquareMeters: safeSurfaceValue,
       startAt: new Date(form.startAt).toISOString(),
       endAt: new Date(form.endAt).toISOString(),
       frequency: form.frequency,
       mode: form.mode,
       ecoPreference: form.ecoPreference,
-      requiredProviders: form.requiredProviders,
+      requiredProviders: safeRequiredProviders,
       preferredTeamId: form.preferredTeamId.trim() ? form.preferredTeamId.trim() : undefined,
       providerIds: selectedProviderIds.length ? selectedProviderIds : undefined,
       notes: form.notes || undefined,
@@ -1038,12 +1055,18 @@ function CreateBookingPageContent() {
             <FormField label={t('bookingForm.surface')} requiredMark>
               <input
                 id="surfacesSquareMeters"
-                type="number"
-                min={10}
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={form.surfacesSquareMeters}
                 onChange={handleChange('surfacesSquareMeters')}
                 className={inputClasses}
+                placeholder={t('bookingForm.surfacePlaceholder', 'ex : 120')}
+                aria-describedby="surface-helper"
               />
+              <p id="surface-helper" className="sr-only">
+                {t('forms.accessibility.numbersOnly', 'Saisissez uniquement des chiffres.')}
+              </p>
               {errors.surfacesSquareMeters ? (
                 <p className="text-xs text-red-600">{errors.surfacesSquareMeters}</p>
               ) : null}
@@ -1120,12 +1143,14 @@ function CreateBookingPageContent() {
               )}
             >
               <input
-                type="number"
-                min={1}
-                max={20}
+                id="requiredProviders"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={form.requiredProviders}
                 onChange={handleChange('requiredProviders')}
                 className={inputClasses}
+                placeholder={t('bookingForm.requiredProvidersPlaceholder', 'ex : 2')}
               />
               {errors.requiredProviders ? (
                 <p className="text-xs text-red-600">{errors.requiredProviders}</p>
@@ -1208,8 +1233,13 @@ function CreateBookingPageContent() {
                 </p>
                 <p className="text-[0.7rem] uppercase tracking-[0.2em] text-saubio-slate/50">
                   {t('bookingForm.providerSelection.requirement', {
-                    count: form.requiredProviders,
-                    defaultValue: `Min. ${form.requiredProviders} intervenant(s)`,
+                    count: safeRequiredProviders,
+                    defaultValue: safeRequiredProviders
+                      ? `Min. ${safeRequiredProviders} intervenant(s)`
+                      : t(
+                          'bookingForm.providerSelection.requirementPending',
+                          'Indiquez le nombre d’intervenants souhaité.'
+                        ),
                   })}
                 </p>
               </div>
@@ -1228,8 +1258,13 @@ function CreateBookingPageContent() {
                   >
                     {t('bookingForm.providerSelection.manualProgress', {
                       selected: selectedProviderIds.length,
-                      required: form.requiredProviders,
-                      defaultValue: `${selectedProviderIds.length}/${form.requiredProviders}`,
+                      required: safeRequiredProviders,
+                      defaultValue: safeRequiredProviders
+                        ? `${selectedProviderIds.length}/${safeRequiredProviders}`
+                        : t(
+                            'bookingForm.providerSelection.manualPending',
+                            'Renseignez un nombre pour suivre votre sélection.'
+                          ),
                     })}
                   </span>
                 ) : null}
@@ -1677,11 +1712,9 @@ function CreateBookingPageContent() {
             suggestionsCount={providerSuggestions.length}
             teamSelectedName={selectedTeam?.name}
             teamCount={providerTeams.length}
-            manualSelectionPending={
-              form.mode === 'manual' && form.requiredProviders > selectedProviderIds.length
-            }
-            requiredProviders={form.requiredProviders}
-            pendingSelectionCount={Math.max(form.requiredProviders - selectedProviderIds.length, 0)}
+            manualSelectionPending={form.mode === 'manual' && safeRequiredProviders > selectedProviderIds.length}
+            requiredProviders={safeRequiredProviders}
+            pendingSelectionCount={Math.max(safeRequiredProviders - selectedProviderIds.length, 0)}
             stageOverrides={matchingStageEvents}
           />
 

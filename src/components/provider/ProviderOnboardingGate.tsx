@@ -10,9 +10,11 @@ const CORE_TASKS = new Set(['identity', 'address', 'phone']);
 const SOFT_ALLOWED_PREFIXES = [
   '/prestataire/onboarding',
   '/prestataire/onboarding/identity',
+  '/prestataire/identite',
   '/prestataire/profile',
   '/prestataire/disponibilites',
   '/prestataire/profile/services',
+  '/prestataire/paiements',
 ];
 
 interface ProviderOnboardingGateProps {

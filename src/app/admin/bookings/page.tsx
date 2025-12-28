@@ -1,282 +1,317 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useTranslation } from 'react-i18next';
+import { SurfaceCard, Skeleton } from '@saubio/ui';
 import { useMemo } from 'react';
-import { SectionDescription, SectionTitle, SurfaceCard, Skeleton, Pill } from '@saubio/ui';
-import { useAdminBookings, useRequireRole, formatDateTime, downloadDocument } from '@saubio/utils';
-import type { BookingRequest } from '@saubio/models';
+import { CalendarDays, Clock, AlertTriangle, Ban, ShieldCheck, UserCheck } from 'lucide-react';
 import { ErrorState } from '../../../components/feedback/ErrorState';
+import { formatDateTime, useAdminBookingsOverviewStats } from '@saubio/utils';
+import type { BookingStatus } from '@saubio/models';
 
-const DEFAULT_FILTERS = {
-  status: 'pending_provider' as const,
-  fallbackRequested: true,
-};
+const ResponsiveContainer = dynamic(
+  () => import('recharts').then((mod) => ({ default: mod.ResponsiveContainer })),
+  { ssr: false }
+);
+const BarChart = dynamic(() => import('recharts').then((mod) => ({ default: mod.BarChart })), { ssr: false });
+const Bar = dynamic(() => import('recharts').then((mod) => ({ default: mod.Bar })), { ssr: false });
+const XAxis = dynamic(() => import('recharts').then((mod) => ({ default: mod.XAxis })), { ssr: false });
+const YAxis = dynamic(() => import('recharts').then((mod) => ({ default: mod.YAxis })), { ssr: false });
+const Tooltip = dynamic(() => import('recharts').then((mod) => ({ default: mod.Tooltip })), { ssr: false });
+const LineChart = dynamic(() => import('recharts').then((mod) => ({ default: mod.LineChart })), { ssr: false });
+const Line = dynamic(() => import('recharts').then((mod) => ({ default: mod.Line })), { ssr: false });
+const PieChart = dynamic(() => import('recharts').then((mod) => ({ default: mod.PieChart })), { ssr: false });
+const Pie = dynamic(() => import('recharts').then((mod) => ({ default: mod.Pie })), { ssr: false });
 
-const STATUS_TONE: Record<'escalated' | 'candidate' | 'pending', 'sun' | 'forest' | 'mist'> = {
-  escalated: 'sun',
-  candidate: 'forest',
-  pending: 'mist',
-};
+const currencyFormatter = new Intl.NumberFormat('fr-FR', {
+  style: 'currency',
+  currency: 'EUR',
+  maximumFractionDigits: 0,
+});
 
-type BookingAttachment = BookingRequest['attachments'][number];
+const percentFormatter = new Intl.NumberFormat('fr-FR', {
+  style: 'percent',
+  minimumFractionDigits: 1,
+});
 
-export default function AdminBookingsPage() {
-  const { t } = useTranslation();
-  const session = useRequireRole({ allowedRoles: ['admin', 'employee'] });
-  const bookingsQuery = useAdminBookings(DEFAULT_FILTERS);
-  const { data, isLoading, isError, refetch } = bookingsQuery;
-
-  const bookings = data ?? [];
-
-  const summary = useMemo(() => {
-    const escalated = bookings.filter((booking) => Boolean(booking.fallbackEscalatedAt)).length;
-    const candidate = bookings.filter((booking) => Boolean(booking.fallbackTeamCandidate)).length;
-    const awaiting = bookings.length - candidate;
-    return { escalated, candidate, awaiting };
-  }, [bookings]);
-
-  const shortNoticeSummary = useMemo(
-    () =>
-      bookings.reduce(
-        (acc, booking) => {
-          if (booking.shortNotice) {
-            const hasInvoice = booking.attachments?.some((attachment) => attachment.type === 'invoice');
-            if (hasInvoice) {
-              acc.confirmed += 1;
-            } else {
-              acc.pending += 1;
-            }
-          }
-          return acc;
-        },
-        { pending: 0, confirmed: 0 }
-      ),
-    [bookings]
-  );
-
-  const handleInvoiceDownload = (attachment: BookingAttachment) => {
-    if (!attachment?.url) {
-      return;
-    }
-    void downloadDocument(attachment.url, attachment.name ?? 'facture.pdf');
-  };
-
-  if (!session.user) {
-    return null;
+const bookingStatusLabel = (status: BookingStatus) => {
+  switch (status) {
+    case 'pending_provider':
+      return 'En attente prestataire';
+    case 'pending_client':
+      return 'En attente client';
+    case 'confirmed':
+      return 'Confirmé';
+    case 'in_progress':
+      return 'En cours';
+    case 'completed':
+      return 'Terminé';
+    case 'cancelled':
+      return 'Annulé';
+    case 'disputed':
+      return 'Litige';
+    case 'draft':
+    default:
+      return 'Brouillon';
   }
+};
+
+const statusTone = (status: BookingStatus) => {
+  switch (status) {
+    case 'confirmed':
+    case 'in_progress':
+    case 'completed':
+      return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+    case 'pending_provider':
+    case 'pending_client':
+      return 'bg-amber-50 text-amber-700 border-amber-200';
+    case 'cancelled':
+    case 'disputed':
+      return 'bg-rose-50 text-rose-700 border-rose-200';
+    case 'draft':
+    default:
+      return 'bg-slate-50 text-saubio-slate border-slate-200';
+  }
+};
+
+const paymentLabel = (status: string) => {
+  switch (status) {
+    case 'captured':
+    case 'released':
+      return 'Payé';
+    case 'pending':
+    case 'requires_action':
+    case 'authorized':
+    case 'capture_pending':
+    case 'held':
+      return 'En attente';
+    case 'failed':
+    case 'disputed':
+      return 'Échec';
+    case 'refunded':
+      return 'Remboursé';
+    default:
+      return status;
+  }
+};
+
+export default function AdminBookingsOverviewPage() {
+  const overviewQuery = useAdminBookingsOverviewStats();
+  const { data: overview, isLoading, isError, refetch } = overviewQuery;
+
+  const cards = useMemo(() => {
+    if (!overview) return [];
+    return [
+      {
+        label: 'Total réservations',
+        helper: 'Portefeuille global',
+        value: overview.totals.all.toLocaleString('fr-FR'),
+        icon: CalendarDays,
+        tone: 'bg-saubio-forest/10 text-saubio-forest',
+      },
+      {
+        label: 'À venir',
+        helper: 'Prochaines 72h',
+        value: overview.totals.upcoming.toLocaleString('fr-FR'),
+        icon: Clock,
+        tone: 'bg-sky-100 text-sky-900',
+      },
+      {
+        label: 'Short notice',
+        helper: `${percentFormatter.format(overview.shortNoticeRatio / 100)} des missions`,
+        value: overview.totals.shortNotice.toLocaleString('fr-FR'),
+        icon: AlertTriangle,
+        tone: 'bg-amber-100 text-amber-900',
+      },
+      {
+        label: 'Terminé',
+        helper: '30 derniers jours',
+        value: overview.totals.completed.toLocaleString('fr-FR'),
+        icon: ShieldCheck,
+        tone: 'bg-emerald-100 text-emerald-900',
+      },
+      {
+        label: 'Annulés / Litiges',
+        helper: 'Sur la période',
+        value: overview.totals.cancelled.toLocaleString('fr-FR'),
+        icon: Ban,
+        tone: 'bg-rose-100 text-rose-900',
+      },
+      {
+        label: 'CA aujourd’hui',
+        helper: 'Paiements capturés',
+        value: currencyFormatter.format(overview.financials.revenueTodayCents / 100),
+        icon: UserCheck,
+        tone: 'bg-saubio-sun/30 text-saubio-forest',
+      },
+    ];
+  }, [overview]);
+
+  const bookingsChart = overview?.charts.bookingsByDay.map((point) => ({
+    label: new Intl.DateTimeFormat('fr-FR', { weekday: 'short', day: 'numeric' }).format(new Date(point.date)),
+    total: point.total,
+  }));
+
+  const revenueChart = overview?.charts.revenueByWeek.map((point) => ({
+    label: point.week,
+    total: point.totalCents / 100,
+  }));
 
   return (
     <div className="space-y-6">
-      <header className="space-y-3">
-        <SectionTitle as="h1" size="large">
-          {t('adminBookings.title', 'Escalated bookings')}
-        </SectionTitle>
-        <SectionDescription>
-          {t(
-            'adminBookings.subtitle',
-            'Filtre appliqué : missions en attente fournisseur avec fallback déclenché.'
-          )}
-        </SectionDescription>
-        <div className="flex flex-wrap items-center gap-3 text-xs text-saubio-slate/60">
-          <span>
-            {t('adminBookings.filters.status', 'Statut : {{status}}', {
-              status: t('bookingStatus.pending_provider', 'En attente prestataire'),
-            })}
-          </span>
-          <span>•</span>
-          <span>
-            {t('adminBookings.filters.fallback', 'Fallback demandé : {{value}}', {
-              value: t('common.yes', 'Oui'),
-            })}
-          </span>
-          <button
-            type="button"
-            className="rounded-full border border-saubio-forest/25 px-3 py-1 font-semibold text-saubio-forest transition hover:border-saubio-forest/50"
-            onClick={() => {
-              void refetch();
-            }}
-            disabled={isLoading}
-          >
-            {isLoading ? t('adminBookings.refreshing', 'Actualisation…') : t('adminBookings.refresh', 'Actualiser')}
-          </button>
-        </div>
+      <header className="space-y-2">
+        <p className="text-xs uppercase tracking-[0.35em] text-saubio-slate/60">Réservations</p>
+        <h1 className="text-3xl font-semibold text-saubio-forest">Pilotage opérationnel</h1>
+        <p className="text-sm text-saubio-slate/70">Suivi en temps réel des volumes, risques et paiements.</p>
       </header>
 
       {isError ? (
         <ErrorState
-          title={t('adminBookings.errorTitle', 'Impossible de charger les réservations')}
-          description={t('adminBookings.errorDescription', 'Vérifiez votre connexion ou réessayez.')}
-          onRetry={() => {
-            void refetch();
-          }}
+          title="Impossible de charger les indicateurs"
+          description="Merci de réessayer dans quelques instants."
+          onRetry={() => refetch()}
         />
       ) : null}
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <SurfaceCard variant="soft" padding="md" className="space-y-2">
-          <p className="text-xs uppercase tracking-[0.3em] text-saubio-slate/50">
-            {t('adminBookings.metric.total', 'En file Ops')}
-          </p>
-          <p className="text-3xl font-semibold text-saubio-forest">{bookings.length}</p>
-        </SurfaceCard>
-        <SurfaceCard variant="soft" padding="md" className="space-y-2">
-          <p className="text-xs uppercase tracking-[0.3em] text-saubio-slate/50">
-            {t('adminBookings.metric.candidate', 'Équipes candidates')}
-          </p>
-          <p className="text-3xl font-semibold text-saubio-forest">{summary.candidate}</p>
-        </SurfaceCard>
-        <SurfaceCard variant="soft" padding="md" className="space-y-2">
-          <p className="text-xs uppercase tracking-[0.3em] text-saubio-slate/50">
-            {t('adminBookings.metric.escalated', 'Escalades critiques')}
-          </p>
-          <p className="text-3xl font-semibold text-saubio-forest">{summary.escalated}</p>
-        </SurfaceCard>
-      </div>
-
-      {shortNoticeSummary.pending > 0 ? (
-        <div className="rounded-3xl border border-saubio-sun/40 bg-saubio-sun/10 p-4 text-sm text-saubio-slate/80">
-          {t('adminBookings.paymentBannerPending', '{{count}} paiements short notice en attente.', {
-            count: shortNoticeSummary.pending,
-          })}
-        </div>
-      ) : shortNoticeSummary.confirmed > 0 ? (
-        <div className="rounded-3xl border border-saubio-forest/30 bg-saubio-forest/5 p-4 text-sm text-saubio-forest">
-          {t('adminBookings.paymentBannerCleared', '{{count}} paiements short notice confirmés.', {
-            count: shortNoticeSummary.confirmed,
-          })}
+      {isLoading && !overview ? (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Skeleton key={`booking-overview-skeleton-${index}`} className="h-28 rounded-3xl" />
+          ))}
         </div>
       ) : null}
 
-      <SurfaceCard variant="soft" padding="md" className="space-y-3">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold uppercase tracking-[0.28em] text-saubio-slate/50">
-            {t('adminBookings.tableTitle', 'Réservations en escalade')}
-          </h2>
-          <span className="text-xs text-saubio-slate/60">
-            {t('adminBookings.tableCount', '{{count}} mission(s)', { count: bookings.length })}
-          </span>
-        </div>
-        {isLoading ? (
-          <div className="space-y-3">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <Skeleton key={`booking-skeleton-${index}`} className="h-16 rounded-3xl" />
-            ))}
-          </div>
-        ) : bookings.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-saubio-forest/15 bg-white/70 p-6 text-center text-sm text-saubio-slate/60">
-            {t('adminBookings.empty', 'Aucune mission en attente d’action Ops.')}
-          </p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-left text-sm text-saubio-slate/80">
-              <thead>
-                <tr className="text-xs uppercase tracking-[0.2em] text-saubio-slate/50">
-                  <th className="px-3 py-2">ID</th>
-                  <th className="px-3 py-2">{t('bookingForm.service', 'Service')}</th>
-                  <th className="px-3 py-2">{t('bookingForm.address.city', 'Ville')}</th>
-                  <th className="px-3 py-2">{t('bookingForm.startAt', 'Début')}</th>
-                  <th className="px-3 py-2">{t('adminBookings.providers', 'Intervenants')}</th>
-                  <th className="px-3 py-2">{t('adminBookings.retries', 'Retentatives')}</th>
-                  <th className="px-3 py-2">{t('adminBookings.fallbackStatus', 'Fallback')}</th>
-                  <th className="px-3 py-2">{t('adminBookings.teamCandidate', 'Équipe suggérée')}</th>
-                  <th className="px-3 py-2">{t('adminBookings.paymentColumn', 'Paiement')}</th>
-                  <th className="px-3 py-2">{t('adminBookings.invoiceColumn', 'Facture')}</th>
-                  <th className="px-3 py-2">{t('adminBookings.actions', 'Actions')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {bookings.map((booking) => {
-                  const required = booking.requiredProviders ?? booking.providerIds.length ?? 0;
-                  const assigned = booking.providerIds.length;
-                  const fallbackStatus = booking.fallbackEscalatedAt
-                    ? 'escalated'
-                    : booking.fallbackTeamCandidate
-                      ? 'candidate'
-                      : 'pending';
-                  const fallbackTone = STATUS_TONE[fallbackStatus];
-                  const candidateLabel = booking.fallbackTeamCandidate
-                    ? booking.fallbackTeamCandidate.name ?? booking.fallbackTeamCandidate.id
-                    : '—';
-                  const invoiceAttachment = booking.attachments?.find((doc) => doc.type === 'invoice');
-                  const hasInvoice = Boolean(invoiceAttachment);
-                  const isShortNotice = Boolean(booking.shortNotice);
-                  const paymentStatus: 'pending' | 'confirmed' | 'standard' = isShortNotice
-                    ? hasInvoice
-                      ? 'confirmed'
-                      : 'pending'
-                    : 'standard';
-                  const paymentTone = paymentStatus === 'confirmed' ? 'forest' : paymentStatus === 'pending' ? 'sun' : 'mist';
-                  return (
-                    <tr
-                      key={booking.id}
-                      className="border-b border-saubio-forest/10 last:border-none"
-                    >
-                      <td className="px-3 py-3 font-mono text-xs text-saubio-slate/70">
-                        #{booking.id.slice(-8)}
-                      </td>
-                      <td className="px-3 py-3 font-semibold text-saubio-forest">
-                        {t(`services.${booking.service}`, booking.service)}
-                      </td>
-                      <td className="px-3 py-3">{booking.address.city}</td>
-                      <td className="px-3 py-3 text-xs">{formatDateTime(booking.startAt)}</td>
-                      <td className="px-3 py-3 text-xs">
-                        {assigned}/{required}
-                      </td>
-                      <td className="px-3 py-3 text-center text-xs">{booking.matchingRetryCount ?? 0}</td>
-                      <td className="px-3 py-3">
-                        <Pill tone={fallbackTone}>
-                          {fallbackStatus === 'escalated'
-                            ? t('adminBookings.status.escalated', 'Escalade Ops')
-                            : fallbackStatus === 'candidate'
-                              ? t('adminBookings.status.candidate', 'Équipe prête')
-                              : t('adminBookings.status.pending', 'Recherche')}
-                        </Pill>
-                      </td>
-                      <td className="px-3 py-3 text-xs text-saubio-slate/70">{candidateLabel}</td>
-                      <td className="px-3 py-3 text-xs">
-                        <Pill tone={paymentTone}>
-                          {t(
-                            `adminBookings.paymentStatus.${paymentStatus}`,
-                            paymentStatus === 'confirmed'
-                              ? 'Paiement confirmé'
-                              : paymentStatus === 'pending'
-                                ? 'En attente'
-                                : 'Standard'
-                          )}
-                        </Pill>
-                      </td>
-                      <td className="px-3 py-3 text-xs">
-                        {invoiceAttachment ? (
-                          <button
-                            type="button"
-                            onClick={() => handleInvoiceDownload(invoiceAttachment)}
-                            className="font-semibold text-saubio-forest underline"
-                          >
-                            {t('adminBookings.invoiceDownload', 'Télécharger')}
-                          </button>
-                        ) : (
-                          <span className="text-saubio-slate/50">
-                            {t('adminBookings.invoiceMissing', 'En attente')}
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-3 py-3 text-xs">
-                        <Link
-                          href={`/client/bookings/${booking.id}`}
-                          className="font-semibold text-saubio-forest underline"
-                        >
-                          {t('adminBookings.view', 'Ouvrir')}
-                        </Link>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </SurfaceCard>
+      {overview ? (
+        <>
+          <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+            {cards.map((card) => {
+              const Icon = card.icon;
+              return (
+                <SurfaceCard key={card.label} className="flex flex-col gap-2 rounded-3xl p-5 shadow-soft-lg">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs uppercase tracking-[0.35em] text-saubio-slate/60">{card.label}</p>
+                    <span className={`flex h-10 w-10 items-center justify-center rounded-2xl ${card.tone}`}>
+                      <Icon className="h-5 w-5" />
+                    </span>
+                  </div>
+                  <p className="text-3xl font-semibold text-saubio-forest">{card.value}</p>
+                  <p className="text-xs text-saubio-slate/60">{card.helper}</p>
+                </SurfaceCard>
+              );
+            })}
+          </section>
+
+          <section className="grid gap-4 xl:grid-cols-3">
+            <SurfaceCard className="rounded-3xl border border-saubio-forest/5 bg-white/95 p-5 shadow-soft-lg xl:col-span-2">
+              <div className="mb-4 flex items-center justify-between">
+                <p className="text-sm font-semibold text-saubio-forest">Volume journalier</p>
+                <span className="text-xs text-saubio-slate/60">14 derniers jours</span>
+              </div>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={bookingsChart}>
+                    <XAxis dataKey="label" tick={{ fill: '#5f6f6e' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fill: '#5f6f6e' }} axisLine={false} tickLine={false} />
+                    <Tooltip />
+                    <Bar dataKey="total" name="Réservations" fill="#1c332a" radius={[6, 6, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </SurfaceCard>
+
+            <SurfaceCard className="rounded-3xl border border-saubio-forest/5 bg-white/95 p-5 shadow-soft-lg">
+              <div className="mb-4 flex items-center justify-between">
+                <p className="text-sm font-semibold text-saubio-forest">CA hebdomadaire</p>
+                <span className="text-xs text-saubio-slate/60">8 dernières semaines</span>
+              </div>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={revenueChart}>
+                    <XAxis dataKey="label" tick={{ fill: '#5f6f6e' }} axisLine={false} tickLine={false} />
+                    <YAxis
+                      tickFormatter={(value: number) => currencyFormatter.format(value)}
+                      tick={{ fill: '#5f6f6e' }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <Tooltip formatter={(value: number) => currencyFormatter.format(value as number)} />
+                    <Line type="monotone" dataKey="total" stroke="#4f9c7f" strokeWidth={3} dot />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </SurfaceCard>
+          </section>
+
+          <section className="grid gap-4 md:grid-cols-2">
+            <SurfaceCard className="rounded-3xl border border-saubio-forest/5 bg-white/95 p-5 shadow-soft-lg">
+              <div className="mb-4 flex items-center justify-between">
+                <p className="text-sm font-semibold text-saubio-forest">Répartition statuts</p>
+                <span className="text-xs text-saubio-slate/60">Portefeuille global</span>
+              </div>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={overview.statuses.map((entry) => ({
+                        name: bookingStatusLabel(entry.status),
+                        value: entry.count,
+                      }))}
+                      dataKey="value"
+                      innerRadius={55}
+                      outerRadius={85}
+                    />
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </SurfaceCard>
+
+            <SurfaceCard className="rounded-3xl border border-saubio-forest/5 bg-white/95 p-5 shadow-soft-lg">
+              <div className="mb-4 flex items-center justify-between">
+                <p className="text-sm font-semibold text-saubio-forest">Paiements</p>
+                <span className="text-xs text-saubio-slate/60">Transactions clients</span>
+              </div>
+              <ul className="space-y-3 text-sm text-saubio-slate/80">
+                {overview.paymentStatuses.map((entry) => (
+                  <li key={entry.status} className="flex items-center justify-between rounded-2xl border border-saubio-forest/10 bg-saubio-mist/60 px-3 py-2">
+                    <span className="font-semibold text-saubio-forest">{paymentLabel(entry.status)}</span>
+                    <span className="text-xs text-saubio-slate/60">{entry.count.toLocaleString('fr-FR')}</span>
+                  </li>
+                ))}
+              </ul>
+            </SurfaceCard>
+          </section>
+
+          <SurfaceCard className="rounded-3xl border border-saubio-forest/5 bg-white/95 p-5 shadow-soft-lg">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-saubio-forest">Réservations récentes</p>
+                <p className="text-xs text-saubio-slate/60">Dernières créations</p>
+              </div>
+            </div>
+            {overview.recent.length === 0 ? (
+              <p className="text-sm text-saubio-slate/60">Aucun mouvement récent.</p>
+            ) : (
+              <div className="space-y-3 text-sm text-saubio-slate/80">
+                {overview.recent.map((booking) => (
+                  <div key={booking.id} className="flex items-center justify-between rounded-2xl border border-saubio-forest/10 bg-saubio-mist/60 px-3 py-2">
+                    <div>
+                      <Link href={`/admin/bookings/${booking.id}`} className="font-semibold text-saubio-forest underline-offset-4 hover:underline">
+                        {booking.id}
+                      </Link>
+                      <p className="text-xs text-saubio-slate/60">{booking.client.name}</p>
+                      <p className="text-xs text-saubio-slate/60">{formatDateTime(booking.startAt)}</p>
+                    </div>
+                    <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${statusTone(booking.status)}`}>
+                      {bookingStatusLabel(booking.status)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </SurfaceCard>
+        </>
+      ) : null}
     </div>
   );
 }

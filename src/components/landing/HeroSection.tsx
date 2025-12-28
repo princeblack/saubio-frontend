@@ -12,12 +12,14 @@ import {
   SectionTitle,
 } from '@saubio/ui';
 import { Clock3, Leaf, ShieldCheck } from 'lucide-react';
+import { createApiClient } from '@saubio/utils';
 
 export function HeroSection() {
   const { t } = useTranslation();
   const router = useRouter();
   const [postalCode, setPostalCode] = useState('');
   const [postalError, setPostalError] = useState<string | null>(null);
+  const [isCheckingCoverage, setCheckingCoverage] = useState(false);
 
   const stats = t('hero.stats', { returnObjects: true }) as {
     availability: { label: string; value: string };
@@ -25,7 +27,7 @@ export function HeroSection() {
     eco: { label: string; value: string };
   };
 
-  const handlePlannerRedirect = (event: FormEvent<HTMLFormElement>) => {
+  const handlePlannerRedirect = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const normalized = postalCode.trim();
     if (!normalized) {
@@ -37,7 +39,36 @@ export function HeroSection() {
       return;
     }
     setPostalError(null);
-    router.push(`/bookings/planning?postalCode=${encodeURIComponent(normalized)}`);
+    setCheckingCoverage(true);
+    try {
+      const client = createApiClient({ includeCredentials: false });
+      const coverage = await client.checkPostalCoverage(normalized);
+      if (coverage.covered) {
+        router.push(`/bookings/planning?postalCode=${encodeURIComponent(normalized)}`);
+        return;
+      }
+      if (coverage.reason && coverage.reason !== 'uncovered') {
+        setPostalError(
+          t('hero.postalCoverageError', "Ce code postal n'est pas reconnu ou n'est pas desservi.")
+        );
+        return;
+      }
+      const params = new URLSearchParams({ postalCode: normalized });
+      if (coverage.city) {
+        params.set('city', coverage.city);
+      }
+      router.push(`/follow-up?${params.toString()}`);
+    } catch (error) {
+      console.error(error);
+      setPostalError(
+        t(
+          'hero.postalCoverageRequestError',
+          'Nous ne parvenons pas à vérifier la couverture pour le moment. Merci de réessayer.'
+        )
+      );
+    } finally {
+      setCheckingCoverage(false);
+    }
   };
 
   return (
@@ -109,9 +140,10 @@ export function HeroSection() {
               </p>
               <button
                 type="submit"
-                className="w-full rounded-3xl bg-saubio-sun px-6 py-3 text-sm font-semibold uppercase tracking-wide text-saubio-forest shadow-soft-lg hover:bg-yellow-300"
+                disabled={isCheckingCoverage}
+                className="w-full rounded-3xl bg-saubio-sun px-6 py-3 text-sm font-semibold uppercase tracking-wide text-saubio-forest shadow-soft-lg hover:bg-yellow-300 disabled:opacity-70"
               >
-                {t('hero.postalCta', 'Planifier')}
+                {isCheckingCoverage ? t('hero.postalChecking', 'Vérification…') : t('hero.postalCta', 'Planifier')}
               </button>
             </form>
             <div className="flex flex-wrap gap-3">

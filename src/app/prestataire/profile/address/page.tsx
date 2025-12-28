@@ -2,13 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  useProviderProfile,
-  useUpdateProviderProfileMutation,
-  useAddressAutocomplete,
-  useRequireRole,
-  useCompleteProviderAddressMutation,
-} from '@saubio/utils';
+import { useProviderProfile, useUpdateProviderProfileMutation, useAddressAutocomplete, useRequireRole } from '@saubio/utils';
 import { SectionDescription, SectionTitle, SurfaceCard, Skeleton } from '@saubio/ui';
 import { ErrorState } from '../../../../components/feedback/ErrorState';
 import type { AddressSuggestion } from '@saubio/models';
@@ -34,17 +28,6 @@ export default function ProviderAddressPage() {
 
   const profileQuery = useProviderProfile();
   const updateProfileMutation = useUpdateProviderProfileMutation();
-  const completeAddressMutation = useCompleteProviderAddressMutation();
-  const [addressForm, setAddressForm] = useState({
-    streetLine1: '',
-    streetLine2: '',
-    postalCode: '',
-    city: '',
-    region: '',
-    country: 'DE',
-  });
-  const [addressMessage, setAddressMessage] = useState('');
-  const [addressError, setAddressError] = useState('');
   const [serviceZones, setServiceZones] = useState<ServiceZoneForm[]>([]);
   const [zoneQuery, setZoneQuery] = useState('');
   const [zoneDebouncedQuery, setZoneDebouncedQuery] = useState('');
@@ -62,23 +45,12 @@ export default function ProviderAddressPage() {
     return () => clearTimeout(handle);
   }, [zoneQuery]);
 
-useEffect(() => {
-  if (!profileQuery.data) return;
-  const currentAddress = profileQuery.data.address;
-  if (currentAddress) {
-    setAddressForm({
-      streetLine1: currentAddress.streetLine1 ?? currentAddress.street ?? '',
-      streetLine2: currentAddress.streetLine2 ?? currentAddress.complement ?? '',
-      postalCode: currentAddress.postalCode ?? '',
-      city: currentAddress.city ?? '',
-      region: currentAddress.region ?? '',
-      country: currentAddress.country ?? 'DE',
-    });
-  }
-  setServiceZones(
-    (profileQuery.data.serviceZones ?? []).map((zone) => ({
-      id: zone.id,
-      name: zone.name,
+  useEffect(() => {
+    if (!profileQuery.data) return;
+    setServiceZones(
+      (profileQuery.data.serviceZones ?? []).map((zone) => ({
+        id: zone.id,
+        name: zone.name,
         postalCode: zone.postalCode ?? undefined,
         city: zone.city ?? undefined,
         district: zone.district ?? undefined,
@@ -128,40 +100,6 @@ useEffect(() => {
     setServiceZones((previous) => previous.filter((_, zoneIndex) => zoneIndex !== index));
   };
 
-  const handleAddressInputChange = (field: keyof typeof addressForm, value: string) => {
-    setAddressForm((previous) => ({
-      ...previous,
-      [field]: value,
-    }));
-  };
-
-  const handleAddressSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setAddressMessage('');
-    setAddressError('');
-    completeAddressMutation.mutate(
-      {
-        streetLine1: addressForm.streetLine1.trim(),
-        streetLine2: addressForm.streetLine2.trim() || undefined,
-        postalCode: addressForm.postalCode.trim(),
-        city: addressForm.city.trim(),
-        region: addressForm.region.trim() || undefined,
-        country: addressForm.country.trim() || 'DE',
-      },
-      {
-        onSuccess: () => {
-          setAddressMessage(t('providerProfilePage.actions.success'));
-          void profileQuery.refetch();
-        },
-        onError: (error) => {
-          setAddressError(
-            error instanceof Error ? error.message : t('system.error.generic', 'Une erreur est survenue.')
-          );
-        },
-      }
-    );
-  };
-
   const handleServiceAreaSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setServiceAreaMessage('');
@@ -204,7 +142,7 @@ useEffect(() => {
             {t('providerProfilePage.fields.serviceAreas')}
           </SectionTitle>
           <SectionDescription>
-            {t('providerProfilePage.sections.addressSubtitle', 'Mettez à jour vos adresses et zones desservies.')}
+            {t('providerProfilePage.sections.zonesSubtitle', 'Définissez les zones où vous pouvez intervenir.')}
           </SectionDescription>
         </header>
         <SurfaceCard variant="soft" padding="md">
@@ -236,107 +174,9 @@ useEffect(() => {
           {t('providerProfilePage.fields.serviceAreas')}
         </SectionTitle>
         <SectionDescription>
-          {t('providerProfilePage.sections.addressSubtitle', 'Mettez à jour vos adresses et zones desservies.')}
+          {t('providerProfilePage.sections.zonesSubtitle', 'Définissez les zones où vous pouvez intervenir.')}
         </SectionDescription>
       </header>
-
-      <form onSubmit={handleAddressSubmit}>
-        <SurfaceCard variant="soft" padding="md" className="space-y-4 border border-saubio-mist/60">
-          <div>
-            <h2 className="text-sm font-semibold uppercase tracking-[0.28em] text-saubio-slate/50">
-              {t('providerProfilePage.sections.addressTitle', 'Adresse principale')}
-            </h2>
-            <SectionDescription className="text-xs">
-              {t(
-                'providerProfilePage.sections.addressDescription',
-                'Cette adresse est utilisée pour matcher vos missions locales.'
-              )}
-            </SectionDescription>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="space-y-2 text-sm text-saubio-slate/80 sm:col-span-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-saubio-slate/50">
-                {t('providerProfilePage.sections.addressStreet', 'Adresse')}
-              </span>
-              <input
-                value={addressForm.streetLine1}
-                onChange={(event) => handleAddressInputChange('streetLine1', event.target.value)}
-                placeholder={t('providerProfilePage.sections.addressStreetPlaceholder', 'Rue et numéro')}
-                className="w-full rounded-2xl border border-saubio-forest/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-saubio-forest"
-                required
-              />
-            </label>
-            <label className="space-y-2 text-sm text-saubio-slate/80 sm:col-span-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-saubio-slate/50">
-                {t('providerProfilePage.sections.addressStreet2', 'Complément (optionnel)')}
-              </span>
-              <input
-                value={addressForm.streetLine2}
-                onChange={(event) => handleAddressInputChange('streetLine2', event.target.value)}
-                className="w-full rounded-2xl border border-saubio-forest/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-saubio-forest"
-              />
-            </label>
-            <label className="space-y-2 text-sm text-saubio-slate/80">
-              <span className="text-xs font-semibold uppercase tracking-wide text-saubio-slate/50">
-                {t('providerProfilePage.sections.addressPostal', 'Code postal')}
-              </span>
-              <input
-                value={addressForm.postalCode}
-                onChange={(event) => handleAddressInputChange('postalCode', event.target.value)}
-                className="w-full rounded-2xl border border-saubio-forest/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-saubio-forest"
-                required
-              />
-            </label>
-            <label className="space-y-2 text-sm text-saubio-slate/80">
-              <span className="text-xs font-semibold uppercase tracking-wide text-saubio-slate/50">
-                {t('providerProfilePage.sections.addressCity', 'Ville')}
-              </span>
-              <input
-                value={addressForm.city}
-                onChange={(event) => handleAddressInputChange('city', event.target.value)}
-                className="w-full rounded-2xl border border-saubio-forest/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-saubio-forest"
-                required
-              />
-            </label>
-            <label className="space-y-2 text-sm text-saubio-slate/80">
-              <span className="text-xs font-semibold uppercase tracking-wide text-saubio-slate/50">
-                {t('providerProfilePage.sections.addressRegion', 'Région (optionnel)')}
-              </span>
-              <input
-                value={addressForm.region}
-                onChange={(event) => handleAddressInputChange('region', event.target.value)}
-                className="w-full rounded-2xl border border-saubio-forest/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-saubio-forest"
-              />
-            </label>
-            <label className="space-y-2 text-sm text-saubio-slate/80">
-              <span className="text-xs font-semibold uppercase tracking-wide text-saubio-slate/50">
-                {t('providerProfilePage.sections.addressCountry', 'Pays')}
-              </span>
-              <input
-                value={addressForm.country}
-                onChange={(event) => handleAddressInputChange('country', event.target.value)}
-                className="w-full rounded-2xl border border-saubio-forest/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-saubio-forest"
-                required
-              />
-            </label>
-          </div>
-          {addressError ? (
-            <p className="text-xs font-semibold text-red-600">{addressError}</p>
-          ) : null}
-          {addressMessage ? (
-            <p className="text-xs font-semibold text-emerald-600">{addressMessage}</p>
-          ) : null}
-          <button
-            type="submit"
-            className="rounded-full bg-saubio-forest px-5 py-2 text-sm font-semibold text-white transition hover:bg-saubio-moss disabled:opacity-60"
-            disabled={completeAddressMutation.isPending}
-          >
-            {completeAddressMutation.isPending
-              ? t('providerProfilePage.actions.saving')
-              : t('providerProfilePage.sections.addressCta', 'Modifier mon adresse')}
-          </button>
-        </SurfaceCard>
-      </form>
 
       <form onSubmit={handleServiceAreaSubmit}>
         <SurfaceCard variant="soft" padding="md" className="space-y-4 border border-saubio-mist/60">

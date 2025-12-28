@@ -1,11 +1,6 @@
 import type { ReactNode } from 'react';
-import { RoleLayout } from '../../components/layout/RoleLayout';
-import { adminSidebarItems } from '../../components/navigation/adminSidebarConfig';
+import { AdminShell } from '../../components/admin/AdminShell';
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
-  return (
-    <RoleLayout allowedRoles={['admin']} sidebarItems={adminSidebarItems}>
-      {children}
-    </RoleLayout>
-  );
+  return <AdminShell>{children}</AdminShell>;
 }

@@ -35,31 +35,39 @@ export function AppHeader({ sidebarCollapsed, onToggleSidebar, onOpenMobileSideb
   const homeHref = session.user ? resolveRoleHome(roles) : '/';
   const isClient = roles.includes('client') || roles.includes('company');
   const isProvider = roles.includes('provider');
-  const isAdmin = roles.includes('admin') || roles.includes('employee');
+  const isEmployee = roles.includes('employee');
+  const isAdmin = roles.includes('admin');
 
   const profileHref = session.user
-    ? isAdmin
-      ? '/admin/users'
+    ? isEmployee
+      ? '/employee/users'
+      : isAdmin
+      ? '/admin'
       : isProvider
       ? '/prestataire/profile'
       : '/client/profile'
     : '/login';
 
   const notificationsHref = session.user
-    ? isAdmin
-      ? '/admin/tickets'
+    ? isEmployee
+      ? '/employee/tickets'
+      : isAdmin
+      ? '/admin'
       : isProvider
-      ? '/prestataire/dashboard'
+      ? '/prestataire/notifications'
       : '/client/notifications'
     : '/login';
 
   const supportHref = session.user
-    ? isAdmin
-      ? '/admin/support'
+    ? isEmployee
+      ? '/employee/support'
+      : isAdmin
+      ? '/admin'
       : '/client/support'
     : 'mailto:support@saubio.de';
 
-  const ctaHref = isClient ? '/bookings/planning' : isProvider ? '/prestataire/missions' : '/admin/dashboard';
+  const fallbackCta = isEmployee ? '/employee/dashboard' : isAdmin ? '/admin' : '/employee/dashboard';
+  const ctaHref = isClient ? '/bookings/planning' : isProvider ? '/prestataire/missions' : fallbackCta;
   const sidebarToggleLabel = sidebarCollapsed ? t('appNav.sidebar.show') : t('appNav.sidebar.hide');
   const mobileMenuLabel = t('appNav.sidebar.openMobile');
 

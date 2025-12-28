@@ -1,6 +1,7 @@
 import type { SidebarItem } from './Sidebar';
 import {
   BarChart3,
+  Bell,
   BriefcaseBusiness,
   CircleUser,
   Wallet,
@@ -18,22 +19,39 @@ export const providerSidebarItems: SidebarItem[] = [
     icon: <BarChart3 className="h-5 w-5" />,
   },
   {
+    href: '/prestataire/notifications',
+    labelKey: 'sidebar.provider.notifications',
+    icon: <Bell className="h-5 w-5" />,
+  },
+  {
     href: '/prestataire/missions',
     labelKey: 'sidebar.provider.missions',
     icon: <BriefcaseBusiness className="h-5 w-5" />,
   },
   {
-    href: '/prestataire/profile/identity',
+    href: '/prestataire/profile',
     labelKey: 'sidebar.provider.profileSection',
     icon: <CircleUser className="h-5 w-5" />,
     children: [
+      {
+        href: '/prestataire/profile',
+        labelKey: 'sidebar.provider.profileAccount',
+      },
       {
         href: '/prestataire/profile/identity',
         labelKey: 'sidebar.provider.profilePublic',
       },
       {
+        href: '/prestataire/identite',
+        labelKey: 'sidebar.provider.identityVerification',
+      },
+      {
         href: '/prestataire/profile/address',
         labelKey: 'sidebar.provider.profileAddress',
+      },
+      {
+        href: '/prestataire/paiements',
+        labelKey: 'sidebar.provider.payouts',
       },
     ],
   },

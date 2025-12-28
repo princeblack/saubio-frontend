@@ -50,6 +50,30 @@ export type BookingMode = 'manual' | 'smart_match';
 
 export type EcoPreference = 'standard' | 'bio';
 
+export type PromoCodeType = 'fixed' | 'percent';
+
+export type MarketingLandingStatus = 'draft' | 'published' | 'archived';
+
+export type CleaningSoilLevel = 'light' | 'normal' | 'strong' | 'extreme';
+
+export interface BookingContactDetails {
+  firstName?: string;
+  lastName?: string;
+  company?: string;
+  phone?: string;
+  address?: Address;
+}
+
+export interface BookingServicePreferences {
+  soilLevel?: CleaningSoilLevel;
+  wishes?: string[];
+  upholstery?: {
+    quantities?: Record<string, number>;
+    addons?: string[];
+  };
+  additionalInstructions?: string;
+}
+
 export interface BaseEntity {
   id: string;
   createdAt: string;
@@ -92,9 +116,11 @@ export interface EmployeeProfile extends BaseEntity {
   permissions: string[];
 }
 
+export type ProviderType = 'freelancer' | 'company';
+
 export interface ProviderProfile extends BaseEntity {
   userId: string;
-  type: 'freelancer' | 'company';
+  type: ProviderType;
   languages: string[];
   serviceAreas: string[];
   serviceZones?: ProviderServiceZone[];
@@ -105,11 +131,16 @@ export interface ProviderProfile extends BaseEntity {
   ratingAverage?: number;
   ratingCount?: number;
   offersEco: boolean;
+  photoUrl?: string | null;
   acceptsAnimals?: boolean;
   payoutMethod?: 'card' | 'bank_transfer';
   payoutLast4?: string;
   payoutReady: boolean;
   kycStatus?: string;
+  payoutActivationStatus?: 'pending' | 'inactive' | 'active' | 'failed';
+  payoutAccountHolder?: string | null;
+  payoutIbanMasked?: string | null;
+  payoutBankName?: string | null;
   gender?: string;
   birthDate?: string;
   birthCity?: string;
@@ -244,6 +275,7 @@ export interface ProviderBookingInvitation {
   status: BookingInvitationStatus;
   createdAt: string;
   respondedAt?: string | null;
+  viewedAt?: string | null;
   service: ServiceCategory;
   city: string;
   postalCode: string;
@@ -251,9 +283,14 @@ export interface ProviderBookingInvitation {
   endAt: string;
   durationHours: number;
   ecoPreference: EcoPreference;
-  surfacesSquareMeters: number;
+  surfacesSquareMeters?: number | null;
   requiredProviders: number;
   shortNoticeDepositCents?: number;
+  address: Address;
+  contact?: BookingContactDetails;
+  onsiteContact?: BookingContactDetails;
+  servicePreferences?: BookingServicePreferences;
+  instructions?: string;
 }
 
 export interface BookingCreationResponse extends BookingRequest {
@@ -507,6 +544,7 @@ export type DocumentType =
   | 'checklist'
   | 'photo_before'
   | 'photo_after'
+  | 'profile_photo'
   | 'invoice'
   | 'other';
 

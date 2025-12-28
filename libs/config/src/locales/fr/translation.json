@@ -14,8 +14,48 @@
       "client": "Espace client",
       "provider": "Espace prestataire",
       "company": "Espace entreprise",
-      "admin": "Back-office admin",
-      "employee": "Console opérations"
+      "admin": "Espace employé",
+      "employee": "Espace employé"
+    },
+    "employee": {
+      "dashboard": "Tableau de bord équipe",
+      "users": "Utilisateurs & comptes",
+      "providers": "Prestataires & candidatures",
+      "bookings": "Réservations & missions",
+      "teams": "Équipes terrain",
+      "support": "Support & litiges",
+      "operations": "Ops & matching",
+      "tickets": "Tickets prioritaires"
+    }
+  },
+  "followUp": {
+    "badge": "Zone en préparation",
+    "title": "Nous arrivons bientôt dans votre quartier",
+    "subtitle": "Saubio ouvre progressivement de nouvelles zones. Laissez-nous vos coordonnées et nous vous informerons dès que des équipes certifiées seront disponibles chez vous.",
+    "bullets": [
+      {
+        "title": "Prestataires sélectionnés",
+        "description": "Professionnels vérifiés, assurés et formés aux protocoles Saubio."
+      },
+      {
+        "title": "Option bio garantie",
+        "description": "Produits écologiques disponibles dans chaque nouvelle zone."
+      },
+      {
+        "title": "Support local",
+        "description": "Une équipe Ops basée à Berlin pour organiser votre mission."
+      }
+    ],
+    "form": {
+      "title": "Prévenez-moi",
+      "email": "Adresse e-mail",
+      "postalCode": "Code postal",
+      "consent": "Je souhaite recevoir des emails, offres et actualités lorsque le service sera disponible dans ma zone.",
+      "submit": "Me prévenir",
+      "successTitle": "Merci !",
+      "successDescription": "Votre demande est bien enregistrée. Nous vous contacterons dès que nous ouvrons votre zone.",
+      "backHome": "Retour à l'accueil",
+      "error": "Impossible d'enregistrer votre demande. Merci de réessayer plus tard."
     }
   },
   "cities": {
@@ -152,7 +192,17 @@
       "totalLabel": "Total estimé",
       "totalValue": "{{amount}}",
       "finalize": "Finaliser la demande"
-    }
+    },
+    "postalLabel": "Où souhaitez-vous être servi ?",
+    "postalPlaceholder": "Code postal",
+    "postalHelp": "Entrez votre code postal pour découvrir les disponibilités et tarifs près de vous.",
+    "postalCta": "Planifier",
+    "postalChecking": "Vérification…",
+    "postalDisclaimer": "Vos informations resteront confidentielles.",
+    "postalErrorRequired": "Merci de saisir un code postal.",
+    "postalErrorFormat": "Ce code postal ne semble pas valide.",
+    "postalCoverageError": "Ce code postal n'est pas reconnu ou n'est pas encore desservi.",
+    "postalCoverageRequestError": "Impossible de vérifier la couverture pour le moment. Merci de réessayer."
   },
   "trust": {
     "badge": "+1 200 missions mensuelles",
@@ -339,11 +389,13 @@
     "country": "Code pays",
     "service": "Type de service",
     "surface": "Surface (m²)",
+    "surfacePlaceholder": "ex : 120",
     "startAt": "Début (date/heure)",
     "endAt": "Fin (date/heure)",
     "frequency": "Fréquence",
     "mode": "Mode d'attribution",
     "ecoPreference": "Option bio",
+    "requiredProvidersPlaceholder": "ex : 2",
     "providerIds": "IDs prestataires favoris (séparés par des virgules)",
     "notes": "Notes (optionnel)",
     "submit": "Créer la mission",
@@ -377,6 +429,10 @@
       "eco": "Option bio",
       "tax": "TVA (19 %)",
       "total": "Total estimé"
+    },
+    "providerSelection": {
+      "requirementPending": "Indiquez le nombre d’intervenants souhaité.",
+      "manualPending": "Renseignez un nombre d’intervenants pour suivre votre sélection."
     }
   },
   "bookingPlanner": {
@@ -868,6 +924,15 @@
         "leather": "Cuir & similicuir",
         "decor_cushions": "Coussins décoratifs"
       }
+    },
+    "validation": {
+      "firstName": "Prénom obligatoire.",
+      "lastName": "Nom obligatoire.",
+      "phone": "Numéro de téléphone obligatoire.",
+      "street": "Indiquez la rue.",
+      "streetNumber": "Indiquez le numéro de rue.",
+      "postalCode": "Code postal obligatoire.",
+      "city": "Ville obligatoire."
     }
   },
   "bookingList": {
@@ -1393,16 +1458,28 @@
     "en": "Anglais",
     "fr": "Français"
   },
+  "forms": {
+    "errors": {
+      "numericOnly": "Veuillez saisir uniquement des chiffres."
+    },
+    "accessibility": {
+      "numbersOnly": "Saisissez uniquement des chiffres."
+    }
+  },
   "sidebar": {
     "client": {
       "mandates": "Mandats SEPA"
     },
     "provider": {
       "dashboard": "Tableau de bord",
+      "notifications": "Notifications & offres",
       "missions": "Missions",
       "profileSection": "Profil & identité",
+      "profileAccount": "Profil",
       "profilePublic": "Profil public",
-      "profileAddress": "Adresse & zone d'intervention",
+      "identityVerification": "Vérification d’identité",
+      "profileAddress": "Zone d’intervention",
+      "payouts": "Paiements & virements",
       "earningsPricing": "Tarifs & prix",
       "servicesSection": "Services proposés",
       "earningsSection": "Paiements & documents",
@@ -1495,12 +1572,14 @@
     },
     "scheduleTitle": "Planning à venir",
     "alertsTitle": "Alertes qualité",
-    "paymentsTitle": "Paiements",
+    "paymentsTitle": "Revenus & PMA",
     "feedbackTitle": "Avis clients",
     "qualityTitle": "Qualité opérationnelle",
     "payments": {
-      "total": "Paiements reçus",
-      "pending": "En attente",
+      "total": "Total gagné (hors missions à venir)",
+      "validation": "En attente de validation",
+      "pending": "À payer (PMA en attente)",
+      "paid": "Déjà versé",
       "lastPayout": "Dernier versement"
     },
     "quality": {
@@ -1514,6 +1593,65 @@
     "feedbackEmpty": "Aucun avis récent.",
     "errorTitle": "Impossible de charger le tableau de bord",
     "errorDescription": "Actualisez la page ou réessayez dans quelques instants."
+  },
+  "providerOffers": {
+    "title": "Offres & notifications",
+    "subtitle": "Gérez vos invitations Smart Match et suivez les alertes importantes.",
+    "tabs": {
+      "offers": "Offres Smart Match",
+      "notifications": "Autres notifications"
+    },
+    "status": {
+      "pending": "Nouvelle",
+      "viewed": "Vue",
+      "accepted": "Acceptée",
+      "declined": "Refusée",
+      "expired": "Expirée"
+    },
+    "card": {
+      "duration": "{{hours}} h · {{providers}} prestataire(s)",
+      "eco": "Préférence : {{eco}}",
+      "surface": "{{count}} m²",
+      "deposit": "Acompte estimé {{amount}}"
+    },
+    "eco": {
+      "bio": "Produits BIO",
+      "standard": "Standard"
+    },
+    "actions": {
+      "view": "Voir détails",
+      "accept": "Accepter",
+      "decline": "Refuser",
+      "close": "Fermer"
+    },
+    "details": {
+      "address": "Adresse de la mission",
+      "timing": "Créneau demandé",
+      "contact": "Contact principal",
+      "unknownContact": "Contact non renseigné",
+      "summary": "Résumé",
+      "eco": "Préférence éco : {{eco}}",
+      "surface": "Surface estimée : {{value}} m²",
+      "instructions": "Instructions client"
+    },
+    "toasts": {
+      "accepted": "Mission acceptée. Nous confirmons cela auprès du client.",
+      "declined": "Invitation refusée.",
+      "error": "Impossible de mettre à jour cette offre."
+    },
+    "empty": "Aucune offre en attente pour le moment.",
+    "errorTitle": "Impossible de charger les offres",
+    "errorDescription": "Un rafraîchissement devrait résoudre le problème.",
+    "notifications": {
+      "title": "Notifications",
+      "markAll": "Tout marquer comme lu",
+      "marking": "Marquage…",
+      "markAllSuccess": "Toutes les notifications ont été marquées comme lues.",
+      "empty": "Aucune notification récente.",
+      "errorTitle": "Impossible de charger les notifications",
+      "errorDescription": "Actualisez la page ou réessayez dans quelques instants.",
+      "generic": "Nouvelle notification."
+    }
   },
   "adminDashboard": {
     "title": "Tableau de bord administrateur",
@@ -1716,23 +1854,49 @@
   },
   "providerRevenue": {
     "title": "Revenus",
-    "subtitle": "Suivez vos paiements et versements à venir.",
-    "summaryTitle": "Synthèse des paiements",
-    "tableTitle": "Historique des paiements",
-    "chartTitle": "Évolution des revenus",
+    "subtitle": "Suivez vos missions terminées, vos montants dus et vos versements.",
+    "overviewTitle": "Vue d’ensemble",
+    "historyTitle": "Historique PMA",
+    "chartTitle": "Évolution des revenus confirmés",
+    "tableTitle": "Historique des missions rémunérées",
+    "summary": {
+      "total": "Total gagné (hors missions à venir)",
+      "awaitingValidation": "En attente de validation",
+      "payable": "À payer (PMA en attente)",
+      "paid": "Déjà versé"
+    },
     "columns": {
       "date": "Date",
-      "booking": "Mission",
-      "amount": "Montant",
+      "client": "Client",
+      "service": "Mission",
+      "gross": "Montant brut",
+      "commission": "Commission",
+      "net": "Montant net",
       "status": "Statut"
     },
-    "status": {
-      "captured": "Capturé",
-      "authorized": "Autorisé",
-      "pending": "En attente",
-      "processing": "En traitement",
+    "statuses": {
+      "upcoming": "À venir",
+      "awaiting_validation": "En attente de validation",
+      "payable": "À payer",
       "paid": "Payé"
-    }
+    },
+    "statusDescriptions": {
+      "upcoming": "Mission planifiée. Montant estimé sous réserve de réalisation.",
+      "awaiting_validation": "Mission terminée, vérification en cours.",
+      "payable": "Montant validé. Versement en préparation.",
+      "paid": "Versement effectué sur votre compte."
+    },
+    "expectedPayout": "Versement estimé le {{date}}",
+    "empty": {
+      "overview": "Vous verrez ici vos montants dès votre première mission terminée.",
+      "table": "Aucune mission rémunérée pour l’instant."
+    },
+    "documentsTitle": "Relevés & factures",
+    "documentsSubtitle": "Téléchargez vos documents comptables dès qu’ils sont disponibles.",
+    "documentsErrorTitle": "Impossible de charger vos relevés",
+    "documentsErrorDescription": "Réessayez dans quelques instants.",
+    "documentsDownload": "Télécharger",
+    "documentsEmpty": "Vos relevés seront disponibles après votre premier paiement."
   },
   "providerResourcesPage": {
     "title": "Ressources",
@@ -1776,6 +1940,7 @@
       "identityDescription": "Téléversez vos pièces officielles pour que notre équipe valide votre compte.",
       "street": "Adresse",
       "city": "Ville",
+      "zonesSubtitle": "Définissez les zones où vous pouvez intervenir.",
       "zonesTitle": "Zones d’intervention",
       "zonesDescription": "Ajoutez les villes ou quartiers dans lesquels vous intervenez.",
       "zonesEmpty": "Aucune zone sélectionnée pour le moment.",
@@ -1798,11 +1963,11 @@
     },
     "payout": {
       "requiredTitle": "Activez vos paiements",
-      "requiredDescription": "Ajoutez vos coordonnées bancaires pour recevoir vos missions. Ce processus sécurisé est géré par Mollie.",
+      "requiredDescription": "Ajoutez vos coordonnées bancaires pour recevoir vos paiements. Tout se passe dans l’application, sans redirection externe.",
       "reviewTitle": "Vérification en cours",
-      "reviewDescription": "Vos informations bancaires sont en cours d’analyse chez Mollie. Vous pourrez rouvrir le portail si nécessaire.",
+      "reviewDescription": "Vos informations bancaires sont en cours d’analyse. Cela prend généralement quelques minutes.",
       "rejectedTitle": "Paiement non validé",
-      "rejectedDescription": "Certaines informations doivent être corrigées. Relancez le portail Mollie pour finaliser l’activation.",
+      "rejectedDescription": "Certaines informations doivent être corrigées. Réessayez avec un IBAN valide.",
       "readyTitle": "Paiements activés",
       "readyDescription": "Vos coordonnées sont validées. Vous recevrez automatiquement vos versements après chaque mission.",
       "method": "Méthode",
@@ -1819,12 +1984,55 @@
       "statusHint": {
         "pending": "Ajoutez vos coordonnées bancaires pour lancer la vérification.",
         "in_review": "Mollie analyse vos informations. Cette étape peut prendre quelques minutes.",
-        "rejected": "Les informations ont été refusées. Rouvrez le portail pour corriger les champs demandés.",
+        "rejected": "Les informations ont été refusées. Merci de corriger et de réessayer.",
         "verified": "Vos paiements sont prêts."
       },
-      "cta": "Compléter mes informations de paiement",
-      "opening": "Ouverture du portail…",
-      "error": "Impossible de créer le lien d’onboarding pour le moment."
+      "cta": "Enregistrer mes coordonnées bancaires",
+      "opening": "Activation en cours…",
+      "error": "Impossible d’enregistrer vos coordonnées pour le moment.",
+      "accountHolder": "Titulaire du compte",
+      "iban": "IBAN",
+      "ibanError": "IBAN invalide. Vérifiez le format.",
+      "success": "Coordonnées bancaires enregistrées. Vous recevrez vos paiements automatiquement.",
+      "pendingReview": "Coordonnées enregistrées, validation en cours."
+    }
+  },
+  "providerAccountPage": {
+    "title": "Mon profil",
+    "subtitle": "Mettez à jour vos informations personnelles, vos coordonnées et votre photo.",
+    "avatar": {
+      "title": "Photo de profil",
+      "description": "Ajoutez une photo claire qui vous représente sur Saubio.",
+      "upload": "Ajouter une photo",
+      "uploading": "Téléversement…",
+      "hint": "PNG ou JPG, 5 Mo max."
+    },
+    "account": {
+      "title": "Informations personnelles",
+      "description": "Ces données apparaissent sur les factures et communications.",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Email",
+      "phone": "Téléphone"
+    },
+    "address": {
+      "title": "Adresse personnelle",
+      "description": "Votre domicile nous aide à proposer des missions proches.",
+      "streetLine1": "Rue et numéro",
+      "streetLine2": "Complément d’adresse",
+      "postalCode": "Code postal",
+      "city": "Ville",
+      "region": "Région"
+    },
+    "actions": {
+      "save": "Enregistrer",
+      "saving": "Enregistrement…"
+    },
+    "messages": {
+      "accountSaved": "Profil mis à jour.",
+      "addressSaved": "Adresse mise à jour.",
+      "photoSaved": "Photo mise à jour.",
+      "error": "Impossible d’enregistrer vos changements pour le moment."
     }
   },
   "providerServicesPage": {
