@@ -75,6 +75,7 @@ import type {
   AdminEmployeeListItem,
   AdminRolesResponse,
   UpdateAdminUserPayload,
+  UpdateAdminEmployeeRolePayload,
   CreateProviderOnboardingPayload,
   ProviderOnboardingRequest,
   ProviderPaymentsOnboardingPayload,
@@ -92,6 +93,7 @@ import type {
   ProviderOnboardingStatus,
   ProviderIdentitySessionResponse,
   ProviderIdentityDocumentSummary,
+  IdentityDocumentTypeConfig,
   ProviderIdentityDocumentUploadPayload,
   ProviderProfilePhotoPayload,
   ProviderAvailabilityOverview,
@@ -123,9 +125,25 @@ import type {
   AdminFinanceExportsResponse,
   AdminFinanceSettingsResponse,
   AdminFinanceInvoicesResponse,
+  AdminAnalyticsOverviewResponse,
+  AdminAnalyticsFunnelResponse,
+  AdminAnalyticsCohortResponse,
+  AdminAnalyticsZonesResponse,
+  AdminAnalyticsOpsResponse,
   AdminMarketingLandingPagesResponse,
   AdminMarketingOverviewResponse,
   AdminMarketingSettingsResponse,
+  AdminNotificationLogItem,
+  AdminNotificationTemplate,
+  AdminNotificationAutomationRule,
+  AdminSystemHealthResponse,
+  AdminSystemIntegrationsResponse,
+  AdminSystemInfoResponse,
+  AdminSystemApiKeyItem,
+  AdminSystemImportJobItem,
+  AdminSystemExportJobItem,
+  AdminWebhookLogItem,
+  AdminWebhookLogDetail,
   AdminPromoCodeListItem,
   AdminPromoCodeDetail,
   AdminPromoCodeStatsResponse,
@@ -160,10 +178,33 @@ import type {
   AdminQualityProviderListItem,
   AdminQualityIncidentItem,
   AdminQualityAlertsResponse,
+  AdminConsentRecord,
+  AdminConsentHistoryItem,
+  AdminSecuritySession,
+  AdminSecurityLoginAttempt,
+  AdminSecurityLog,
+  AdminSecurityIncident,
+  CreateAdminSecurityIncidentPayload,
+  UpdateAdminSecurityIncidentPayload,
   AdminQualitySatisfactionResponse,
   AdminQualityProgramResponse,
   AdminQualityProviderDetail,
+  UserRole,
   ReviewStatus,
+  WebhookDeliveryStatus,
+  AdminIdentityVerificationListItem,
+  AdminIdentityVerificationDetail,
+  AdminIdentityAuditLogItem,
+  SystemApiKeyStatus,
+  SystemDataJobStatus,
+  SystemImportEntity,
+  SystemExportType,
+  AdminGdprRequest,
+  CreateAdminGdprRequestPayload,
+  ConfirmAdminGdprDeletionPayload,
+  RejectAdminGdprRequestPayload,
+  CreateIdentityDocumentTypePayload,
+  UpdateIdentityDocumentTypePayload,
 } from '@saubio/models';
 export type { AdminSupportRangeQuery, AdminSupportTicketsQuery, AdminSupportDisputesQuery } from '@saubio/models';
 import { setSession } from './session-store';
@@ -197,6 +238,45 @@ export interface AdminProviderServiceAreasQuery {
   pageSize?: number;
 }
 
+export interface AdminWebhookLogsQuery {
+  page?: number;
+  pageSize?: number;
+  provider?: string;
+  status?: WebhookDeliveryStatus;
+  eventType?: string;
+  resourceId?: string;
+  bookingId?: string;
+  paymentId?: string;
+  providerProfileId?: string;
+  userId?: string;
+  search?: string;
+  from?: string;
+  to?: string;
+}
+
+export interface AdminSystemApiKeysQuery {
+  page?: number;
+  pageSize?: number;
+  status?: SystemApiKeyStatus;
+  search?: string;
+}
+
+export interface AdminSystemImportJobsQuery {
+  page?: number;
+  pageSize?: number;
+  status?: SystemDataJobStatus;
+  entity?: SystemImportEntity;
+  search?: string;
+}
+
+export interface AdminSystemExportJobsQuery {
+  page?: number;
+  pageSize?: number;
+  status?: SystemDataJobStatus;
+  type?: SystemExportType;
+  search?: string;
+}
+
 export interface AdminMatchingTestPayload {
   service: ServiceCategory;
   postalCode: string;
@@ -220,6 +300,101 @@ export interface AdminSmartMatchingHistoryQuery extends AdminSmartMatchingRangeQ
   postalCode?: string;
   result?: 'assigned' | 'unassigned';
   invitationStatus?: 'pending' | 'accepted' | 'declined' | 'expired';
+}
+
+export interface AdminIdentityVerificationsQuery {
+  status?: 'pending' | 'under_review' | 'approved' | 'rejected';
+  documentType?: string;
+  search?: string;
+  from?: string;
+  to?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface AdminIdentityAuditQuery {
+  providerId?: string;
+  actorId?: string;
+  documentId?: string;
+  action?: string;
+  from?: string;
+  to?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface AdminIdentityDecisionPayload {
+  documentId: string;
+  notes?: string;
+}
+
+export interface AdminIdentityRejectPayload extends AdminIdentityDecisionPayload {
+  reason: string;
+}
+
+export interface AdminIdentityResetPayload {
+  documentId?: string;
+  reason: string;
+}
+
+export interface AdminIdentityUnderReviewPayload {
+  documentId: string;
+  notes?: string;
+}
+
+export interface AdminConsentQuery {
+  role?: UserRole;
+  q?: string;
+  from?: string;
+  to?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface AdminSecuritySessionsQuery {
+  role?: UserRole;
+  status?: 'active' | 'revoked' | 'expired';
+  q?: string;
+  from?: string;
+  to?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface AdminSecurityLoginAttemptsQuery {
+  q?: string;
+  from?: string;
+  to?: string;
+  success?: boolean;
+  page?: number;
+  limit?: number;
+}
+
+export interface AdminSecurityLogsQuery {
+  category?: 'auth' | 'permissions' | 'webhook' | 'payment' | 'admin' | 'other';
+  level?: 'info' | 'warn' | 'error';
+  from?: string;
+  to?: string;
+  q?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface AdminSecurityIncidentsQuery {
+  status?: 'open' | 'in_progress' | 'resolved' | 'closed';
+  category?: 'auth' | 'permissions' | 'webhook' | 'payment' | 'admin' | 'other';
+  severity?: 'low' | 'medium' | 'high' | 'critical';
+  q?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface AdminGdprRequestsQuery {
+  status?: 'pending' | 'processing' | 'completed' | 'rejected';
+  type?: 'export' | 'deletion' | 'rectification';
+  q?: string;
+  page?: number;
+  limit?: number;
 }
 
 export interface AdminQualityRangeParams {
@@ -334,6 +509,34 @@ export interface AdminPromoCodeMutationPayload {
   isActive?: boolean;
 }
 
+export interface AdminNotificationLogsQuery extends AdminMarketingRangeParams {
+  page?: number;
+  pageSize?: number;
+  status?: AdminNotificationLogItem['deliveryStatus'];
+  channel?: AdminNotificationLogItem['channel'];
+  templateKey?: string;
+  type?: AdminNotificationLogItem['type'];
+  bookingId?: string;
+  userId?: string;
+  search?: string;
+}
+
+export interface AdminNotificationTemplateUpdatePayload {
+  status?: AdminNotificationTemplate['status'];
+  activeChannels?: AdminNotificationTemplate['activeChannels'];
+  locales?: string[];
+}
+
+export interface AdminNotificationRuleUpdatePayload {
+  name?: string;
+  description?: string | null;
+  audience?: AdminNotificationAutomationRule['audience'];
+  channels?: AdminNotificationAutomationRule['channels'];
+  delaySeconds?: number | null;
+  isActive?: boolean;
+  templateId?: string | null;
+}
+
 export class ApiError<TBody = unknown> extends Error {
   constructor(
     message: string,
@@ -350,6 +553,11 @@ const joinUrl = (base: string, path: string) => {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
   return `${normalizedBase}${normalizedPath}`;
 };
+
+export const getAdminGdprRequestDownloadUrl = (
+  requestId: string,
+  baseUrl: string = getApiBaseUrl()
+) => joinUrl(baseUrl, `/admin/compliance/gdpr/requests/${requestId}/download`);
 
 export interface AdminFinanceRangeParams {
   from?: string;
@@ -385,6 +593,17 @@ export interface AdminFinanceInvoicesQuery extends AdminFinanceRangeParams {
   clientId?: string;
   providerId?: string;
   search?: string;
+}
+
+export interface AdminAnalyticsRangeQuery {
+  from?: string;
+  to?: string;
+  service?: string;
+  city?: string;
+}
+
+export interface AdminAnalyticsCohortQuery extends AdminAnalyticsRangeQuery {
+  type?: 'client' | 'provider';
 }
 
 type TokenListener = (tokens?: AuthTokens) => void;
@@ -683,6 +902,31 @@ export class ApiClient {
     return this.get<AdminFinanceInvoicesResponse>(`/employee/finance/invoices${qs}`);
   }
 
+  getAdminAnalyticsOverview(params: AdminAnalyticsRangeQuery = {}): Promise<AdminAnalyticsOverviewResponse> {
+    const qs = this.buildQueryString(params);
+    return this.get<AdminAnalyticsOverviewResponse>(`/employee/analytics/overview${qs}`);
+  }
+
+  getAdminAnalyticsFunnel(params: AdminAnalyticsRangeQuery = {}): Promise<AdminAnalyticsFunnelResponse> {
+    const qs = this.buildQueryString(params);
+    return this.get<AdminAnalyticsFunnelResponse>(`/employee/analytics/funnel${qs}`);
+  }
+
+  getAdminAnalyticsCohorts(params: AdminAnalyticsCohortQuery = {}): Promise<AdminAnalyticsCohortResponse> {
+    const qs = this.buildQueryString(params);
+    return this.get<AdminAnalyticsCohortResponse>(`/employee/analytics/cohorts${qs}`);
+  }
+
+  getAdminAnalyticsZones(params: AdminAnalyticsRangeQuery = {}): Promise<AdminAnalyticsZonesResponse> {
+    const qs = this.buildQueryString(params);
+    return this.get<AdminAnalyticsZonesResponse>(`/employee/analytics/zones${qs}`);
+  }
+
+  getAdminAnalyticsOps(params: AdminAnalyticsRangeQuery = {}): Promise<AdminAnalyticsOpsResponse> {
+    const qs = this.buildQueryString(params);
+    return this.get<AdminAnalyticsOpsResponse>(`/employee/analytics/operations${qs}`);
+  }
+
   getAdminFinanceExports(params: AdminFinanceRangeParams = {}): Promise<AdminFinanceExportsResponse> {
     const qs = this.buildFinanceQuery(params);
     return this.get<AdminFinanceExportsResponse>(`/employee/finance/exports${qs}`);
@@ -761,6 +1005,50 @@ export class ApiClient {
     return this.post<AdminSmartMatchingSimulationResponse>('/employee/smart-matching/simulate', payload);
   }
 
+  listAdminNotificationLogs(
+    params: AdminNotificationLogsQuery = {}
+  ): Promise<AdminPaginatedResponse<AdminNotificationLogItem>> {
+    return this.get<AdminPaginatedResponse<AdminNotificationLogItem>>(
+      `/employee/notifications/logs${this.buildQueryString(params)}`
+    );
+  }
+
+  getAdminNotificationLog(id: string): Promise<AdminNotificationLogItem> {
+    return this.get<AdminNotificationLogItem>(`/employee/notifications/logs/${encodeURIComponent(id)}`);
+  }
+
+  listAdminNotificationTemplates(): Promise<AdminNotificationTemplate[]> {
+    return this.get<AdminNotificationTemplate[]>('/employee/notifications/templates');
+  }
+
+  getAdminNotificationTemplate(key: string): Promise<AdminNotificationTemplate> {
+    return this.get<AdminNotificationTemplate>(`/employee/notifications/templates/${encodeURIComponent(key)}`);
+  }
+
+  updateAdminNotificationTemplate(
+    key: string,
+    payload: AdminNotificationTemplateUpdatePayload
+  ): Promise<AdminNotificationTemplate> {
+    return this.patch<AdminNotificationTemplate>(
+      `/employee/notifications/templates/${encodeURIComponent(key)}`,
+      payload
+    );
+  }
+
+  listAdminNotificationAutomationRules(): Promise<AdminNotificationAutomationRule[]> {
+    return this.get<AdminNotificationAutomationRule[]>('/employee/notifications/automation-rules');
+  }
+
+  updateAdminNotificationAutomationRule(
+    id: string,
+    payload: AdminNotificationRuleUpdatePayload
+  ): Promise<AdminNotificationAutomationRule> {
+    return this.patch<AdminNotificationAutomationRule>(
+      `/employee/notifications/automation-rules/${encodeURIComponent(id)}`,
+      payload
+    );
+  }
+
   getAdminMarketingOverview(params: AdminMarketingRangeParams = {}): Promise<AdminMarketingOverviewResponse> {
     return this.get<AdminMarketingOverviewResponse>(`/employee/marketing/overview${this.buildQueryString(params)}`);
   }
@@ -771,6 +1059,54 @@ export class ApiClient {
 
   getAdminMarketingSettings(): Promise<AdminMarketingSettingsResponse> {
     return this.get<AdminMarketingSettingsResponse>('/employee/marketing/settings');
+  }
+
+  getAdminSystemHealth(): Promise<AdminSystemHealthResponse> {
+    return this.get<AdminSystemHealthResponse>('/employee/system/health');
+  }
+
+  getAdminSystemIntegrations(): Promise<AdminSystemIntegrationsResponse> {
+    return this.get<AdminSystemIntegrationsResponse>('/employee/system/integrations');
+  }
+
+  getAdminSystemApiKeys(
+    params: AdminSystemApiKeysQuery = {}
+  ): Promise<AdminPaginatedResponse<AdminSystemApiKeyItem>> {
+    return this.get<AdminPaginatedResponse<AdminSystemApiKeyItem>>(
+      `/employee/system/api-keys${this.buildQueryString(params)}`
+    );
+  }
+
+  getAdminSystemImportJobs(
+    params: AdminSystemImportJobsQuery = {}
+  ): Promise<AdminPaginatedResponse<AdminSystemImportJobItem>> {
+    return this.get<AdminPaginatedResponse<AdminSystemImportJobItem>>(
+      `/employee/system/imports${this.buildQueryString(params)}`
+    );
+  }
+
+  getAdminSystemExportJobs(
+    params: AdminSystemExportJobsQuery = {}
+  ): Promise<AdminPaginatedResponse<AdminSystemExportJobItem>> {
+    return this.get<AdminPaginatedResponse<AdminSystemExportJobItem>>(
+      `/employee/system/exports${this.buildQueryString(params)}`
+    );
+  }
+
+  listAdminWebhookLogs(
+    params: AdminWebhookLogsQuery = {}
+  ): Promise<AdminPaginatedResponse<AdminWebhookLogItem>> {
+    return this.get<AdminPaginatedResponse<AdminWebhookLogItem>>(
+      `/employee/system/webhooks${this.buildQueryString(params)}`
+    );
+  }
+
+  getAdminWebhookLog(id: string): Promise<AdminWebhookLogDetail> {
+    return this.get<AdminWebhookLogDetail>(`/employee/system/webhooks/${encodeURIComponent(id)}`);
+  }
+
+  getAdminSystemInfo(): Promise<AdminSystemInfoResponse> {
+    return this.get<AdminSystemInfoResponse>('/employee/system/info');
   }
 
   getAdminQualityOverview(params: AdminQualityRangeParams = {}): Promise<AdminQualityOverviewResponse> {
@@ -1301,6 +1637,10 @@ export class ApiClient {
     return this.post<ProviderIdentityDocumentSummary>('/provider/onboarding/identity/document', payload);
   }
 
+  listProviderIdentityDocumentTypes(): Promise<IdentityDocumentTypeConfig[]> {
+    return this.get<IdentityDocumentTypeConfig[]>('/provider/onboarding/identity/document-types');
+  }
+
   uploadProviderProfilePhoto(payload: ProviderProfilePhotoPayload): Promise<ProviderProfile> {
     return this.post<ProviderProfile>('/provider/profile/photo', payload);
   }
@@ -1395,6 +1735,222 @@ export class ApiClient {
     return this.get<AdminProviderIdentityReview[]>(`/employee/providers/identity${query}`);
   }
 
+  listAdminIdentityVerifications(
+    params: AdminIdentityVerificationsQuery = {}
+  ): Promise<AdminPaginatedResponse<AdminIdentityVerificationListItem>> {
+    const query = new URLSearchParams();
+    if (params.status) query.set('status', params.status);
+    if (params.documentType) query.set('documentType', params.documentType);
+    if (params.search) query.set('search', params.search);
+    if (params.from) query.set('from', params.from);
+    if (params.to) query.set('to', params.to);
+    if (params.page) query.set('page', String(params.page));
+    if (params.limit) query.set('limit', String(params.limit));
+    const qs = query.toString();
+    return this.get<AdminPaginatedResponse<AdminIdentityVerificationListItem>>(
+      qs ? `/admin/identity/verifications?${qs}` : '/admin/identity/verifications'
+    );
+  }
+
+  getAdminIdentityVerification(providerId: string): Promise<AdminIdentityVerificationDetail> {
+    return this.get<AdminIdentityVerificationDetail>(`/admin/identity/verifications/${providerId}`);
+  }
+
+  approveAdminIdentityVerification(
+    providerId: string,
+    payload: AdminIdentityDecisionPayload
+  ): Promise<AdminIdentityVerificationDetail> {
+    return this.post<AdminIdentityVerificationDetail>(`/admin/identity/verifications/${providerId}/approve`, payload);
+  }
+
+  rejectAdminIdentityVerification(
+    providerId: string,
+    payload: AdminIdentityRejectPayload
+  ): Promise<AdminIdentityVerificationDetail> {
+    return this.post<AdminIdentityVerificationDetail>(`/admin/identity/verifications/${providerId}/reject`, payload);
+  }
+
+  resetAdminIdentityVerification(
+    providerId: string,
+    payload: AdminIdentityResetPayload
+  ): Promise<AdminIdentityVerificationDetail> {
+    return this.post<AdminIdentityVerificationDetail>(`/admin/identity/verifications/${providerId}/reset`, payload);
+  }
+
+  markAdminIdentityUnderReview(
+    providerId: string,
+    payload: AdminIdentityUnderReviewPayload
+  ): Promise<AdminIdentityVerificationDetail> {
+    return this.post<AdminIdentityVerificationDetail>(
+      `/admin/identity/verifications/${providerId}/under-review`,
+      payload
+    );
+  }
+
+  listAdminIdentityAudit(
+    params: AdminIdentityAuditQuery = {}
+  ): Promise<AdminPaginatedResponse<AdminIdentityAuditLogItem>> {
+    const query = new URLSearchParams();
+    if (params.providerId) query.set('providerId', params.providerId);
+    if (params.actorId) query.set('actorId', params.actorId);
+    if (params.documentId) query.set('documentId', params.documentId);
+    if (params.action) query.set('action', params.action);
+    if (params.from) query.set('from', params.from);
+    if (params.to) query.set('to', params.to);
+    if (params.page) query.set('page', String(params.page));
+    if (params.limit) query.set('limit', String(params.limit));
+    const qs = query.toString();
+    return this.get<AdminPaginatedResponse<AdminIdentityAuditLogItem>>(
+      qs ? `/admin/identity/audit?${qs}` : '/admin/identity/audit'
+    );
+  }
+
+  listAdminIdentityDocumentTypes(options: { includeArchived?: boolean } = {}): Promise<IdentityDocumentTypeConfig[]> {
+    const qs = options.includeArchived ? '?includeArchived=true' : '';
+    return this.get<IdentityDocumentTypeConfig[]>(`/admin/identity/document-types${qs}`);
+  }
+
+  createAdminIdentityDocumentType(payload: CreateIdentityDocumentTypePayload): Promise<IdentityDocumentTypeConfig> {
+    return this.post<IdentityDocumentTypeConfig>('/admin/identity/document-types', payload);
+  }
+
+  updateAdminIdentityDocumentType(
+    id: string,
+    payload: UpdateIdentityDocumentTypePayload
+  ): Promise<IdentityDocumentTypeConfig> {
+    return this.patch<IdentityDocumentTypeConfig>(`/admin/identity/document-types/${id}`, payload);
+  }
+
+  deleteAdminIdentityDocumentType(id: string): Promise<{ success: boolean }> {
+    return this.delete<{ success: boolean }>(`/admin/identity/document-types/${id}`);
+  }
+
+  listAdminConsents(params: AdminConsentQuery = {}): Promise<AdminPaginatedResponse<AdminConsentRecord>> {
+    const query = new URLSearchParams();
+    if (params.role) query.set('role', params.role.toUpperCase());
+    if (params.q) query.set('q', params.q);
+    if (params.from) query.set('from', params.from);
+    if (params.to) query.set('to', params.to);
+    if (params.page) query.set('page', String(params.page));
+    if (params.limit) query.set('limit', String(params.limit));
+    const qs = query.toString();
+    return this.get<AdminPaginatedResponse<AdminConsentRecord>>(
+      qs ? `/admin/compliance/consents?${qs}` : '/admin/compliance/consents'
+    );
+  }
+
+  getAdminConsentHistory(userId: string): Promise<AdminConsentHistoryItem[]> {
+    return this.get<AdminConsentHistoryItem[]>(`/admin/compliance/consents/${userId}/history`);
+  }
+
+  listAdminSecuritySessions(
+    params: AdminSecuritySessionsQuery = {}
+  ): Promise<AdminPaginatedResponse<AdminSecuritySession>> {
+    const query = new URLSearchParams();
+    if (params.role) query.set('role', params.role.toUpperCase());
+    if (params.status) query.set('status', params.status);
+    if (params.q) query.set('q', params.q);
+    if (params.from) query.set('from', params.from);
+    if (params.to) query.set('to', params.to);
+    if (params.page) query.set('page', String(params.page));
+    if (params.limit) query.set('limit', String(params.limit));
+    const qs = query.toString();
+    return this.get<AdminPaginatedResponse<AdminSecuritySession>>(qs ? `/admin/security/sessions?${qs}` : '/admin/security/sessions');
+  }
+
+  revokeAdminSecuritySession(id: string): Promise<AdminSecuritySession> {
+    return this.post<AdminSecuritySession>(`/admin/security/sessions/${id}/revoke`);
+  }
+
+  listAdminSecurityLoginAttempts(
+    params: AdminSecurityLoginAttemptsQuery = {}
+  ): Promise<AdminPaginatedResponse<AdminSecurityLoginAttempt>> {
+    const query = new URLSearchParams();
+    if (params.q) query.set('q', params.q);
+    if (params.from) query.set('from', params.from);
+    if (params.to) query.set('to', params.to);
+    if (typeof params.success === 'boolean') query.set('success', String(params.success));
+    if (params.page) query.set('page', String(params.page));
+    if (params.limit) query.set('limit', String(params.limit));
+    const qs = query.toString();
+    return this.get<AdminPaginatedResponse<AdminSecurityLoginAttempt>>(
+      qs ? `/admin/security/login-attempts?${qs}` : '/admin/security/login-attempts'
+    );
+  }
+
+  listAdminSecurityLogs(
+    params: AdminSecurityLogsQuery = {}
+  ): Promise<AdminPaginatedResponse<AdminSecurityLog>> {
+    const query = new URLSearchParams();
+    if (params.category) query.set('category', params.category.toUpperCase());
+    if (params.level) query.set('level', params.level.toUpperCase());
+    if (params.from) query.set('from', params.from);
+    if (params.to) query.set('to', params.to);
+    if (params.q) query.set('q', params.q);
+    if (params.page) query.set('page', String(params.page));
+    if (params.limit) query.set('limit', String(params.limit));
+    const qs = query.toString();
+    return this.get<AdminPaginatedResponse<AdminSecurityLog>>(qs ? `/admin/security/logs?${qs}` : '/admin/security/logs');
+  }
+
+  listAdminSecurityIncidents(
+    params: AdminSecurityIncidentsQuery = {}
+  ): Promise<AdminPaginatedResponse<AdminSecurityIncident>> {
+    const query = new URLSearchParams();
+    if (params.status) query.set('status', params.status.toUpperCase());
+    if (params.category) query.set('category', params.category.toUpperCase());
+    if (params.severity) query.set('severity', params.severity.toUpperCase());
+    if (params.q) query.set('q', params.q);
+    if (params.page) query.set('page', String(params.page));
+    if (params.limit) query.set('limit', String(params.limit));
+    const qs = query.toString();
+    return this.get<AdminPaginatedResponse<AdminSecurityIncident>>(
+      qs ? `/admin/security/incidents?${qs}` : '/admin/security/incidents'
+    );
+  }
+
+  createAdminSecurityIncident(payload: CreateAdminSecurityIncidentPayload): Promise<AdminSecurityIncident> {
+    return this.post<AdminSecurityIncident>('/admin/security/incidents', payload);
+  }
+
+  updateAdminSecurityIncident(id: string, payload: UpdateAdminSecurityIncidentPayload): Promise<AdminSecurityIncident> {
+    return this.patch<AdminSecurityIncident>(`/admin/security/incidents/${id}`, payload);
+  }
+
+  listAdminGdprRequests(
+    params: AdminGdprRequestsQuery = {}
+  ): Promise<AdminPaginatedResponse<AdminGdprRequest>> {
+    const query = new URLSearchParams();
+    if (params.status) query.set('status', params.status.toUpperCase());
+    if (params.type) query.set('type', params.type.toUpperCase());
+    if (params.q) query.set('q', params.q);
+    if (params.page) query.set('page', String(params.page));
+    if (params.limit) query.set('limit', String(params.limit));
+    const qs = query.toString();
+    return this.get<AdminPaginatedResponse<AdminGdprRequest>>(
+      qs ? `/admin/compliance/gdpr/requests?${qs}` : '/admin/compliance/gdpr/requests'
+    );
+  }
+
+  createAdminGdprRequest(payload: CreateAdminGdprRequestPayload): Promise<AdminGdprRequest> {
+    return this.post<AdminGdprRequest>('/admin/compliance/gdpr/requests', payload);
+  }
+
+  startAdminGdprRequest(id: string): Promise<AdminGdprRequest> {
+    return this.post<AdminGdprRequest>(`/admin/compliance/gdpr/requests/${id}/start`);
+  }
+
+  confirmAdminGdprDeletion(
+    id: string,
+    payload: ConfirmAdminGdprDeletionPayload = {}
+  ): Promise<AdminGdprRequest> {
+    return this.post<AdminGdprRequest>(`/admin/compliance/gdpr/requests/${id}/confirm-delete`, payload);
+  }
+
+  rejectAdminGdprRequest(id: string, payload: RejectAdminGdprRequestPayload): Promise<AdminGdprRequest> {
+    return this.post<AdminGdprRequest>(`/admin/compliance/gdpr/requests/${id}/reject`, payload);
+  }
+
   getAdminUsersOverview(): Promise<AdminUsersOverviewResponse> {
     return this.get<AdminUsersOverviewResponse>('/employee/users/overview');
   }
@@ -1427,18 +1983,36 @@ export class ApiClient {
     return this.get<AdminProviderDetails>(`/employee/users/providers/${id}`);
   }
 
-  listAdminEmployees(params: { page?: number; pageSize?: number; status?: string; search?: string } = {}): Promise<AdminPaginatedResponse<AdminEmployeeListItem>> {
+  listAdminEmployees(
+    params: { page?: number; pageSize?: number; status?: string; search?: string; role?: string } = {}
+  ): Promise<AdminPaginatedResponse<AdminEmployeeListItem>> {
     const query = new URLSearchParams();
     if (params.page) query.set('page', String(params.page));
-    if (params.pageSize) query.set('pageSize', String(params.pageSize));
+    if (params.pageSize) query.set('limit', String(params.pageSize));
     if (params.status && params.status !== 'all') query.set('status', params.status);
-    if (params.search) query.set('search', params.search);
+    if (params.role && params.role !== 'all') query.set('role', params.role.toUpperCase());
+    if (params.search) query.set('q', params.search);
     const qs = query.toString();
-    return this.get<AdminPaginatedResponse<AdminEmployeeListItem>>(qs ? `/employee/users/employees?${qs}` : '/employee/users/employees');
+    return this.get<AdminPaginatedResponse<AdminEmployeeListItem>>(
+      qs ? `/admin/security/employee-users?${qs}` : '/admin/security/employee-users'
+    );
   }
 
   getAdminRoles(): Promise<AdminRolesResponse> {
-    return this.get<AdminRolesResponse>('/employee/users/roles');
+    return this.get<AdminRolesResponse>('/admin/security/roles');
+  }
+
+  updateAdminEmployeeRole(
+    id: string,
+    payload: UpdateAdminEmployeeRolePayload
+  ): Promise<AdminEmployeeListItem> {
+    const body: Record<string, string> = {
+      role: payload.role.toUpperCase(),
+    };
+    if (payload.reason) {
+      body.reason = payload.reason;
+    }
+    return this.patch<AdminEmployeeListItem>(`/admin/security/employee-users/${id}/role`, body);
   }
 
   getAdminProviderIdentityReview(providerId: string): Promise<AdminProviderIdentityReview> {

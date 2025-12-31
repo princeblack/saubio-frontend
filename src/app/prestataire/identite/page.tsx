@@ -1,21 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   useRequireRole,
   useProviderProfile,
   useUploadProviderIdentityDocumentMutation,
+  useProviderIdentityDocumentTypes,
 } from '@saubio/utils';
 import { SectionTitle, SurfaceCard, LoadingIndicator } from '@saubio/ui';
 import { UploadCloud, AlertTriangle, ShieldCheck, FileText } from 'lucide-react';
 import Link from 'next/link';
+import type { IdentityDocumentTypeConfig } from '@saubio/models';
 
-const DOCUMENT_OPTIONS = [
-  { value: 'id_card', label: 'Carte d’identité' },
-  { value: 'passport', label: 'Passeport' },
-  { value: 'residence_permit', label: 'Titre de séjour' },
-] as const;
+const FALLBACK_DOCUMENT_TYPES: Pick<IdentityDocumentTypeConfig, 'code' | 'label'>[] = [
+  { code: 'id_card', label: { fr: 'Carte d’identité' } },
+  { code: 'passport', label: { fr: 'Passeport' } },
+  { code: 'residence_permit', label: { fr: 'Titre de séjour' } },
+];
 
 const SIDE_OPTIONS = [
   { value: 'front', label: 'Recto' },
@@ -30,8 +32,24 @@ export default function ProviderIdentityVerificationPage() {
   const session = useRequireRole({ allowedRoles: ['provider', 'employee', 'admin'] });
   const profileQuery = useProviderProfile();
   const uploadMutation = useUploadProviderIdentityDocumentMutation();
+  const documentTypesQuery = useProviderIdentityDocumentTypes();
 
-  const [documentType, setDocumentType] = useState<(typeof DOCUMENT_OPTIONS)[number]['value']>('id_card');
+  const documentTypeOptions = useMemo(() => {
+    if (documentTypesQuery.data && documentTypesQuery.data.length) {
+      return documentTypesQuery.data.map((type) => ({
+        code: type.code,
+        label: type.label.fr,
+      }));
+    }
+    return FALLBACK_DOCUMENT_TYPES.map((type) => ({ code: type.code, label: type.label.fr }));
+  }, [documentTypesQuery.data]);
+
+  const [documentType, setDocumentType] = useState<string>(documentTypeOptions[0]?.code ?? 'id_card');
+  useEffect(() => {
+    if (documentTypeOptions.length && !documentTypeOptions.some((option) => option.code === documentType)) {
+      setDocumentType(documentTypeOptions[0].code);
+    }
+  }, [documentTypeOptions, documentType]);
   const [side, setSide] = useState<(typeof SIDE_OPTIONS)[number]['value']>('front');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
@@ -186,10 +204,10 @@ export default function ProviderIdentityVerificationPage() {
               <select
                 className="w-full rounded-2xl border border-saubio-mist/70 bg-white px-3 py-2 text-sm text-saubio-slate focus:border-saubio-forest focus:outline-none"
                 value={documentType}
-                onChange={(event) => setDocumentType(event.target.value as typeof documentType)}
+                onChange={(event) => setDocumentType(event.target.value)}
               >
-                {DOCUMENT_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
+                {documentTypeOptions.map((option) => (
+                  <option key={option.code} value={option.code}>
                     {option.label}
                   </option>
                 ))}

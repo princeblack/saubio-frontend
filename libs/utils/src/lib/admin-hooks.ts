@@ -3,6 +3,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
   AdminUser,
   UpdateAdminUserPayload,
+  AdminEmployeeListItem,
+  UpdateAdminEmployeeRolePayload,
   ProviderOnboardingRequest,
   UpdateProviderOnboardingStatusPayload,
   AdminProviderIdentityReview,
@@ -26,6 +28,20 @@ import type {
   AdminQualityReviewDetail,
   AdminQualityIncidentItem,
   AdminQualityAlertsResponse,
+  AdminNotificationTemplate,
+  AdminNotificationAutomationRule,
+  AdminConsentRecord,
+  AdminConsentHistoryItem,
+  AdminSecuritySession,
+  AdminSecurityLoginAttempt,
+  AdminSecurityLog,
+  AdminSecurityIncident,
+  AdminGdprRequest,
+  CreateAdminGdprRequestPayload,
+  ConfirmAdminGdprDeletionPayload,
+  RejectAdminGdprRequestPayload,
+  CreateAdminSecurityIncidentPayload,
+  UpdateAdminSecurityIncidentPayload,
 } from '@saubio/models';
 import type {
   AdminFinanceRangeParams,
@@ -55,6 +71,29 @@ import type {
   AdminSupportRangeQuery,
   AdminSupportTicketsQuery,
   AdminSupportDisputesQuery,
+  AdminNotificationLogsQuery,
+  AdminNotificationTemplateUpdatePayload,
+  AdminNotificationRuleUpdatePayload,
+  AdminWebhookLogsQuery,
+  AdminSystemApiKeysQuery,
+  AdminSystemImportJobsQuery,
+  AdminSystemExportJobsQuery,
+  AdminAnalyticsRangeQuery,
+  AdminAnalyticsCohortQuery,
+  AdminIdentityVerificationsQuery,
+  AdminIdentityAuditQuery,
+  AdminIdentityDecisionPayload,
+  AdminIdentityRejectPayload,
+  AdminIdentityResetPayload,
+  AdminIdentityUnderReviewPayload,
+  CreateIdentityDocumentTypePayload,
+  UpdateIdentityDocumentTypePayload,
+  AdminConsentQuery,
+  AdminSecuritySessionsQuery,
+  AdminSecurityLoginAttemptsQuery,
+  AdminSecurityLogsQuery,
+  AdminSecurityIncidentsQuery,
+  AdminGdprRequestsQuery,
 } from './api-client';
 import {
   adminUsersQueryKey,
@@ -78,6 +117,28 @@ import {
   adminProviderIdentityQueueQueryKey,
   adminProviderIdentityReviewQueryOptions,
   adminProviderIdentityReviewQueryKey,
+  adminSecuritySessionsQueryOptions,
+  adminSecuritySessionsQueryKey,
+  adminSecurityLoginAttemptsQueryOptions,
+  adminSecurityLoginAttemptsQueryKey,
+  adminSecurityLogsQueryOptions,
+  adminSecurityLogsQueryKey,
+  adminSecurityIncidentsQueryOptions,
+  adminSecurityIncidentsQueryKey,
+  adminConsentsQueryOptions,
+  adminConsentsQueryKey,
+  adminConsentHistoryQueryOptions,
+  adminConsentHistoryQueryKey,
+  adminGdprRequestsQueryOptions,
+  adminGdprRequestsQueryKey,
+  adminIdentityVerificationsQueryOptions,
+  adminIdentityVerificationsQueryKey,
+  adminIdentityVerificationDetailQueryOptions,
+  adminIdentityVerificationDetailQueryKey,
+  adminIdentityAuditQueryOptions,
+  adminIdentityAuditQueryKey,
+  adminIdentityDocumentTypesQueryOptions,
+  adminIdentityDocumentTypesQueryKey,
   payoutBatchesQueryOptions,
   payoutBatchesQueryKey,
   adminProviderTeamsQueryOptions,
@@ -103,6 +164,14 @@ import {
   adminMarketingOverviewQueryOptions,
   adminMarketingLandingQueryOptions,
   adminMarketingSettingsQueryOptions,
+  adminSystemHealthQueryOptions,
+  adminSystemIntegrationsQueryOptions,
+  adminSystemInfoQueryOptions,
+  adminSystemApiKeysQueryOptions,
+  adminSystemImportJobsQueryOptions,
+  adminSystemExportJobsQueryOptions,
+  adminWebhookLogsQueryOptions,
+  adminWebhookLogDetailQueryOptions,
   adminPromoCodesQueryOptions,
   adminPromoCodesBaseKey,
   adminPromoCodeDetailQueryOptions,
@@ -144,6 +213,16 @@ import {
   adminSupportDisputesQueryKey,
   adminSupportDisputeDetailQueryOptions,
   adminSupportSlaQueryOptions,
+  adminNotificationLogsQueryOptions,
+  adminNotificationTemplatesQueryOptions,
+  adminNotificationRulesQueryOptions,
+  adminNotificationTemplatesQueryKey,
+  adminNotificationRulesQueryKey,
+  adminAnalyticsOverviewQueryOptions,
+  adminAnalyticsFunnelQueryOptions,
+  adminAnalyticsCohortsQueryOptions,
+  adminAnalyticsZonesQueryOptions,
+  adminAnalyticsOpsQueryOptions,
 } from './api-queries';
 import { createApiClient } from './api-client';
 
@@ -168,7 +247,9 @@ export const useAdminProviders = (params: { page?: number; pageSize?: number; st
   return useQuery(adminProvidersQueryOptions(params));
 };
 
-export const useAdminEmployees = (params: { page?: number; pageSize?: number; status?: string; search?: string } = {}) => {
+export const useAdminEmployees = (
+  params: { page?: number; pageSize?: number; status?: string; search?: string; role?: string } = {}
+) => {
   return useQuery(adminEmployeesQueryOptions(params));
 };
 
@@ -204,6 +285,26 @@ export const useAdminFinanceInvoices = (params: AdminFinanceInvoicesQuery = {}) 
   return useQuery(adminFinanceInvoicesQueryOptions(params));
 };
 
+export const useAdminAnalyticsOverview = (params: AdminAnalyticsRangeQuery = {}) => {
+  return useQuery(adminAnalyticsOverviewQueryOptions(params));
+};
+
+export const useAdminAnalyticsFunnel = (params: AdminAnalyticsRangeQuery = {}) => {
+  return useQuery(adminAnalyticsFunnelQueryOptions(params));
+};
+
+export const useAdminAnalyticsCohorts = (params: AdminAnalyticsCohortQuery = {}) => {
+  return useQuery(adminAnalyticsCohortsQueryOptions(params));
+};
+
+export const useAdminAnalyticsZones = (params: AdminAnalyticsRangeQuery = {}) => {
+  return useQuery(adminAnalyticsZonesQueryOptions(params));
+};
+
+export const useAdminAnalyticsOps = (params: AdminAnalyticsRangeQuery = {}) => {
+  return useQuery(adminAnalyticsOpsQueryOptions(params));
+};
+
 export const useAdminMarketingOverview = (params: AdminMarketingRangeParams = {}) => {
   return useQuery(adminMarketingOverviewQueryOptions(params));
 };
@@ -214,6 +315,80 @@ export const useAdminMarketingLandingPages = () => {
 
 export const useAdminMarketingSettings = () => {
   return useQuery(adminMarketingSettingsQueryOptions());
+};
+
+export const useAdminSystemHealth = () => {
+  return useQuery(adminSystemHealthQueryOptions());
+};
+
+export const useAdminSystemIntegrations = () => {
+  return useQuery(adminSystemIntegrationsQueryOptions());
+};
+
+export const useAdminSystemInfo = () => {
+  return useQuery(adminSystemInfoQueryOptions());
+};
+
+export const useAdminSystemApiKeys = (params: AdminSystemApiKeysQuery = {}) => {
+  return useQuery(adminSystemApiKeysQueryOptions(params));
+};
+
+export const useAdminSystemImportJobs = (params: AdminSystemImportJobsQuery = {}) => {
+  return useQuery(adminSystemImportJobsQueryOptions(params));
+};
+
+export const useAdminSystemExportJobs = (params: AdminSystemExportJobsQuery = {}) => {
+  return useQuery(adminSystemExportJobsQueryOptions(params));
+};
+
+export const useAdminWebhookLogs = (params: AdminWebhookLogsQuery = {}) => {
+  return useQuery(adminWebhookLogsQueryOptions(params));
+};
+
+export const useAdminWebhookLog = (id?: string) => {
+  return useQuery(adminWebhookLogDetailQueryOptions(id ?? ''));
+};
+
+export const useAdminNotificationLogs = (params: AdminNotificationLogsQuery = {}) => {
+  return useQuery(adminNotificationLogsQueryOptions(params));
+};
+
+export const useAdminNotificationTemplates = () => {
+  return useQuery(adminNotificationTemplatesQueryOptions());
+};
+
+export const useUpdateAdminNotificationTemplate = () => {
+  const client = clientFactory();
+  const queryClient = useQueryClient();
+  return useMutation<
+    AdminNotificationTemplate,
+    unknown,
+    { key: string; payload: AdminNotificationTemplateUpdatePayload }
+  >({
+    mutationFn: ({ key, payload }) => client.updateAdminNotificationTemplate(key, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminNotificationTemplatesQueryKey });
+    },
+  });
+};
+
+export const useAdminNotificationRules = () => {
+  return useQuery(adminNotificationRulesQueryOptions());
+};
+
+export const useUpdateAdminNotificationRule = () => {
+  const client = clientFactory();
+  const queryClient = useQueryClient();
+  return useMutation<
+    AdminNotificationAutomationRule,
+    unknown,
+    { id: string; payload: AdminNotificationRuleUpdatePayload }
+  >({
+    mutationFn: ({ id, payload }) => client.updateAdminNotificationAutomationRule(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminNotificationRulesQueryKey });
+    },
+  });
 };
 
 export const useAdminPromoCodes = (params: AdminPromoCodesQuery = {}) => {
@@ -509,6 +684,292 @@ export const useAdminIdentityQueue = (status?: 'not_started' | 'submitted' | 've
 
 export const useAdminProviderIdentityReview = (providerId?: string) => {
   return useQuery(adminProviderIdentityReviewQueryOptions(providerId));
+};
+
+export const useAdminSecuritySessions = (params: AdminSecuritySessionsQuery = {}) => {
+  return useQuery(adminSecuritySessionsQueryOptions(params));
+};
+
+export const useAdminSecurityLoginAttempts = (params: AdminSecurityLoginAttemptsQuery = {}) => {
+  return useQuery(adminSecurityLoginAttemptsQueryOptions(params));
+};
+
+export const useAdminSecurityLogs = (params: AdminSecurityLogsQuery = {}) => {
+  return useQuery(adminSecurityLogsQueryOptions(params));
+};
+
+export const useAdminSecurityIncidents = (params: AdminSecurityIncidentsQuery = {}) => {
+  return useQuery(adminSecurityIncidentsQueryOptions(params));
+};
+
+export const useAdminConsents = (params: AdminConsentQuery = {}) => {
+  return useQuery(adminConsentsQueryOptions(params));
+};
+
+export const useAdminConsentHistory = (userId?: string) => {
+  return useQuery(adminConsentHistoryQueryOptions(userId));
+};
+
+export const useAdminGdprRequests = (params: AdminGdprRequestsQuery = {}) => {
+  return useQuery(adminGdprRequestsQueryOptions(params));
+};
+
+export const useAdminIdentityVerifications = (params: AdminIdentityVerificationsQuery = {}) => {
+  return useQuery(adminIdentityVerificationsQueryOptions(params));
+};
+
+export const useAdminIdentityVerification = (providerId?: string) => {
+  return useQuery(adminIdentityVerificationDetailQueryOptions(providerId));
+};
+
+export const useAdminIdentityAudit = (params: AdminIdentityAuditQuery = {}) => {
+  return useQuery(adminIdentityAuditQueryOptions(params));
+};
+
+export const useAdminIdentityDocumentTypes = (options: { includeArchived?: boolean } = {}) => {
+  return useQuery(adminIdentityDocumentTypesQueryOptions(options.includeArchived ?? false));
+};
+
+export const useCreateGdprRequestMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation<AdminGdprRequest, unknown, CreateAdminGdprRequestPayload>({
+    mutationFn: async (payload) => {
+      const client = clientFactory();
+      return client.createAdminGdprRequest(payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['api', 'admin', 'compliance', 'gdpr', 'requests'] });
+    },
+  });
+};
+
+export const useStartGdprRequestMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation<AdminGdprRequest, unknown, { id: string }>({
+    mutationFn: async ({ id }) => {
+      const client = clientFactory();
+      return client.startAdminGdprRequest(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['api', 'admin', 'compliance', 'gdpr', 'requests'] });
+    },
+  });
+};
+
+export const useConfirmGdprDeletionMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    AdminGdprRequest,
+    unknown,
+    { id: string; payload?: ConfirmAdminGdprDeletionPayload }
+  >({
+    mutationFn: async ({ id, payload }) => {
+      const client = clientFactory();
+      return client.confirmAdminGdprDeletion(id, payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['api', 'admin', 'compliance', 'gdpr', 'requests'] });
+    },
+  });
+};
+
+export const useRejectGdprRequestMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    AdminGdprRequest,
+    unknown,
+    { id: string; payload: RejectAdminGdprRequestPayload }
+  >({
+    mutationFn: async ({ id, payload }) => {
+      const client = clientFactory();
+      return client.rejectAdminGdprRequest(id, payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['api', 'admin', 'compliance', 'gdpr', 'requests'] });
+    },
+  });
+};
+
+export const useUpdateEmployeeRoleMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    AdminEmployeeListItem,
+    unknown,
+    { id: string; payload: UpdateAdminEmployeeRolePayload }
+  >({
+    mutationFn: async ({ id, payload }) => {
+      const client = clientFactory();
+      return client.updateAdminEmployeeRole(id, payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['api', 'admin', 'users', 'employees'] });
+      queryClient.invalidateQueries({ queryKey: adminRolesQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['api', 'admin', 'security', 'logs'] });
+    },
+  });
+};
+
+export const useRevokeSecuritySessionMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation<AdminSecuritySession, unknown, { id: string }>({
+    mutationFn: async ({ id }) => {
+      const client = clientFactory();
+      return client.revokeAdminSecuritySession(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['api', 'admin', 'security', 'sessions'] });
+    },
+  });
+};
+
+export const useCreateSecurityIncidentMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation<AdminSecurityIncident, unknown, CreateAdminSecurityIncidentPayload>({
+    mutationFn: async (payload) => {
+      const client = clientFactory();
+      return client.createAdminSecurityIncident(payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['api', 'admin', 'security', 'incidents'] });
+    },
+  });
+};
+
+export const useUpdateSecurityIncidentMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    AdminSecurityIncident,
+    unknown,
+    { id: string; payload: UpdateAdminSecurityIncidentPayload }
+  >({
+    mutationFn: async ({ id, payload }) => {
+      const client = clientFactory();
+      return client.updateAdminSecurityIncident(id, payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['api', 'admin', 'security', 'incidents'] });
+    },
+  });
+};
+
+export const useApproveIdentityVerificationMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    AdminIdentityVerificationDetail,
+    unknown,
+    { providerId: string; documentId: string; notes?: string }
+  >({
+    mutationFn: async ({ providerId, documentId, notes }) => {
+      const client = clientFactory();
+      return client.approveAdminIdentityVerification(providerId, { documentId, notes });
+    },
+    onSuccess: (_result, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['api', 'admin', 'identity', 'verifications'] });
+      queryClient.invalidateQueries({ queryKey: adminIdentityVerificationDetailQueryKey(variables.providerId) });
+      queryClient.invalidateQueries({ queryKey: ['api', 'admin', 'identity', 'audit'] });
+      queryClient.invalidateQueries({ queryKey: adminProviderIdentityQueueQueryKey() });
+    },
+  });
+};
+
+export const useRejectIdentityVerificationMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    AdminIdentityVerificationDetail,
+    unknown,
+    { providerId: string; documentId: string; reason: string; notes?: string }
+  >({
+    mutationFn: async ({ providerId, documentId, reason, notes }) => {
+      const client = clientFactory();
+      return client.rejectAdminIdentityVerification(providerId, { documentId, reason, notes });
+    },
+    onSuccess: (_result, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['api', 'admin', 'identity', 'verifications'] });
+      queryClient.invalidateQueries({ queryKey: adminIdentityVerificationDetailQueryKey(variables.providerId) });
+      queryClient.invalidateQueries({ queryKey: ['api', 'admin', 'identity', 'audit'] });
+      queryClient.invalidateQueries({ queryKey: adminProviderIdentityQueueQueryKey() });
+    },
+  });
+};
+
+export const useResetIdentityVerificationMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    AdminIdentityVerificationDetail,
+    unknown,
+    { providerId: string; documentId?: string; reason: string }
+  >({
+    mutationFn: async ({ providerId, documentId, reason }) => {
+      const client = clientFactory();
+      return client.resetAdminIdentityVerification(providerId, { documentId, reason });
+    },
+    onSuccess: (_result, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['api', 'admin', 'identity', 'verifications'] });
+      queryClient.invalidateQueries({ queryKey: adminIdentityVerificationDetailQueryKey(variables.providerId) });
+      queryClient.invalidateQueries({ queryKey: ['api', 'admin', 'identity', 'audit'] });
+    },
+  });
+};
+
+export const useMarkIdentityUnderReviewMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    AdminIdentityVerificationDetail,
+    unknown,
+    { providerId: string; payload: AdminIdentityUnderReviewPayload }
+  >({
+    mutationFn: async ({ providerId, payload }) => {
+      const client = clientFactory();
+      return client.markAdminIdentityUnderReview(providerId, payload);
+    },
+    onSuccess: (_result, variables) => {
+      queryClient.invalidateQueries({ queryKey: adminIdentityVerificationDetailQueryKey(variables.providerId) });
+      queryClient.invalidateQueries({ queryKey: adminIdentityVerificationsQueryKey() });
+      queryClient.invalidateQueries({ queryKey: adminIdentityAuditQueryKey() });
+    },
+  });
+};
+
+export const useCreateIdentityDocumentTypeMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: CreateIdentityDocumentTypePayload) => {
+      const client = clientFactory();
+      return client.createAdminIdentityDocumentType(payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminIdentityDocumentTypesQueryKey(false) });
+      queryClient.invalidateQueries({ queryKey: adminIdentityDocumentTypesQueryKey(true) });
+    },
+  });
+};
+
+export const useUpdateIdentityDocumentTypeMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, payload }: { id: string; payload: UpdateIdentityDocumentTypePayload }) => {
+      const client = clientFactory();
+      return client.updateAdminIdentityDocumentType(id, payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminIdentityDocumentTypesQueryKey(false) });
+      queryClient.invalidateQueries({ queryKey: adminIdentityDocumentTypesQueryKey(true) });
+    },
+  });
+};
+
+export const useDeleteIdentityDocumentTypeMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const client = clientFactory();
+      return client.deleteAdminIdentityDocumentType(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminIdentityDocumentTypesQueryKey(false) });
+      queryClient.invalidateQueries({ queryKey: adminIdentityDocumentTypesQueryKey(true) });
+    },
+  });
 };
 
 export const useUpdateAdminProviderRequestMutation = () => {

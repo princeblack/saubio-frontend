@@ -620,7 +620,11 @@ export interface ProviderIdentityPayload {
   acceptTerms: boolean;
 }
 
-export type ProviderIdentityDocumentType = 'passport' | 'id_card' | 'residence_permit';
+export type ProviderIdentityDocumentType =
+  | 'passport'
+  | 'id_card'
+  | 'residence_permit'
+  | (string & Record<never, never>);
 
 export type ProviderIdentityDocumentStatus = 'submitted' | 'verified' | 'rejected';
 
@@ -636,6 +640,50 @@ export interface ProviderIdentityDocumentSummary {
   reviewer?: string;
   reviewedAt?: string;
   notes?: string;
+}
+
+export interface IdentityDocumentTypeConfig {
+  id: string;
+  code: ProviderIdentityDocumentType;
+  label: {
+    fr: string;
+    en?: string;
+    de?: string;
+  };
+  description?: string;
+  isDefault: boolean;
+  isRequired: boolean;
+  requiredFiles: number;
+  applicableCountries: string[];
+  isActive: boolean;
+  archivedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface CreateIdentityDocumentTypePayload {
+  code: ProviderIdentityDocumentType;
+  labelFr: string;
+  labelEn?: string;
+  labelDe?: string;
+  description?: string;
+  isRequired?: boolean;
+  requiredFiles?: number;
+  applicableCountries?: string[];
+  metadata?: Record<string, unknown>;
+}
+
+export interface UpdateIdentityDocumentTypePayload {
+  labelFr?: string;
+  labelEn?: string;
+  labelDe?: string;
+  description?: string;
+  isRequired?: boolean;
+  requiredFiles?: number;
+  applicableCountries?: string[];
+  isActive?: boolean;
+  metadata?: Record<string, unknown>;
 }
 
 export interface ProviderIdentityDocumentUploadPayload {
@@ -667,6 +715,256 @@ export interface AdminProviderIdentityReview {
   notes?: string;
   welcomeSessionCompletedAt?: string;
   documents: ProviderIdentityDocumentSummary[];
+}
+
+export type IdentityAuditAction =
+  | 'submitted'
+  | 'under_review'
+  | 'approved'
+  | 'rejected'
+  | 'reset'
+  | 'requested_document'
+  | 'note';
+
+export interface AdminIdentityVerificationListItem {
+  id: string;
+  providerId: string;
+  providerName: string;
+  providerEmail: string;
+  providerReference: string;
+  documentType: ProviderIdentityDocumentType;
+  documentLabel: string;
+  status: DocumentReviewStatus;
+  submittedAt: string;
+  currentStatus: 'not_started' | 'submitted' | 'verified' | 'rejected';
+  reviewer?: string;
+  reviewerId?: string;
+  reviewedAt?: string;
+  metadata?: Record<string, unknown>;
+  reason?: string;
+  underReviewBy?: string;
+  underReviewById?: string;
+  underReviewAt?: string;
+  underReviewNotes?: string;
+}
+
+export interface AdminIdentityDocumentItem {
+  id: string;
+  name: string;
+  documentType: ProviderIdentityDocumentType;
+  documentLabel: string;
+  url: string;
+  downloadUrl: string;
+  status: DocumentReviewStatus;
+  side?: ProviderIdentityDocumentSide;
+  mimeType?: string;
+  underReviewBy?: string;
+  underReviewById?: string;
+  underReviewAt?: string;
+  underReviewNotes?: string;
+  submittedAt: string;
+  reviewer?: string;
+  reviewerId?: string;
+  reviewedAt?: string;
+  notes?: string;
+}
+
+export interface AdminIdentityVerificationDetail {
+  provider: {
+    id: string;
+    name: string;
+    email: string;
+    phone?: string;
+    status: 'not_started' | 'submitted' | 'verified' | 'rejected';
+    reviewer?: string;
+    reviewerId?: string;
+    reviewedAt?: string;
+    submittedAt?: string;
+    notes?: string;
+  };
+  documents: AdminIdentityDocumentItem[];
+  timeline: AdminIdentityAuditLogItem[];
+}
+
+export interface AdminIdentityAuditLogItem {
+  id: string;
+  providerId: string;
+  providerName: string;
+  providerEmail?: string;
+  documentId?: string;
+  documentType?: ProviderIdentityDocumentType;
+  documentLabel?: string;
+  actorId?: string;
+  actorLabel?: string;
+  action: IdentityAuditAction;
+  createdAt: string;
+  payload?: Record<string, unknown>;
+}
+
+export interface AdminGdprRequest {
+  id: string;
+  type: 'export' | 'deletion' | 'rectification';
+  status: 'pending' | 'processing' | 'completed' | 'rejected';
+  user: {
+    id: string;
+    email: string;
+    role: UserRole;
+  };
+  reason?: string;
+  createdAt: string;
+  updatedAt: string;
+  startedAt?: string;
+  startedBy?: string;
+  processedAt?: string;
+  processedBy?: string;
+  rejectedAt?: string;
+  rejectedBy?: string;
+  rejectReason?: string;
+  exportReadyAt?: string;
+  exportExpiresAt?: string;
+  exportAvailable: boolean;
+}
+
+export interface CreateAdminGdprRequestPayload {
+  userId: string;
+  type: 'export' | 'deletion' | 'rectification';
+  reason?: string;
+}
+
+export interface ConfirmAdminGdprDeletionPayload {
+  notes?: string;
+}
+
+export interface RejectAdminGdprRequestPayload {
+  reason: string;
+}
+
+export interface AdminConsentRecord {
+  id: string;
+  user: {
+    id: string;
+    email: string;
+    firstName?: string;
+    lastName?: string;
+    role: UserRole;
+  };
+  consentMarketing: boolean;
+  consentStats: boolean;
+  consentPreferences: boolean;
+  consentNecessary: boolean;
+  source?: string | null;
+  channel?: string | null;
+  capturedAt?: string | null;
+  firstCapturedAt?: string | null;
+  updatedAt: string;
+}
+
+export interface AdminConsentHistoryItem {
+  id: string;
+  userId: string;
+  actorId?: string;
+  actorLabel?: string | null;
+  consentMarketing: boolean;
+  consentStats: boolean;
+  consentPreferences: boolean;
+  consentNecessary: boolean;
+  source?: string | null;
+  channel?: string | null;
+  ipAddress?: string | null;
+  userAgent?: string | null;
+  notes?: string | null;
+  capturedAt?: string | null;
+  createdAt: string;
+}
+
+export interface AdminSecuritySession {
+  id: string;
+  user: {
+    id: string;
+    email: string;
+    firstName?: string;
+    lastName?: string;
+    role: UserRole;
+  };
+  status: 'active' | 'revoked' | 'expired';
+  createdAt: string;
+  updatedAt: string;
+  expiresAt: string;
+  revokedAt?: string;
+  ipAddress?: string;
+  userAgent?: string;
+}
+
+export interface AdminSecurityLoginAttempt {
+  id: string;
+  email: string;
+  userId?: string;
+  userRole?: UserRole;
+  provider?: string;
+  success: boolean;
+  reason?: string;
+  ipAddress?: string;
+  userAgent?: string;
+  createdAt: string;
+}
+
+export interface AdminSecurityLog {
+  id: string;
+  category: 'auth' | 'permissions' | 'webhook' | 'payment' | 'admin' | 'other';
+  level: 'info' | 'warn' | 'error';
+  message: string;
+  requestId?: string;
+  actorId?: string;
+  actorEmail?: string;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface AdminSecurityIncident {
+  id: string;
+  title: string;
+  description: string;
+  category: 'auth' | 'permissions' | 'webhook' | 'payment' | 'admin' | 'other';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  status: 'open' | 'in_progress' | 'resolved' | 'closed';
+  assignedTo?: {
+    id: string;
+    email: string;
+    firstName?: string;
+    lastName?: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  resolvedAt?: string;
+  timeline: AdminSecurityIncidentTimeline[];
+}
+
+export interface AdminSecurityIncidentTimeline {
+  id: string;
+  actorId?: string;
+  actorLabel?: string;
+  action: string;
+  message?: string;
+  createdAt: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface CreateAdminSecurityIncidentPayload {
+  title: string;
+  description: string;
+  category?: AdminSecurityIncident['category'];
+  severity?: AdminSecurityIncident['severity'];
+  assignedToId?: string;
+}
+
+export interface UpdateAdminSecurityIncidentPayload {
+  title?: string;
+  description?: string;
+  category?: AdminSecurityIncident['category'];
+  severity?: AdminSecurityIncident['severity'];
+  status?: AdminSecurityIncident['status'];
+  assignedToId?: string | null;
+  timelineMessage?: string;
 }
 
 export interface ProviderIdentitySessionResponse {
@@ -801,6 +1099,55 @@ export interface ProviderDocumentSummary {
   category?: string;
 }
 
+export interface AdminEmployeeListItem {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  accessRole: UserRole;
+  createdAt: string;
+  lastLoginAt: string | null;
+  status: 'active' | 'invited' | 'suspended';
+}
+
+export interface AdminRoleSummary {
+  role: UserRole;
+  description: string;
+  permissions: string[];
+  userCount: number;
+}
+
+export type AdminPermissionImpact = 'low' | 'medium' | 'high';
+
+export interface AdminPermissionMatrixRoleAccess {
+  role: UserRole;
+  allowed: boolean;
+  scope?: string | null;
+}
+
+export interface AdminPermissionMatrixEntry {
+  id: string;
+  category: string;
+  label: string;
+  description: string;
+  impact: AdminPermissionImpact;
+  roles: AdminPermissionMatrixRoleAccess[];
+}
+
+export interface AdminRolesResponse {
+  roles: AdminRoleSummary[];
+  adminAccounts: Array<{
+    id: string;
+    name: string;
+    email: string;
+    createdAt: string;
+    lastLoginAt: string | null;
+    status: 'active' | 'invited' | 'suspended';
+  }>;
+  permissionMatrix: AdminPermissionMatrixEntry[];
+  lastReviewedAt?: string | null;
+}
+
 export interface AdminUser {
   id: string;
   name: string;
@@ -909,6 +1256,11 @@ export interface PaymentEventRecord {
 export interface UpdateAdminUserPayload {
   role?: UserRole;
   status?: 'active' | 'invited' | 'suspended';
+}
+
+export interface UpdateAdminEmployeeRolePayload {
+  role: UserRole;
+  reason?: string | null;
 }
 
 export interface UpdateProviderOnboardingStatusPayload {
@@ -1285,6 +1637,10 @@ export interface AdminMarketingLandingPageSummary {
   leads: number;
   conversionRate: number | null;
   bounceRate: number | null;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  heroTitle?: string | null;
+  heroDescription?: string | null;
   updatedAt: string;
 }
 

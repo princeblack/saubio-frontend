@@ -610,7 +610,8 @@ export type NotificationType =
   | 'billing'
   | 'support_update'
   | 'matching_progress'
-  | 'mission_status';
+  | 'mission_status'
+  | 'identity_verification';
 
 export type NotificationChannel = 'in_app' | 'email' | 'push';
 

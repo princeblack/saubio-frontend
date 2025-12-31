@@ -11,6 +11,14 @@ import type {
   AdminMatchingTestPayload,
   AdminSmartMatchingRangeQuery,
   AdminSmartMatchingHistoryQuery,
+  AdminIdentityVerificationsQuery,
+  AdminIdentityAuditQuery,
+  AdminConsentQuery,
+  AdminSecuritySessionsQuery,
+  AdminSecurityLoginAttemptsQuery,
+  AdminSecurityLogsQuery,
+  AdminSecurityIncidentsQuery,
+  AdminGdprRequestsQuery,
   AdminMarketingRangeParams,
   AdminPromoCodesQuery,
   AdminPromoCodeUsageQuery,
@@ -23,6 +31,13 @@ import type {
   AdminSupportTicketsQuery,
   AdminSupportDisputesQuery,
   AdminSupportRangeQuery,
+  AdminNotificationLogsQuery,
+  AdminWebhookLogsQuery,
+  AdminSystemApiKeysQuery,
+  AdminSystemImportJobsQuery,
+  AdminSystemExportJobsQuery,
+  AdminAnalyticsRangeQuery,
+  AdminAnalyticsCohortQuery,
 } from './api-client';
 import type {
   BookingRequest,
@@ -112,9 +127,33 @@ import type {
   AdminQualityProviderListItem,
   AdminQualityIncidentItem,
   AdminQualityAlertsResponse,
+  AdminConsentRecord,
+  AdminConsentHistoryItem,
+  AdminSecuritySession,
+  AdminSecurityLoginAttempt,
+  AdminSecurityLog,
+  AdminSecurityIncident,
+  AdminGdprRequest,
   AdminQualitySatisfactionResponse,
   AdminQualityProgramResponse,
   AdminQualityProviderDetail,
+  AdminNotificationLogItem,
+  AdminNotificationTemplate,
+  AdminNotificationAutomationRule,
+  AdminSystemHealthResponse,
+  AdminSystemIntegrationsResponse,
+  AdminSystemInfoResponse,
+  AdminWebhookLogItem,
+  AdminWebhookLogDetail,
+  AdminAnalyticsOverviewResponse,
+  AdminAnalyticsFunnelResponse,
+  AdminAnalyticsCohortResponse,
+  AdminAnalyticsZonesResponse,
+  AdminAnalyticsOpsResponse,
+  IdentityDocumentTypeConfig,
+  AdminIdentityVerificationListItem,
+  AdminIdentityVerificationDetail,
+  AdminIdentityAuditLogItem,
 } from '@saubio/models';
 
 type BaseClientLike = Pick<ApiClient, 'health'>;
@@ -162,6 +201,18 @@ type AdminProviderRequestsClientLike = Pick<
 >;
 type AdminIdentityQueueClientLike = Pick<ApiClient, 'listAdminProviderIdentityReviews'>;
 type AdminIdentityReviewClientLike = Pick<ApiClient, 'getAdminProviderIdentityReview'>;
+type AdminIdentityVerificationsClientLike = Pick<ApiClient, 'listAdminIdentityVerifications'>;
+type AdminIdentityVerificationDetailClientLike = Pick<ApiClient, 'getAdminIdentityVerification'>;
+type AdminIdentityAuditClientLike = Pick<ApiClient, 'listAdminIdentityAudit'>;
+type AdminIdentityDocumentTypesClientLike = Pick<ApiClient, 'listAdminIdentityDocumentTypes'>;
+type ProviderIdentityDocumentTypesClientLike = Pick<ApiClient, 'listProviderIdentityDocumentTypes'>;
+type AdminSecuritySessionsClientLike = Pick<ApiClient, 'listAdminSecuritySessions'>;
+type AdminSecurityLoginAttemptsClientLike = Pick<ApiClient, 'listAdminSecurityLoginAttempts'>;
+type AdminSecurityLogsClientLike = Pick<ApiClient, 'listAdminSecurityLogs'>;
+type AdminSecurityIncidentsClientLike = Pick<ApiClient, 'listAdminSecurityIncidents'>;
+type AdminConsentsClientLike = Pick<ApiClient, 'listAdminConsents'>;
+type AdminConsentHistoryClientLike = Pick<ApiClient, 'getAdminConsentHistory'>;
+type AdminGdprRequestsClientLike = Pick<ApiClient, 'listAdminGdprRequests'>;
 type AdminProviderTeamsClientLike = Pick<ApiClient, 'listProviderTeams'>;
 type AdminProviderTeamScheduleClientLike = Pick<ApiClient, 'getProviderTeamSchedule'>;
 type AdminProviderTeamPlanClientLike = Pick<ApiClient, 'getProviderTeamPlan'>;
@@ -183,6 +234,11 @@ type AdminFinancePayoutsClientLike = Pick<ApiClient, 'listAdminFinancePayouts'>;
 type AdminFinanceCommissionsClientLike = Pick<ApiClient, 'getAdminFinanceCommissions'>;
 type AdminFinanceExportsClientLike = Pick<ApiClient, 'getAdminFinanceExports'>;
 type AdminFinanceSettingsClientLike = Pick<ApiClient, 'getAdminFinanceSettings'>;
+type AdminAnalyticsOverviewClientLike = Pick<ApiClient, 'getAdminAnalyticsOverview'>;
+type AdminAnalyticsFunnelClientLike = Pick<ApiClient, 'getAdminAnalyticsFunnel'>;
+type AdminAnalyticsCohortsClientLike = Pick<ApiClient, 'getAdminAnalyticsCohorts'>;
+type AdminAnalyticsZonesClientLike = Pick<ApiClient, 'getAdminAnalyticsZones'>;
+type AdminAnalyticsOpsClientLike = Pick<ApiClient, 'getAdminAnalyticsOps'>;
 type AdminMarketingOverviewClientLike = Pick<ApiClient, 'getAdminMarketingOverview'>;
 type AdminMarketingLandingClientLike = Pick<ApiClient, 'getAdminMarketingLandingPages'>;
 type AdminMarketingSettingsClientLike = Pick<ApiClient, 'getAdminMarketingSettings'>;
@@ -217,6 +273,20 @@ type AdminPromoCodesClientLike = Pick<ApiClient, 'listAdminPromoCodes'>;
 type AdminPromoCodeDetailClientLike = Pick<ApiClient, 'getAdminPromoCode'>;
 type AdminPromoCodeStatsClientLike = Pick<ApiClient, 'getAdminPromoCodeStats'>;
 type AdminPromoCodeUsagesClientLike = Pick<ApiClient, 'listAdminPromoCodeUsages'>;
+type AdminNotificationLogsClientLike = Pick<ApiClient, 'listAdminNotificationLogs'>;
+type AdminNotificationTemplatesClientLike = Pick<ApiClient, 'listAdminNotificationTemplates'>;
+type AdminNotificationTemplateDetailClientLike = Pick<ApiClient, 'getAdminNotificationTemplate'>;
+type AdminNotificationTemplateUpdateClientLike = Pick<ApiClient, 'updateAdminNotificationTemplate'>;
+type AdminNotificationRulesClientLike = Pick<ApiClient, 'listAdminNotificationAutomationRules'>;
+type AdminNotificationRuleUpdateClientLike = Pick<ApiClient, 'updateAdminNotificationAutomationRule'>;
+type AdminSystemHealthClientLike = Pick<ApiClient, 'getAdminSystemHealth'>;
+type AdminSystemIntegrationsClientLike = Pick<ApiClient, 'getAdminSystemIntegrations'>;
+type AdminSystemInfoClientLike = Pick<ApiClient, 'getAdminSystemInfo'>;
+type AdminSystemApiKeysClientLike = Pick<ApiClient, 'getAdminSystemApiKeys'>;
+type AdminSystemImportJobsClientLike = Pick<ApiClient, 'getAdminSystemImportJobs'>;
+type AdminSystemExportJobsClientLike = Pick<ApiClient, 'getAdminSystemExportJobs'>;
+type AdminWebhookLogsClientLike = Pick<ApiClient, 'listAdminWebhookLogs'>;
+type AdminWebhookLogDetailClientLike = Pick<ApiClient, 'getAdminWebhookLog'>;
 
 const ensureClient = <T>(client?: T) => client ?? ((createApiClient() as unknown) as T);
 
@@ -345,6 +415,99 @@ export const adminFinanceOverviewQueryOptions = (
   queryKey: adminFinanceOverviewQueryKey(params),
   queryFn: async (): Promise<AdminFinanceOverviewResponse> =>
     ensureClient(client).getAdminFinanceOverview(params),
+});
+
+const analyticsRangeKey = (params: AdminAnalyticsRangeQuery = {}) => [
+  params.from ?? 'default_from',
+  params.to ?? 'default_to',
+  params.service ?? 'all_services',
+  params.city ?? 'all_cities',
+];
+
+export const adminAnalyticsOverviewQueryKey = (params: AdminAnalyticsRangeQuery = {}): QueryKey => [
+  'api',
+  'admin',
+  'analytics',
+  'overview',
+  ...analyticsRangeKey(params),
+];
+
+export const adminAnalyticsOverviewQueryOptions = (
+  params: AdminAnalyticsRangeQuery = {},
+  client?: AdminAnalyticsOverviewClientLike
+) => ({
+  queryKey: adminAnalyticsOverviewQueryKey(params),
+  queryFn: async (): Promise<AdminAnalyticsOverviewResponse> =>
+    ensureClient(client).getAdminAnalyticsOverview(params),
+});
+
+export const adminAnalyticsFunnelQueryKey = (params: AdminAnalyticsRangeQuery = {}): QueryKey => [
+  'api',
+  'admin',
+  'analytics',
+  'funnel',
+  ...analyticsRangeKey(params),
+];
+
+export const adminAnalyticsFunnelQueryOptions = (
+  params: AdminAnalyticsRangeQuery = {},
+  client?: AdminAnalyticsFunnelClientLike
+) => ({
+  queryKey: adminAnalyticsFunnelQueryKey(params),
+  queryFn: async (): Promise<AdminAnalyticsFunnelResponse> =>
+    ensureClient(client).getAdminAnalyticsFunnel(params),
+});
+
+export const adminAnalyticsCohortsQueryKey = (params: AdminAnalyticsCohortQuery = {}): QueryKey => [
+  'api',
+  'admin',
+  'analytics',
+  'cohorts',
+  params.type ?? 'client',
+  ...analyticsRangeKey(params),
+];
+
+export const adminAnalyticsCohortsQueryOptions = (
+  params: AdminAnalyticsCohortQuery = {},
+  client?: AdminAnalyticsCohortsClientLike
+) => ({
+  queryKey: adminAnalyticsCohortsQueryKey(params),
+  queryFn: async (): Promise<AdminAnalyticsCohortResponse> =>
+    ensureClient(client).getAdminAnalyticsCohorts(params),
+});
+
+export const adminAnalyticsZonesQueryKey = (params: AdminAnalyticsRangeQuery = {}): QueryKey => [
+  'api',
+  'admin',
+  'analytics',
+  'zones',
+  ...analyticsRangeKey(params),
+];
+
+export const adminAnalyticsZonesQueryOptions = (
+  params: AdminAnalyticsRangeQuery = {},
+  client?: AdminAnalyticsZonesClientLike
+) => ({
+  queryKey: adminAnalyticsZonesQueryKey(params),
+  queryFn: async (): Promise<AdminAnalyticsZonesResponse> =>
+    ensureClient(client).getAdminAnalyticsZones(params),
+});
+
+export const adminAnalyticsOpsQueryKey = (params: AdminAnalyticsRangeQuery = {}): QueryKey => [
+  'api',
+  'admin',
+  'analytics',
+  'ops',
+  ...analyticsRangeKey(params),
+];
+
+export const adminAnalyticsOpsQueryOptions = (
+  params: AdminAnalyticsRangeQuery = {},
+  client?: AdminAnalyticsOpsClientLike
+) => ({
+  queryKey: adminAnalyticsOpsQueryKey(params),
+  queryFn: async (): Promise<AdminAnalyticsOpsResponse> =>
+    ensureClient(client).getAdminAnalyticsOps(params),
 });
 
 export const adminFinancePaymentsQueryKey = (params: AdminFinancePaymentsQuery = {}): QueryKey => [
@@ -477,6 +640,59 @@ export const adminMarketingOverviewQueryOptions = (
     ensureClient(client).getAdminMarketingOverview(params),
 });
 
+const notificationLogsKeyParts = (params: AdminNotificationLogsQuery = {}) => [
+  params.page ?? 1,
+  params.pageSize ?? 25,
+  params.status ?? 'any',
+  params.channel ?? 'any',
+  params.templateKey ?? 'any',
+  params.type ?? 'any',
+  params.bookingId ?? 'any',
+  params.userId ?? 'any',
+  params.search ?? 'any',
+  params.from ?? 'any',
+  params.to ?? 'any',
+];
+
+export const adminNotificationLogsQueryKey = (
+  params: AdminNotificationLogsQuery = {}
+): QueryKey => ['api', 'admin', 'notifications', 'logs', ...notificationLogsKeyParts(params)];
+
+export const adminNotificationLogsQueryOptions = (
+  params: AdminNotificationLogsQuery = {},
+  client?: AdminNotificationLogsClientLike
+) => ({
+  queryKey: adminNotificationLogsQueryKey(params),
+  keepPreviousData: true,
+  queryFn: async (): Promise<AdminPaginatedResponse<AdminNotificationLogItem>> =>
+    ensureClient(client).listAdminNotificationLogs(params),
+});
+
+export const adminNotificationTemplatesQueryKey: QueryKey = [
+  'api',
+  'admin',
+  'notifications',
+  'templates',
+];
+
+export const adminNotificationTemplatesQueryOptions = (
+  client?: AdminNotificationTemplatesClientLike
+) => ({
+  queryKey: adminNotificationTemplatesQueryKey,
+  queryFn: async (): Promise<AdminNotificationTemplate[]> =>
+    ensureClient(client).listAdminNotificationTemplates(),
+});
+
+export const adminNotificationRulesQueryKey: QueryKey = ['api', 'admin', 'notifications', 'rules'];
+
+export const adminNotificationRulesQueryOptions = (
+  client?: AdminNotificationRulesClientLike
+) => ({
+  queryKey: adminNotificationRulesQueryKey,
+  queryFn: async (): Promise<AdminNotificationAutomationRule[]> =>
+    ensureClient(client).listAdminNotificationAutomationRules(),
+});
+
 export const adminMarketingLandingQueryKey: QueryKey = ['api', 'admin', 'marketing', 'landing'];
 
 export const adminMarketingLandingQueryOptions = (client?: AdminMarketingLandingClientLike) => ({
@@ -491,6 +707,115 @@ export const adminMarketingSettingsQueryOptions = (client?: AdminMarketingSettin
   queryKey: adminMarketingSettingsQueryKey,
   queryFn: async (): Promise<AdminMarketingSettingsResponse> =>
     ensureClient(client).getAdminMarketingSettings(),
+});
+
+export const adminSystemHealthQueryKey: QueryKey = ['api', 'admin', 'system', 'health'];
+
+export const adminSystemHealthQueryOptions = (client?: AdminSystemHealthClientLike) => ({
+  queryKey: adminSystemHealthQueryKey,
+  queryFn: async (): Promise<AdminSystemHealthResponse> =>
+    ensureClient(client).getAdminSystemHealth(),
+});
+
+export const adminSystemIntegrationsQueryKey: QueryKey = ['api', 'admin', 'system', 'integrations'];
+
+export const adminSystemIntegrationsQueryOptions = (
+  client?: AdminSystemIntegrationsClientLike
+) => ({
+  queryKey: adminSystemIntegrationsQueryKey,
+  queryFn: async (): Promise<AdminSystemIntegrationsResponse> =>
+    ensureClient(client).getAdminSystemIntegrations(),
+});
+
+export const adminSystemInfoQueryKey: QueryKey = ['api', 'admin', 'system', 'info'];
+
+export const adminSystemInfoQueryOptions = (client?: AdminSystemInfoClientLike) => ({
+  queryKey: adminSystemInfoQueryKey,
+  queryFn: async (): Promise<AdminSystemInfoResponse> => ensureClient(client).getAdminSystemInfo(),
+});
+
+const adminSystemApiKeysBaseKey: QueryKey = ['api', 'admin', 'system', 'api-keys'];
+
+export const adminSystemApiKeysQueryOptions = (
+  params: AdminSystemApiKeysQuery = {},
+  client?: AdminSystemApiKeysClientLike
+) => ({
+  queryKey: [...adminSystemApiKeysBaseKey, params.page ?? 1, params.pageSize ?? 20, params.status ?? 'all', params.search ?? ''],
+  keepPreviousData: true,
+  queryFn: async () => ensureClient(client).getAdminSystemApiKeys(params),
+});
+
+const adminSystemImportJobsBaseKey: QueryKey = ['api', 'admin', 'system', 'import-jobs'];
+
+export const adminSystemImportJobsQueryOptions = (
+  params: AdminSystemImportJobsQuery = {},
+  client?: AdminSystemImportJobsClientLike
+) => ({
+  queryKey: [
+    ...adminSystemImportJobsBaseKey,
+    params.page ?? 1,
+    params.pageSize ?? 20,
+    params.status ?? 'all',
+    params.entity ?? 'all',
+    params.search ?? '',
+  ],
+  keepPreviousData: true,
+  queryFn: async () => ensureClient(client).getAdminSystemImportJobs(params),
+});
+
+const adminSystemExportJobsBaseKey: QueryKey = ['api', 'admin', 'system', 'export-jobs'];
+
+export const adminSystemExportJobsQueryOptions = (
+  params: AdminSystemExportJobsQuery = {},
+  client?: AdminSystemExportJobsClientLike
+) => ({
+  queryKey: [
+    ...adminSystemExportJobsBaseKey,
+    params.page ?? 1,
+    params.pageSize ?? 20,
+    params.status ?? 'all',
+    params.type ?? 'all',
+    params.search ?? '',
+  ],
+  keepPreviousData: true,
+  queryFn: async () => ensureClient(client).getAdminSystemExportJobs(params),
+});
+
+const adminWebhookLogsBaseKey: QueryKey = ['api', 'admin', 'system', 'webhooks'];
+
+const adminWebhookLogsKeyParts = (params: AdminWebhookLogsQuery = {}) => [
+  params.page ?? 1,
+  params.pageSize ?? 25,
+  params.provider ?? 'all',
+  params.status ?? 'all',
+  params.eventType ?? 'all',
+  params.resourceId ?? 'any',
+  params.bookingId ?? 'any',
+  params.paymentId ?? 'any',
+  params.providerProfileId ?? 'any',
+  params.userId ?? 'any',
+  params.search ?? 'any',
+  params.from ?? 'none',
+  params.to ?? 'none',
+];
+
+export const adminWebhookLogsQueryOptions = (
+  params: AdminWebhookLogsQuery = {},
+  client?: AdminWebhookLogsClientLike
+) => ({
+  queryKey: [...adminWebhookLogsBaseKey, ...adminWebhookLogsKeyParts(params)],
+  keepPreviousData: true,
+  queryFn: async (): Promise<AdminPaginatedResponse<AdminWebhookLogItem>> =>
+    ensureClient(client).listAdminWebhookLogs(params),
+});
+
+export const adminWebhookLogDetailQueryOptions = (
+  id: string,
+  client?: AdminWebhookLogDetailClientLike
+) => ({
+  queryKey: [...adminWebhookLogsBaseKey, 'detail', id],
+  enabled: Boolean(id),
+  queryFn: async (): Promise<AdminWebhookLogDetail> => ensureClient(client).getAdminWebhookLog(id),
 });
 
 export const adminQualityOverviewBaseKey: QueryKey = ['api', 'admin', 'quality', 'overview'];
@@ -1257,7 +1582,7 @@ export const adminUsersOverviewQueryOptions = (client?: AdminUsersOverviewClient
     ensureClient(client).getAdminUsersOverview(),
 });
 
-const normalizeListParams = (params: { page?: number; pageSize?: number; status?: string; search?: string } = {}) => ({
+const normalizeListParams = (params: { page?: number; pageSize?: number; status?: string; search?: string; role?: string } = {}) => ({
   page: params.page ?? 1,
   pageSize: params.pageSize ?? 25,
   status: params.status ?? 'all',
@@ -1294,13 +1619,20 @@ export const adminProvidersQueryOptions = (
   keepPreviousData: true,
 });
 
-export const adminEmployeesQueryKey = (params: { page?: number; pageSize?: number; status?: string; search?: string } = {}): QueryKey => {
+export const adminEmployeesQueryKey = (params: {
+  page?: number;
+  pageSize?: number;
+  status?: string;
+  search?: string;
+  role?: string;
+} = {}): QueryKey => {
   const normalized = normalizeListParams(params);
-  return ['api', 'admin', 'users', 'employees', normalized.page, normalized.pageSize, normalized.status, normalized.search];
+  const role = params.role ?? 'all';
+  return ['api', 'admin', 'users', 'employees', normalized.page, normalized.pageSize, normalized.status, normalized.search, role];
 };
 
 export const adminEmployeesQueryOptions = (
-  params: { page?: number; pageSize?: number; status?: string; search?: string } = {},
+  params: { page?: number; pageSize?: number; status?: string; search?: string; role?: string } = {},
   client?: AdminEmployeesClientLike,
 ) => ({
   queryKey: adminEmployeesQueryKey(params),
@@ -1500,6 +1832,211 @@ export const adminProviderIdentityReviewQueryOptions = (
     }
     return ensureClient(client).getAdminProviderIdentityReview(providerId);
   },
+});
+
+export const adminSecuritySessionsQueryKey = (params: AdminSecuritySessionsQuery = {}): QueryKey => [
+  'api',
+  'admin',
+  'security',
+  'sessions',
+  params,
+];
+
+export const adminSecuritySessionsQueryOptions = (
+  params: AdminSecuritySessionsQuery = {},
+  client?: AdminSecuritySessionsClientLike,
+) => ({
+  queryKey: adminSecuritySessionsQueryKey(params),
+  queryFn: async (): Promise<AdminPaginatedResponse<AdminSecuritySession>> =>
+    ensureClient(client).listAdminSecuritySessions(params),
+});
+
+export const adminSecurityLoginAttemptsQueryKey = (
+  params: AdminSecurityLoginAttemptsQuery = {}
+): QueryKey => ['api', 'admin', 'security', 'login_attempts', params];
+
+export const adminSecurityLoginAttemptsQueryOptions = (
+  params: AdminSecurityLoginAttemptsQuery = {},
+  client?: AdminSecurityLoginAttemptsClientLike,
+) => ({
+  queryKey: adminSecurityLoginAttemptsQueryKey(params),
+  queryFn: async (): Promise<AdminPaginatedResponse<AdminSecurityLoginAttempt>> =>
+    ensureClient(client).listAdminSecurityLoginAttempts(params),
+});
+
+export const adminSecurityLogsQueryKey = (params: AdminSecurityLogsQuery = {}): QueryKey => [
+  'api',
+  'admin',
+  'security',
+  'logs',
+  params,
+];
+
+export const adminSecurityLogsQueryOptions = (
+  params: AdminSecurityLogsQuery = {},
+  client?: AdminSecurityLogsClientLike,
+) => ({
+  queryKey: adminSecurityLogsQueryKey(params),
+  queryFn: async (): Promise<AdminPaginatedResponse<AdminSecurityLog>> =>
+    ensureClient(client).listAdminSecurityLogs(params),
+});
+
+export const adminSecurityIncidentsQueryKey = (params: AdminSecurityIncidentsQuery = {}): QueryKey => [
+  'api',
+  'admin',
+  'security',
+  'incidents',
+  params,
+];
+
+export const adminSecurityIncidentsQueryOptions = (
+  params: AdminSecurityIncidentsQuery = {},
+  client?: AdminSecurityIncidentsClientLike,
+) => ({
+  queryKey: adminSecurityIncidentsQueryKey(params),
+  queryFn: async (): Promise<AdminPaginatedResponse<AdminSecurityIncident>> =>
+    ensureClient(client).listAdminSecurityIncidents(params),
+});
+
+export const adminConsentsQueryKey = (params: AdminConsentQuery = {}): QueryKey => [
+  'api',
+  'admin',
+  'compliance',
+  'consents',
+  params,
+];
+
+export const adminConsentsQueryOptions = (
+  params: AdminConsentQuery = {},
+  client?: AdminConsentsClientLike,
+) => ({
+  queryKey: adminConsentsQueryKey(params),
+  queryFn: async (): Promise<AdminPaginatedResponse<AdminConsentRecord>> =>
+    ensureClient(client).listAdminConsents(params),
+});
+
+export const adminConsentHistoryQueryKey = (userId?: string): QueryKey => [
+  'api',
+  'admin',
+  'compliance',
+  'consent_history',
+  userId ?? 'none',
+];
+
+export const adminConsentHistoryQueryOptions = (
+  userId?: string,
+  client?: AdminConsentHistoryClientLike,
+) => ({
+  queryKey: adminConsentHistoryQueryKey(userId),
+  enabled: Boolean(userId),
+  queryFn: async (): Promise<AdminConsentHistoryItem[]> => {
+    if (!userId) {
+      throw new ApiError('userId_required', 400);
+    }
+    return ensureClient(client).getAdminConsentHistory(userId);
+  },
+});
+
+export const adminGdprRequestsQueryKey = (params: AdminGdprRequestsQuery = {}): QueryKey => [
+  'api',
+  'admin',
+  'compliance',
+  'gdpr',
+  'requests',
+  params,
+];
+
+export const adminGdprRequestsQueryOptions = (
+  params: AdminGdprRequestsQuery = {},
+  client?: AdminGdprRequestsClientLike,
+) => ({
+  queryKey: adminGdprRequestsQueryKey(params),
+  queryFn: async (): Promise<AdminPaginatedResponse<AdminGdprRequest>> =>
+    ensureClient(client).listAdminGdprRequests(params),
+});
+
+export const adminIdentityVerificationsQueryKey = (
+  params: AdminIdentityVerificationsQuery = {},
+): QueryKey => ['api', 'admin', 'identity', 'verifications', params];
+
+export const adminIdentityVerificationsQueryOptions = (
+  params: AdminIdentityVerificationsQuery = {},
+  client?: AdminIdentityVerificationsClientLike,
+) => ({
+  queryKey: adminIdentityVerificationsQueryKey(params),
+  queryFn: async (): Promise<AdminPaginatedResponse<AdminIdentityVerificationListItem>> =>
+    ensureClient(client).listAdminIdentityVerifications(params),
+});
+
+export const adminIdentityVerificationDetailQueryKey = (providerId?: string): QueryKey => [
+  'api',
+  'admin',
+  'identity',
+  'verification',
+  providerId ?? 'none',
+];
+
+export const adminIdentityVerificationDetailQueryOptions = (
+  providerId?: string,
+  client?: AdminIdentityVerificationDetailClientLike,
+) => ({
+  queryKey: adminIdentityVerificationDetailQueryKey(providerId),
+  enabled: Boolean(providerId),
+  queryFn: async (): Promise<AdminIdentityVerificationDetail> => {
+    if (!providerId) {
+      throw new ApiError('providerId_required', 400);
+    }
+    return ensureClient(client).getAdminIdentityVerification(providerId);
+  },
+});
+
+export const adminIdentityAuditQueryKey = (params: AdminIdentityAuditQuery = {}): QueryKey => [
+  'api',
+  'admin',
+  'identity',
+  'audit',
+  params,
+];
+
+export const adminIdentityAuditQueryOptions = (
+  params: AdminIdentityAuditQuery = {},
+  client?: AdminIdentityAuditClientLike,
+) => ({
+  queryKey: adminIdentityAuditQueryKey(params),
+  queryFn: async (): Promise<AdminPaginatedResponse<AdminIdentityAuditLogItem>> =>
+    ensureClient(client).listAdminIdentityAudit(params),
+});
+
+export const adminIdentityDocumentTypesQueryKey = (includeArchived = false): QueryKey => [
+  'api',
+  'admin',
+  'identity',
+  'document_types',
+  includeArchived,
+];
+
+export const adminIdentityDocumentTypesQueryOptions = (
+  includeArchived = false,
+  client?: AdminIdentityDocumentTypesClientLike,
+) => ({
+  queryKey: adminIdentityDocumentTypesQueryKey(includeArchived),
+  queryFn: async (): Promise<IdentityDocumentTypeConfig[]> =>
+    ensureClient(client).listAdminIdentityDocumentTypes({ includeArchived }),
+});
+
+export const providerIdentityDocumentTypesQueryKey: QueryKey = [
+  'api',
+  'provider',
+  'identity',
+  'document_types',
+];
+
+export const providerIdentityDocumentTypesQueryOptions = (
+  client?: ProviderIdentityDocumentTypesClientLike,
+) => ({
+  queryKey: providerIdentityDocumentTypesQueryKey,
+  queryFn: async (): Promise<IdentityDocumentTypeConfig[]> =>
+    ensureClient(client).listProviderIdentityDocumentTypes(),
 });
 
 export const addressAutocompleteQueryKey = (query: string): QueryKey => [

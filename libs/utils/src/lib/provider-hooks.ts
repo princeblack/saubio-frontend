@@ -48,6 +48,8 @@ import {
   providerInvitationsQueryOptions,
   providerServiceCatalogQueryKey,
   providerServiceCatalogQueryOptions,
+  providerIdentityDocumentTypesQueryOptions,
+  providerIdentityDocumentTypesQueryKey,
 } from './api-queries';
 import { createApiClient } from './api-client';
 import type { ProviderBookingInvitation } from '@saubio/models';
@@ -105,6 +107,10 @@ export const useProviderResources = () => {
 
 export const useProviderProfile = () => {
   return useQuery(providerProfileQueryOptions());
+};
+
+export const useProviderIdentityDocumentTypes = () => {
+  return useQuery(providerIdentityDocumentTypesQueryOptions());
 };
 
 export const useProviderBankInfo = () => {
