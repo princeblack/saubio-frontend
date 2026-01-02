@@ -114,6 +114,9 @@ import type {
   ServiceCategory,
   EcoPreference,
   PromoCodeType,
+  MarketingCampaignChannel,
+  MarketingCampaignStatus,
+  ReferralStatus,
   PostalCodeLookupResponse,
   AdminBookingListItem,
   AdminBookingDetails,
@@ -130,9 +133,11 @@ import type {
   AdminAnalyticsCohortResponse,
   AdminAnalyticsZonesResponse,
   AdminAnalyticsOpsResponse,
+  AdminMarketingCampaignListResponse,
   AdminMarketingLandingPagesResponse,
   AdminMarketingOverviewResponse,
   AdminMarketingSettingsResponse,
+  AdminReferralListResponse,
   AdminNotificationLogItem,
   AdminNotificationTemplate,
   AdminNotificationAutomationRule,
@@ -479,6 +484,21 @@ export interface AdminSmartMatchingSimulationPayload {
 export interface AdminMarketingRangeParams {
   from?: string;
   to?: string;
+}
+
+export interface AdminMarketingCampaignsQuery extends AdminMarketingRangeParams {
+  status?: MarketingCampaignStatus;
+  channel?: MarketingCampaignChannel;
+  search?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface AdminReferralQuery {
+  status?: ReferralStatus;
+  search?: string;
+  page?: number;
+  pageSize?: number;
 }
 
 export interface AdminPromoCodesQuery {
@@ -1061,6 +1081,18 @@ export class ApiClient {
     return this.get<AdminMarketingSettingsResponse>('/employee/marketing/settings');
   }
 
+  getAdminMarketingCampaigns(
+    params: AdminMarketingCampaignsQuery = {}
+  ): Promise<AdminMarketingCampaignListResponse> {
+    return this.get<AdminMarketingCampaignListResponse>(
+      `/employee/marketing/campaigns${this.buildQueryString(params)}`
+    );
+  }
+
+  getAdminReferralInvites(params: AdminReferralQuery = {}): Promise<AdminReferralListResponse> {
+    return this.get<AdminReferralListResponse>(`/employee/marketing/referrals${this.buildQueryString(params)}`);
+  }
+
   getAdminSystemHealth(): Promise<AdminSystemHealthResponse> {
     return this.get<AdminSystemHealthResponse>('/employee/system/health');
   }
@@ -1069,27 +1101,39 @@ export class ApiClient {
     return this.get<AdminSystemIntegrationsResponse>('/employee/system/integrations');
   }
 
-  getAdminSystemApiKeys(
-    params: AdminSystemApiKeysQuery = {}
-  ): Promise<AdminPaginatedResponse<AdminSystemApiKeyItem>> {
+  getAdminSystemApiKeys(params: AdminSystemApiKeysQuery = {}): Promise<
+    AdminPaginatedResponse<AdminSystemApiKeyItem>
+  > {
+    const query: Record<string, unknown> = { ...params };
+    if (params.status) {
+      query.status = params.status.toUpperCase();
+    }
     return this.get<AdminPaginatedResponse<AdminSystemApiKeyItem>>(
-      `/employee/system/api-keys${this.buildQueryString(params)}`
+      `/employee/system/api-keys${this.buildQueryString(query)}`
     );
   }
 
-  getAdminSystemImportJobs(
-    params: AdminSystemImportJobsQuery = {}
-  ): Promise<AdminPaginatedResponse<AdminSystemImportJobItem>> {
+  getAdminSystemImportJobs(params: AdminSystemImportJobsQuery = {}): Promise<
+    AdminPaginatedResponse<AdminSystemImportJobItem>
+  > {
+    const query: Record<string, unknown> = { ...params };
+    if (params.status) {
+      query.status = params.status.toUpperCase();
+    }
     return this.get<AdminPaginatedResponse<AdminSystemImportJobItem>>(
-      `/employee/system/imports${this.buildQueryString(params)}`
+      `/employee/system/imports${this.buildQueryString(query)}`
     );
   }
 
-  getAdminSystemExportJobs(
-    params: AdminSystemExportJobsQuery = {}
-  ): Promise<AdminPaginatedResponse<AdminSystemExportJobItem>> {
+  getAdminSystemExportJobs(params: AdminSystemExportJobsQuery = {}): Promise<
+    AdminPaginatedResponse<AdminSystemExportJobItem>
+  > {
+    const query: Record<string, unknown> = { ...params };
+    if (params.status) {
+      query.status = params.status.toUpperCase();
+    }
     return this.get<AdminPaginatedResponse<AdminSystemExportJobItem>>(
-      `/employee/system/exports${this.buildQueryString(params)}`
+      `/employee/system/exports${this.buildQueryString(query)}`
     );
   }
 

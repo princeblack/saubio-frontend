@@ -20,6 +20,8 @@ import type {
   AdminSecurityIncidentsQuery,
   AdminGdprRequestsQuery,
   AdminMarketingRangeParams,
+  AdminMarketingCampaignsQuery,
+  AdminReferralQuery,
   AdminPromoCodesQuery,
   AdminPromoCodeUsageQuery,
   AdminQualityRangeParams,
@@ -98,6 +100,8 @@ import type {
   AdminMarketingLandingPagesResponse,
   AdminMarketingOverviewResponse,
   AdminMarketingSettingsResponse,
+  AdminMarketingCampaignListResponse,
+  AdminReferralListResponse,
   AdminPromoCodeListItem,
   AdminPromoCodeDetail,
   AdminPromoCodeStatsResponse,
@@ -707,6 +711,39 @@ export const adminMarketingSettingsQueryOptions = (client?: AdminMarketingSettin
   queryKey: adminMarketingSettingsQueryKey,
   queryFn: async (): Promise<AdminMarketingSettingsResponse> =>
     ensureClient(client).getAdminMarketingSettings(),
+});
+
+export const adminMarketingCampaignsQueryKey = (params: AdminMarketingCampaignsQuery = {}): QueryKey => [
+  'api',
+  'admin',
+  'marketing',
+  'campaigns',
+  params,
+];
+
+export const adminMarketingCampaignsQueryOptions = (
+  params: AdminMarketingCampaignsQuery = {},
+  client?: ApiClient,
+) => ({
+  queryKey: adminMarketingCampaignsQueryKey(params),
+  queryFn: async (): Promise<AdminMarketingCampaignListResponse> =>
+    ensureClient(client).getAdminMarketingCampaigns(params),
+  keepPreviousData: true,
+});
+
+export const adminReferralQueryKey = (params: AdminReferralQuery = {}): QueryKey => [
+  'api',
+  'admin',
+  'marketing',
+  'referrals',
+  params,
+];
+
+export const adminReferralQueryOptions = (params: AdminReferralQuery = {}, client?: ApiClient) => ({
+  queryKey: adminReferralQueryKey(params),
+  queryFn: async (): Promise<AdminReferralListResponse> =>
+    ensureClient(client).getAdminReferralInvites(params),
+  keepPreviousData: true,
 });
 
 export const adminSystemHealthQueryKey: QueryKey = ['api', 'admin', 'system', 'health'];

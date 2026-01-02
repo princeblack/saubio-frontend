@@ -57,6 +57,8 @@ import type {
   AdminSmartMatchingConfigPayload,
   AdminSmartMatchingSimulationPayload,
   AdminMarketingRangeParams,
+  AdminMarketingCampaignsQuery,
+  AdminReferralQuery,
   AdminPromoCodesQuery,
   AdminPromoCodeUsageQuery,
   AdminPromoCodeMutationPayload,
@@ -164,6 +166,8 @@ import {
   adminMarketingOverviewQueryOptions,
   adminMarketingLandingQueryOptions,
   adminMarketingSettingsQueryOptions,
+  adminMarketingCampaignsQueryOptions,
+  adminReferralQueryOptions,
   adminSystemHealthQueryOptions,
   adminSystemIntegrationsQueryOptions,
   adminSystemInfoQueryOptions,
@@ -315,6 +319,14 @@ export const useAdminMarketingLandingPages = () => {
 
 export const useAdminMarketingSettings = () => {
   return useQuery(adminMarketingSettingsQueryOptions());
+};
+
+export const useAdminMarketingCampaigns = (params: AdminMarketingCampaignsQuery = {}) => {
+  return useQuery(adminMarketingCampaignsQueryOptions(params));
+};
+
+export const useAdminReferralInvites = (params: AdminReferralQuery = {}) => {
+  return useQuery(adminReferralQueryOptions(params));
 };
 
 export const useAdminSystemHealth = () => {
