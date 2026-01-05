@@ -153,6 +153,7 @@ import {
   paymentEventsQueryOptions,
   bookingsQueryKey,
   adminClientsQueryOptions,
+  adminClientDetailQueryOptions,
   adminProvidersQueryOptions,
   adminEmployeesQueryOptions,
   adminRolesQueryOptions,
@@ -245,6 +246,10 @@ export const useAdminUsersOverview = () => {
 
 export const useAdminClients = (params: { page?: number; pageSize?: number; status?: string; search?: string } = {}) => {
   return useQuery(adminClientsQueryOptions(params));
+};
+
+export const useAdminClientDetail = (clientId?: string) => {
+  return useQuery(adminClientDetailQueryOptions(clientId));
 };
 
 export const useAdminProviders = (params: { page?: number; pageSize?: number; status?: string; search?: string } = {}) => {

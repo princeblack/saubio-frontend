@@ -72,6 +72,7 @@ import type {
   AdminBookingDetails,
   AdminBookingOverviewResponse,
   AdminClientListItem,
+  AdminClientDetails,
   AdminProviderListItem,
   AdminEmployeeListItem,
   AdminRolesResponse,
@@ -186,6 +187,7 @@ type ProviderServicesClientLike = Pick<ApiClient, 'getProviderServiceCatalog'>;
 type AdminUsersClientLike = Pick<ApiClient, 'listAdminUsers' | 'updateAdminUser'>;
 type AdminUsersOverviewClientLike = Pick<ApiClient, 'getAdminUsersOverview'>;
 type AdminClientsClientLike = Pick<ApiClient, 'listAdminClients'>;
+type AdminClientDetailClientLike = Pick<ApiClient, 'getAdminClient'>;
 type AdminProvidersClientLike = Pick<ApiClient, 'listAdminProviders'>;
 type AdminEmployeesClientLike = Pick<ApiClient, 'listAdminEmployees'>;
 type AdminRolesClientLike = Pick<ApiClient, 'getAdminRoles'>;
@@ -1639,6 +1641,22 @@ export const adminClientsQueryOptions = (
   queryFn: async (): Promise<AdminPaginatedResponse<AdminClientListItem>> =>
     ensureClient(client).listAdminClients(params),
   keepPreviousData: true,
+});
+
+export const adminClientDetailQueryKey = (clientId: string) => ['api', 'admin', 'users', 'clients', 'detail', clientId];
+
+export const adminClientDetailQueryOptions = (
+  clientId: string | undefined,
+  client?: AdminClientDetailClientLike,
+) => ({
+  queryKey: adminClientDetailQueryKey(clientId ?? 'unknown'),
+  queryFn: async (): Promise<AdminClientDetails> => {
+    if (!clientId) {
+      throw new Error('CLIENT_ID_REQUIRED');
+    }
+    return ensureClient(client).getAdminClient(clientId);
+  },
+  enabled: Boolean(clientId),
 });
 
 export const adminProvidersQueryKey = (params: { page?: number; pageSize?: number; status?: string; search?: string } = {}): QueryKey => {

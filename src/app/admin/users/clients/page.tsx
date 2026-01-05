@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { SurfaceCard, Skeleton, PrimaryButton } from '@saubio/ui';
 import { useAdminClients } from '@saubio/utils';
@@ -105,13 +106,14 @@ export default function AdminClientsPage() {
                 <th className="px-3 py-2 text-left font-semibold">Dernière réservation</th>
                 <th className="px-3 py-2 text-left font-semibold">Total dépensé</th>
                 <th className="px-3 py-2 text-left font-semibold">Statut</th>
+                <th className="px-3 py-2 text-left font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
               {isLoading && !data
                 ? Array.from({ length: 5 }).map((_, index) => (
                     <tr key={`clients-skeleton-${index}`} className="border-b border-saubio-forest/5">
-                      <td colSpan={8} className="px-3 py-4">
+                      <td colSpan={9} className="px-3 py-4">
                         <Skeleton className="h-6 w-full" />
                       </td>
                     </tr>
@@ -119,7 +121,7 @@ export default function AdminClientsPage() {
                 : null}
               {data && data.items.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-3 py-6 text-center text-saubio-slate/60">
+                  <td colSpan={9} className="px-3 py-6 text-center text-saubio-slate/60">
                     Aucun client ne correspond à vos filtres.
                   </td>
                 </tr>
@@ -139,6 +141,14 @@ export default function AdminClientsPage() {
                     <span className={`inline-flex rounded-full border px-2 py-1 text-xs font-semibold ${statusTone(client.status)}`}>
                       {statusLabel(client.status)}
                     </span>
+                  </td>
+                  <td className="px-3 py-2">
+                    <Link
+                      href={`/admin/users/clients/${client.id}`}
+                      className="inline-flex items-center rounded-full border border-saubio-forest/20 px-3 py-1 text-xs font-semibold text-saubio-forest transition hover:border-saubio-forest/60"
+                    >
+                      Voir profil
+                    </Link>
                   </td>
                 </tr>
               ))}
